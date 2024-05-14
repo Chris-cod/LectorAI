@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'dart:convert'; // Für das Konvertieren von JSON
 import 'package:flutter/services.dart'
     show rootBundle; // Für den Zugriff auf die Asset-Ressourcen
-import 'package:lectorai_frontend/seiten/home_page.dart';
+import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
 
 class LoginPage extends StatefulWidget {
