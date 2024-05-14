@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
-    //MaterialApp ist der Startpunkt unserer Anwendung und definiert das grundlegende Design.
+    //MaterialApp ist der Startpunkt unserer Anwendung und definiert das grundlegende Design..
     return const MaterialApp
     (
       title: 'LectorAI',
