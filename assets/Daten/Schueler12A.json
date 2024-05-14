@@ -1,0 +1,129 @@
+{
+    "schueler": [
+        {
+            "id": 1,
+            "vorname": "Fabian",
+            "nachname": "Huhn"
+        },
+        {
+            "id": 2,
+            "vorname": "Ivan",
+            "nachname": "Zahn"
+        },
+        {
+            "id": 3,
+            "vorname": "Marlis",
+            "nachname": "Hahn"
+        },
+        {
+            "id": 4,
+            "vorname": "Friedrich",
+            "nachname": "Schmiedt-Müde"
+        },
+        {
+            "id": 5,
+            "vorname": "Anika",
+            "nachname": "Heydrich"
+        },
+        {
+            "id": 6,
+            "vorname": "Emil",
+            "nachname": "Liebelt"
+        },
+        {
+            "id": 7,
+            "vorname": "Verena",
+            "nachname": "Reising"
+        },
+        {
+            "id": 8,
+            "vorname": "Gunnar",
+            "nachname": "Dussen"
+        },
+        {
+            "id": 9,
+            "vorname": "Iwona",
+            "nachname": "Anders"
+        },
+        {
+            "id": 10,
+            "vorname": "Milica",
+            "nachname": "Kreusel"
+        },
+        {
+            "id": 11,
+            "vorname": "Maja",
+            "nachname": "Schäfer"
+        },
+        {
+            "id": 12,
+            "vorname": "Insa",
+            "nachname": "Güde"
+        },
+        {
+            "id": 13,
+            "vorname": "Hans Georg",
+            "nachname": "Gutknecht"
+        },
+        {
+            "id": 14,
+            "vorname": "Magret",
+            "nachname": "Fischer"
+        },
+        {
+            "id": 15,
+            "vorname": "Sabrina",
+            "nachname": "Fiebig"
+        },
+        {
+            "id": 16,
+            "vorname": "Kazim",
+            "nachname": "Hettner"
+        },
+        {
+            "id": 17,
+            "vorname": "Bekir",
+            "nachname": "Jacob"
+        },
+        {
+            "id": 18,
+            "vorname": "Stanislav",
+            "nachname": "Gorlitz-Aumann"
+        },
+        {
+            "id": 19,
+            "vorname": "Wojciech",
+            "nachname": "Buchholz-Hering"
+        },
+        {
+            "id": 20,
+            "vorname": "Krystyna",
+            "nachname": "Pröschke"
+        },
+        {
+            "id": 21,
+            "vorname": "Anita",
+            "nachname": "Schinke"
+        },
+        {
+            "id": 22,
+            "vorname": "Ilja",
+            "nachname": "Anders"
+        },
+        {
+            "id": 23,
+            "vorname": "Constance",
+            "nachname": "Noack"
+        },
+        {
+            "id": 24,
+            "vorname": "Ariane",
+            "nachname": "Atzler"
+        },
+        {
+            "id": 25,
+            "vorname": "Adeline",
+            "nachname": "Buchholz"
+        }
+    ]
+}
