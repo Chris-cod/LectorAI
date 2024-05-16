@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:lectorai_frontend/models/klasse.dart';
+import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 
 
 class HomePage extends StatefulWidget {
-  final String username;
+  final Lehrer lehrer;
 
-  const HomePage({super.key, required this.username});
+  const HomePage({super.key, required this.lehrer});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -15,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static const double iconAndTextSize = 36.0;
   static const double cameraIconSize = 120.0;
-  List<String> classes = [];
+  List<Klasse> classes = [];
   bool isLoading = true;  // Anzeigen eines Ladeindikators
   Repository repository = Repository(); // Erstellung einer Instanz der Repository-Klasse
 
@@ -26,9 +29,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void loadClasses() async {
-    bool isLoggedIn = await repository.login('username', 'password'); // Passen Sie dies an
-    if (isLoggedIn) {
-      var fetchedClasses = await repository.fetchTeacherClasses();
+    var fetchedClasses = await repository.fetchTeacherClasses(widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
+    if (fetchedClasses.isNotEmpty) {
       setState(() {
         classes = fetchedClasses;
         isLoading = false;
@@ -56,7 +58,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(5.0),
         child: const Icon(Icons.person, size: 48.0),
       ),
-      title: Text(widget.username, style: TextStyle(fontSize: iconAndTextSize)),
+      title: Text(widget.lehrer.username, style: TextStyle(fontSize: iconAndTextSize)),
     );
   }
 
@@ -110,7 +112,7 @@ class _HomePageState extends State<HomePage> {
           alignment: WrapAlignment.center,
           spacing: 20,
           runSpacing: 15,
-          children: classes.map((className) => _buildClassButton(className, context)).toList(),
+          children: classes.map((className) => _buildClassButton(className.klasseName, context)).toList(),
         ),
       ),
     );
@@ -119,8 +121,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildClassButton(String label, BuildContext context) {
     return ElevatedButton(
       onPressed: () {
+        final int id = classes.firstWhere((element) => element.klasseName == label).klasseId;
         print("Button $label wurde gedrückt.");
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Schuelern()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Schuelern(klasseId: id, token: widget.lehrer.tokenRaw, lehrerId: widget.lehrer.lehrerId, klasseName: label,)));
       },
       style: ElevatedButton.styleFrom(
         foregroundColor: const Color.fromARGB(255, 0, 0, 0), // Textfarbe
