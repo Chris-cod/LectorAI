@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lectorai_frontend/models/klasse.dart';
 import 'package:lectorai_frontend/models/lehrer.dart';
+import 'package:lectorai_frontend/seiten/BlattView/Pdfviewr.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 
@@ -84,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     return Expanded(
       child: Center(
         child: GestureDetector(
-          onTap: () => print("Kamera-Button gedrückt"),
+          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const PdfViwer()));},
           child: Container(
             width: 250,
             height: 130,
