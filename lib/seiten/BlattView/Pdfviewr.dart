@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
@@ -18,8 +17,8 @@ class PdfViwerState extends State<PdfViwer> {
   int? currentPage = 0;
   bool pdfReady = false;
   OverlayEntry? _overlayEntry;
-  final Completer<PDFViewController> _controller = Completer<PDFViewController>();
-  //late PDFViewController _pdfViewController;
+  final Completer<PDFViewController> _controller =
+      Completer<PDFViewController>();
   late String fileType = "";
   String? path;
 
@@ -32,8 +31,7 @@ class PdfViwerState extends State<PdfViwer> {
     });
   }
 
-
-  void initDoc() async{
+  void initDoc() async {
     fileType = await readJson();
     getFileFromAsset("assets/Doc/$fileType.pdf").then((f) {
       setState(() {
@@ -60,14 +58,15 @@ class PdfViwerState extends State<PdfViwer> {
   }
 
   Future<String> readJson() async {
-    final String response = await rootBundle.loadString('assets/Daten/document.json');
+    final String response =
+        await rootBundle.loadString('assets/Daten/document.json');
     final data = await json.decode(response);
     return data['doc-type'];
   }
 
   @override
   void dispose() {
-    _overlayEntry!.remove();
+    _overlayEntry?.remove();
     super.dispose();
   }
 
@@ -76,16 +75,14 @@ class PdfViwerState extends State<PdfViwer> {
     Overlay.of(context)!.insert(_overlayEntry!);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Erfasste Schuerler Blatt"),
+        title: Text("Erfasste Schueler Blatt"),
       ),
-      body: path != null ?
-          showPDF()
-          : Center(child: CircularProgressIndicator()),
+      body:
+          path != null ? showPDF() : Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -99,14 +96,12 @@ class PdfViwerState extends State<PdfViwer> {
       pageSnap: true,
       defaultPage: currentPage!,
       fitPolicy: FitPolicy.BOTH,
-      preventLinkNavigation:
-      false,
+      preventLinkNavigation: false,
       onError: (e) {
         print(e);
       },
       onRender: (_pages) {
-        setState(() {
-        });
+        setState(() {});
       },
       onViewCreated: (PDFViewController vc) {
         _controller.complete(vc);
@@ -116,26 +111,73 @@ class PdfViwerState extends State<PdfViwer> {
   }
 
   OverlayEntry _createOverlayEntry(BuildContext context) {
-      return OverlayEntry(
-        builder: (context) => Positioned(
-          top: 250.0,
-          left: 50.0,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              width: 400,
-              height: 125,
-              decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.red,
-                  width: 3,
-                ),
+    return OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned(
+            top: 492.0,
+            left: 30.0,
+            child: GestureDetector(
+              onTap: () {
+                // Handle tap for Schüler/in to Klasse
+                print("Schüler/in bis Klasse tapped");
+              },
+              child: _buildOverlayBox(
+                "Schüler/in\nName",
+                320,
+                80,
+                Colors.blue.withOpacity(0.5),
               ),
             ),
           ),
+          Positioned(
+            top: 580.0,
+            left: 30.0,
+            child: GestureDetector(
+              onTap: () {
+                // Handle tap for AG to AG Wahl 3
+                print("AG bis AG Wahl 3 tapped");
+              },
+              child: _buildOverlayBox(
+                "AG\nAG Wahl 1\nAG W..",
+                320,
+                80,
+                Colors.green.withOpacity(0.5),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverlayBox(
+      String text, double width, double height, Color color) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Colors.red,
+            width: 2,
+          ),
         ),
-      );
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
   }
 }
