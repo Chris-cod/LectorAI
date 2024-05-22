@@ -111,12 +111,14 @@ class PdfViwerState extends State<PdfViwer> {
   }
 
   OverlayEntry _createOverlayEntry(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return OverlayEntry(
       builder: (context) => Stack(
         children: [
           Positioned(
-            top: 492.0,
-            left: 30.0,
+            top: size.height * 0.52,
+            left: size.width * 0.08,
             child: GestureDetector(
               onTap: () {
                 // Handle tap for Schüler/in to Klasse
@@ -124,15 +126,15 @@ class PdfViwerState extends State<PdfViwer> {
               },
               child: _buildOverlayBox(
                 "Schüler/in\nName",
-                320,
-                80,
+                size.width * 0.8,
+                size.height * 0.1,
                 Colors.blue.withOpacity(0.5),
               ),
             ),
           ),
           Positioned(
-            top: 580.0,
-            left: 30.0,
+            top: size.height * 0.625,
+            left: size.width * 0.08,
             child: GestureDetector(
               onTap: () {
                 // Handle tap for AG to AG Wahl 3
@@ -140,8 +142,8 @@ class PdfViwerState extends State<PdfViwer> {
               },
               child: _buildOverlayBox(
                 "AG\nAG Wahl 1\nAG W..",
-                320,
-                80,
+                size.width * 0.8,
+                size.height * 0.1,
                 Colors.green.withOpacity(0.5),
               ),
             ),
