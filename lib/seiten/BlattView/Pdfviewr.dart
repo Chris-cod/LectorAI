@@ -115,33 +115,33 @@ class PdfViwerState extends State<PdfViwer> {
       builder: (context) => Stack(
         children: [
           Positioned(
-            top: 150.0,
-            left: 20.0,
+            top: 492.0,
+            left: 30.0,
             child: GestureDetector(
               onTap: () {
                 // Handle tap for Schüler/in to Klasse
                 print("Schüler/in bis Klasse tapped");
               },
               child: _buildOverlayBox(
-                "Schüler/in\nName\nVorname\nKlasse",
-                350,
-                200,
+                "Schüler/in\nName",
+                320,
+                80,
                 Colors.blue.withOpacity(0.5),
               ),
             ),
           ),
           Positioned(
-            top: 400.0,
-            left: 20.0,
+            top: 580.0,
+            left: 30.0,
             child: GestureDetector(
               onTap: () {
                 // Handle tap for AG to AG Wahl 3
                 print("AG bis AG Wahl 3 tapped");
               },
               child: _buildOverlayBox(
-                "AG\nAG Wahl 1\nAG Wahl 2\nAG Wahl 3",
-                350,
-                200,
+                "AG\nAG Wahl 1\nAG W..",
+                320,
+                80,
                 Colors.green.withOpacity(0.5),
               ),
             ),
