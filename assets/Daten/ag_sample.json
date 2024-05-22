@@ -1,0 +1,37 @@
+{
+    "doc_type": "AG",
+    "students": [
+      {
+        "id": 1,
+        "vorname": {
+          "value": "Iwona",
+          "similarityScore": 0.92
+        },
+        "nachname": {
+          "value": "Anders",
+          "similarityScore": 0.91
+        },
+        "class": {
+          "value": "12A",
+          "similarityScore": 0.96
+        },
+        "similarityScorePerson": 0.92
+      }
+    ],
+    "AGS": [
+      {
+        "Ag_id": 1,
+        "Ag_name": {
+          "value": "Programmierung",
+          "score": 0.1
+        }
+      },
+      {
+        "Ag_id": 1,
+        "Ag_name": {
+          "value": "Robotik",
+          "score": 0.1
+        }
+      }
+    ]
+  }
