@@ -1,0 +1,103 @@
+{
+  "doc_type": "Adresse",
+  "students": [
+    {
+      "id": 1,
+      "vorname": {
+        "value": "John",
+        "similarityScore": 0.92
+      },
+      "nachname": {
+        "value": "Doe",
+        "similarityScore": 0.91
+      },
+      "class": {
+        "value": "3B",
+        "similarityScore": 0.96
+      },
+      "similarityScorePerson": 0.92,
+      "parents": [
+        {
+          "id": 7,
+          "vorname": {
+            "value": "Makalena",
+            "similarityScore": 0.92
+          },
+          "nachname": {
+            "value": "Doe",
+            "similarityScore": 0.91
+          },
+          "email": {
+            "value": "tobi_hat_geburtstag@geburt.de",
+            "similarityScore": 0.91
+          },
+          "telefone": {
+            "value": "0127182171",
+            "similarityScore": 0.93
+          },
+          "similarityScorePerson": 0.92
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "vorname": {
+        "value": "Jahn",
+        "similarityScore": 0.91
+      },
+      "nachname": {
+        "value": "Doe",
+        "similarityScore": 0.91
+      },
+      "class": {
+        "value": "3B",
+        "similarityScore": 0.91
+      },
+      "similarityScorePerson": 0.91
+    },
+    {
+      "id": 3,
+      "vorname": {
+        "value": "John",
+        "similarityScore": 0.70
+      },
+      "nachname": {
+        "value": "Does",
+        "similarityScore": 0.70
+      },
+      "class": {
+        "value": "9B",
+        "similarityScore": 0.70
+      },
+      "similarityScorePerson": 0.70
+    }
+  ],
+  "addresses": [
+    {
+      "id": 1,
+      "street_name": {
+        "value": "Hauptstraße 5",
+        "similarityScore": 0.95
+      },
+      "location": {
+        "location_id": 101,
+        "location_name": "Berlin",
+        "postal_code": 10115,
+        "similarityScore": 0.98
+      }
+    },
+    {
+      "id": 2,
+      "street_name": {
+        "value": "Nebenstraße 2",
+        "similarityScore": 0.94
+      },
+      "location": {
+        "location_id": 102,
+        "location_name": "Munchen",
+        "postal_code": 80331,
+        "similarityScore": 0.92
+      }
+    }
+  ]
+}
