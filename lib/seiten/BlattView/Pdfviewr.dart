@@ -19,32 +19,32 @@ class PdfViwerState extends State<PdfViwer> {
   OverlayEntry? _overlayEntry;
   final Completer<PDFViewController> _controller = Completer<PDFViewController>();
   String? path;
-  Map<String, dynamic> _jsonData = {};
+  Map<String,dynamic> _jsonData = {};
+  bool dataLoaded = false;
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    initDoc();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    readJson().then((value) => setState(() {
       _showOverlay(context);
-    });
+    }));
   }
 
-  void initDoc() async {
-    _jsonData = await readJson();
-    getFileFromAsset("assets/Doc/${_jsonData['doc_type']}.pdf").then((f) {
-      setState(() {
-        path = f.path;
-        pdfReady = true;
-      });
+  Future<void> readJson() async {
+    final String response = await rootBundle.loadString('assets/Daten/ag_sample.json');
+    var responseJson = await json.decode(response);
+    var f = await getFileFromAsset("assets/Doc/${responseJson['doc_type']}.pdf");
+    setState(() {
+      _jsonData = responseJson;
+      path = f.path;
     });
+    print(path);
   }
 
   Future<File> getFileFromAsset(String asset) async {
     Completer<File> completer = Completer();
     String fileType = asset.split('/').last;
-
     try {
       var dir = await getApplicationDocumentsDirectory();
       File file = File("${dir.path}/$fileType");
@@ -54,16 +54,11 @@ class PdfViwerState extends State<PdfViwer> {
       File assetFile = await file.writeAsBytes(bytes);
       completer.complete(assetFile);
     } catch (e) {
-      throw Exception("Error opening asset file" + e.toString());
+      throw Exception("Error opening asset file: $e");
     }
     return completer.future;
   }
 
-  Future<Map<String, dynamic>> readJson() async {
-    final String response = await rootBundle.loadString('assets/Daten/adresse_sample.json');
-    var data = await json.decode(response);
-    return data;
-  }
 
   @override
   void dispose() {
@@ -71,20 +66,26 @@ class PdfViwerState extends State<PdfViwer> {
     super.dispose();
   }
 
-  void _showOverlay(BuildContext context) {
+  void _showOverlay(BuildContext context) { // Nur Overlay anzeigen, wenn Daten geladen sind
     _overlayEntry = _createOverlayEntry(context);
-    Overlay.of(context)!.insert(_overlayEntry!);
+    if (_overlayEntry != null) {
+      Overlay.of(context)!.insert(_overlayEntry!);
+    }
   }
 
   void _nextData() {
     setState(() {
       _currentIndex = ((_currentIndex + 1) % _jsonData['students'].length).toInt();
+      _overlayEntry?.remove();
+      _showOverlay(context);
     });
   }
 
   void _prevData() {
     setState(() {
       _currentIndex = ((_currentIndex - 1 + _jsonData['students'].length) % _jsonData['students'].length).toInt();
+      _overlayEntry?.remove();
+      _showOverlay(context);
     });
   }
 
@@ -92,73 +93,163 @@ class PdfViwerState extends State<PdfViwer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Erfasste Schueler Blatt"),
+        title: Text("Erfasste Schüler Blatt"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: _prevData,
+          ),
+          IconButton(
+            icon: Icon(Icons.arrow_forward),
+            onPressed: _nextData,
+          ),
+        ],
       ),
-      body:
-          path != null ? showPDF() : Center(child: CircularProgressIndicator()),
-    );
-  }
-
-  Widget showPDF() {
-    return PDFView(
-      filePath: path,
-      enableSwipe: true,
-      swipeHorizontal: true,
-      autoSpacing: false,
-      pageFling: true,
-      pageSnap: true,
-      defaultPage: currentPage!,
-      fitPolicy: FitPolicy.BOTH,
-      preventLinkNavigation: false,
-      onError: (e) {
-        print(e);
-      },
-      onRender: (_pages) {
-        setState(() {});
-      },
-      onViewCreated: (PDFViewController vc) {
-        _controller.complete(vc);
-      },
-      onPageError: (page, e) {},
+      body: path != null
+          ? Stack(
+              children: [
+                PDFView(
+                  filePath: path,
+                  enableSwipe: true,
+                  swipeHorizontal: true,
+                  autoSpacing: false,
+                  pageFling: true,
+                  pageSnap: true,
+                  defaultPage: currentPage!,
+                  fitPolicy: FitPolicy.BOTH,
+                  preventLinkNavigation: false,
+                  onError: (e) {
+                    print(e);
+                  },
+                  onRender: (_pages) {
+                    setState(() {});
+                  },
+                  onViewCreated: (PDFViewController vc) {
+                    _controller.complete(vc);
+                  },
+                  onPageError: (page, e) {
+                    print(e);
+                  },
+                ),
+              ],
+            )
+          : Center(child: CircularProgressIndicator()),
     );
   }
 
   OverlayEntry _createOverlayEntry(BuildContext context) {
     try {
-      var student = _jsonData['students'][_currentIndex];
-      var parent = student['parents'].isNotEmpty ? student['parents'][0] : null;
-      var address = _jsonData['addresses'].firstWhere((addr) => addr['id'] == student['id'], orElse: () => null);
-      var ags = _jsonData['AGs'][_currentIndex];
-      if(_jsonData['doc_type'] == "Adresse") {
+      print(_jsonData['doc_type']);
+      if(_jsonData['doc_type'] == 'Adresse'){
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
-              _buildOverlay(MediaQuery.of(context).size.width * 0.5, MediaQuery.of(context).size.height * 0.22, MediaQuery.of(context).size.height * 0.46,
-                          MediaQuery.of(context).size.width * 0.15, '${parent['nachname']['value']}\n${parent['vorname']['value']}\n${parent['email']['value']}\n${parent['telefon']['value']}'),
-              _buildOverlay(MediaQuery.of(context).size.width * 0.7, MediaQuery.of(context).size.height * 0.22, MediaQuery.of(context).size.height * 0.66,
-                          MediaQuery.of(context).size.width * 0.46, '${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}'),
-              _buildOverlay(MediaQuery.of(context).size.width * 0.9, MediaQuery.of(context).size.height * 0.22, MediaQuery.of(context).size.height * 0.86,
-                          MediaQuery.of(context).size.width * 0.46, '${address['street_name']['value']}\n${address['location']['postal_code']}\n${address['location']['location_name']}')
-            ],
-          ),
-        );
-      } else {
-        return OverlayEntry(
-          builder: (context) => Stack(
-            children: [
-              _buildOverlay(MediaQuery.of(context).size.width * 0.7, MediaQuery.of(context).size.width * 0.7, MediaQuery.of(context).size.height * 0.46,
-                          MediaQuery.of(context).size.height * 0.46, '${student['vorname']['value']}\n${student['nachname']['value']}\n${student['class']['value']}'),
-              _buildOverlay(MediaQuery.of(context).size.width * 0.7, MediaQuery.of(context).size.width * 0.7, MediaQuery.of(context).size.height * 0.46,
-                          MediaQuery.of(context).size.height * 0.46, '${ags['Ag_name']['value']}'),
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.72,
+                height: MediaQuery.of(context).size.height * 0.15,
+                top: MediaQuery.of(context).size.height * 0.46,
+                left: MediaQuery.of(context).size.width * 0.15,
+                child: GestureDetector(
+                  onTap: () {
+                    print("Overlay tapped");
+                  },
+                  child: _buildOverlayBox(
+                    'test',//'${parent['nachname']['value']}\n${parent['vorname']['value']}\n${parent['email']['value']}\n${parent['telefon']['value']}',
+                    220,
+                    80,
+                    Colors.blue.withOpacity(0.5),
+                    0.78
+                  ),
+                ),
+              ),
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.108,
+                top: MediaQuery.of(context).size.height * 0.40,
+                left: MediaQuery.of(context).size.width * 0.12,
+                child: GestureDetector(
+                  onTap: () {
+                    print("Overlay tapped");
+                  },
+                  child: _buildOverlayBox(
+                    'test',//'${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',
+                    220,
+                    80,
+                    Colors.blue.withOpacity(0.5),
+                    0.48
+                  ),
+                ),
+              ),
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.22,
+                top: MediaQuery.of(context).size.height * 0.86,
+                left: MediaQuery.of(context).size.width * 0.15,
+                child: GestureDetector(
+                  onTap: () {
+                    print("Overlay tapped");
+                  },
+                  child: _buildOverlayBox(
+                    'test',//'${address['street_name']['value']}\n${address['location']['postal_code']}\n${address['location']['location_name']}',
+                    220,
+                    80,
+                    Colors.blue.withOpacity(0.5),
+                    0.56
+                  ),
+                ),
+              ),
             ],
           ),
         );
       }
+      else{
+        var student = _jsonData['students'][_currentIndex];
+        var ags = _jsonData['AGS'];
+        return OverlayEntry(builder: (context) => Stack(
+          children: [
+            Positioned(
+              width: MediaQuery.of(context).size.width * 0.72,
+              height: MediaQuery.of(context).size.height * 0.108,
+              top: MediaQuery.of(context).size.height * 0.508,
+              left: MediaQuery.of(context).size.width * 0.09,
+              child: GestureDetector(
+                onTap: () {
+                  print("Overlay tapped");
+                },
+                child: _buildOverlayBox(
+                  '${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',//'${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',
+                  220,
+                  80,
+                  Colors.white.withOpacity(0.5),
+                  student['similarityScorePerson']
+                ),
+              ),
+            ),
+            Positioned(
+              width: MediaQuery.of(context).size.width * 0.72,
+              height: MediaQuery.of(context).size.height * 0.108,
+              top: MediaQuery.of(context).size.height * 0.62,
+              left: MediaQuery.of(context).size.width * 0.09,
+              child: GestureDetector(
+                onTap: () {
+                  print("Overlay tapped");
+                },
+                child: _buildOverlayBox(
+                  '${ags[0]['Ag_name']['value']}\n${ags[1]['Ag_name']['value']}\nChor',//'${ags['Ag_name']['value']}',
+                  220,
+                  80,
+                  Colors.white.withOpacity(0.5),
+                  ags[0]['Ag_name']['score']
+                ),
+              ),
+            ),
+          ],
+        ));
+      }
     } catch (e) {
-      print(e);
+      print('Error creating overlay: $e');
       return OverlayEntry(builder: (context) => Container());
     }
-    
   }
 
   Widget _buildOverlay(double width, double height, double top, double left, String text) {
@@ -169,21 +260,20 @@ class PdfViwerState extends State<PdfViwer> {
       left: left,
       child: GestureDetector(
         onTap: () {
-          // Handle tap for Schüler/in to Klasse
-          print("Schüler/in bis Klasse tapped");
+          print("Overlay tapped");
         },
         child: _buildOverlayBox(
           text,
-          220,
-          80,
+          width,
+          height,
           Colors.blue.withOpacity(0.5),
+          0.12
         ),
       ),
     );
   }
 
-  Widget _buildOverlayBox(
-      String text, double width, double height, Color color, ) {
+  Widget _buildOverlayBox(String text, double width, double height, Color color, double score) {
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -193,22 +283,39 @@ class PdfViwerState extends State<PdfViwer> {
           color: color,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: Colors.red,
+            color: _getColorFromScore(score),
             width: 2,
           ),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
+          child: FittedBox(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
           ),
+          )
+          
         ),
       ),
     );
+  }
+
+  Color _getColorFromScore(double score) {
+    if (score >= 0.9 ) {
+      return Colors.green;
+    } else if (score >= 0.75) {
+      return Colors.orange;
+    }
+    else if(score < 0.75 && score >= 0.5){
+      return Colors.yellow;
+    }
+   else {
+      return Colors.red;
+    }
   }
 }
