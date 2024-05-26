@@ -39,6 +39,11 @@ dependencies:
   cupertino_icons: ^1.0.6
   readmore: ^3.0.0
 
+  camera: ^0.10.5+9  # Aktualisierte Version
+  
+  image: ^3.0.1  # Zum Bearbeiten und Konvertieren von Bildern
+  permission_handler: ^10.2.0 #  Berechtigungen zur Laufzeit zu verwalten
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
