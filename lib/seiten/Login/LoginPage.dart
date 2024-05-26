@@ -59,18 +59,18 @@ class _LoginPageState extends State<LoginPage> {
           const Color(0xFF0077B6), // Setzt die Hintergrundfarbe der Login-Seite
       body: Stack(
         children: [
-          Positioned(
-            left: 23,
-            top: 75, // Position des Zurück-Buttons
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pop(context); // Navigiert zurück zur HomePage
-              },
-              child: Image.asset(
-                'assets/Bilder/_.png', // Das Bild als Zurück-Button
-              ),
-            ),
-          ),
+          // Positioned(
+          //   left: 23,
+          //   top: 75, // Position des Zurück-Buttons
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       Navigator.pop(context); // Navigiert zurück zur HomePage
+          //     },
+          //     child: Image.asset(
+          //       'assets/Bilder/_.png', // Das Bild als Zurück-Button
+          //     ),
+          //   ),
+          // ),
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
