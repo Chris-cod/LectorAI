@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lectorai_frontend/models/klasse.dart';
 import 'package:lectorai_frontend/models/lehrer.dart';
-import 'package:lectorai_frontend/seiten/BlattView/Pdfviewr.dart';
+import 'package:lectorai_frontend/seiten/CamerPage/camera_page.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 
@@ -85,7 +85,14 @@ class _HomePageState extends State<HomePage> {
     return Expanded(
       child: Center(
         child: GestureDetector(
-          onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const PdfViwer()));},
+          onTap: () {
+                    print("Kamera-Button gedrückt");
+                    // Verwenden des Navigators zum Öffnen der CameraPage
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CameraPage()),
+                      );
+                    },
           child: Container(
             width: 250,
             height: 130,

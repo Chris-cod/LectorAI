@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/home/home.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
-import 'package:lectorai_frontend/seiten/home_page.dart';
+import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 
 void main() {
   runApp(const MyApp());
