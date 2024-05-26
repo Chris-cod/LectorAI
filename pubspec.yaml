@@ -31,6 +31,11 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.1
+  camera: ^0.10.5+9  # Aktualisierte Version
+  path_provider: ^2.0.11
+  image: ^3.0.1  # Zum Bearbeiten und Konvertieren von Bildern
+  permission_handler: ^10.2.0 #  Berechtigungen zur Laufzeit zu verwalten
+  
 
 
   # The following adds the Cupertino Icons font to your application.

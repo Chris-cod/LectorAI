@@ -8,9 +8,9 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class SchuelerDetails extends StatefulWidget {
   
-  const SchuelerDetails({super.key, required this.schuelerId});
+  const SchuelerDetails({super.key, required this.schuelerName});
 
-  final int schuelerId;
+  final String schuelerName;
 
   @override
   ShowSchuelerDetails createState() => ShowSchuelerDetails();
@@ -31,7 +31,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails>{
       final alleSchueler = jsonList.map((json) => SchuelerInfo.fromJson(json)).toList();
       //schuelerInfo = alleSchueler.firstWhere((element) => element.id == widget.schuelerId);
       setState(() {
-        schuelerInfo = alleSchueler.firstWhere((element) => element.id == widget.schuelerId);
+        schuelerInfo = alleSchueler.firstWhere((element) => element.vorname == widget.schuelerName);
       });
     });
   }

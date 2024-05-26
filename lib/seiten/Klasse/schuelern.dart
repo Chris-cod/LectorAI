@@ -3,23 +3,31 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lectorai_frontend/models/adresse.dart';
-import 'package:lectorai_frontend/models/kontakt.dart';
+import 'package:lectorai_frontend/models/klasse.dart';
 import 'package:lectorai_frontend/models/schueler.dart';
 import 'package:lectorai_frontend/models/schueler_info.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuler_details.dart';
+import 'package:lectorai_frontend/services/repository.dart';
 
 class Schuelern extends StatefulWidget {
-  const Schuelern({super.key});
+  final int klasseId;
+  final int lehrerId;
+  final String token;
+  final String klasseName;
+  const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName});
 
   @override
   SchulernListStatr createState() => SchulernListStatr();
 }
 
 class SchulernListStatr extends State<Schuelern>{ 
-  List<Schueler> alleSchueler = List.empty();
+  List<Schueler> alleSchueler = [];
 
-  List<Schueler> filteredSchueler = List.empty();
+  List<Schueler> filteredSchueler = [];
+
+  Repository repository = Repository();
+
+  static bool isLoading = false;
 
   /// Initializes the state of the widget.
   /// This method is called when the widget is inserted into the tree.
@@ -30,54 +38,20 @@ class SchulernListStatr extends State<Schuelern>{
     initList(); // Aufruf der Funktion im initState
   }
 
-
-  /// Reads a JSON file and updates the state with the parsed data.
-  Future<List<dynamic>> readJsonFile(String fileName) async {
-
-    try {
-      final String response = await rootBundle.loadString('assets/Daten/$fileName.json');
-      final schulerData = await json.decode(response);
-
-      var slist = schulerData["schueler"] as List<dynamic>;
-      
-      return slist;
-    } catch (e) {
-      print('Fehler beim Laden der Schülerdaten: $e');
-      return List.empty();
-    }
-
-  }
-
-
-  // initList() async {
-  //   final jsonlist = await readJsonFile('Schueler12A');
-  //   alleSchueler = jsonlist.map((json) => Schueler.fromJson(json)).toList();
-  //   print(alleSchueler.first.vorname);
-  //   filteredSchueler = alleSchueler;
-  // }
-
-  initList() {
-    readJsonFile('Schueler12A').then((jsonList) {
-      setState(() {
-        alleSchueler = jsonList.map((json) => Schueler.fromJson(json)).toList();
-        filteredSchueler = alleSchueler;
+  void initList() async{
+    var allStudent = await repository.getClassStudents(widget.token, widget.lehrerId, widget.klasseId);
+    String allStudentString = allStudent.toString();
+    print("alle schueler von backend: $allStudentString");
+    if(allStudent.isNotEmpty){
+        setState(() {
+        alleSchueler = allStudent.toList();
+        filteredSchueler = alleSchueler..sort((a, b) => a.vorname.compareTo(b.vorname));
       });
-    });
+    }
+    else{
+      isLoading = true;
+    }
   }
-
-  
-
-
-//  SchuelerInfo getSchulerInfo(String name) {
-//     SchuelerInfo schuelerInfo = SchuelerInfo(adresse: Adresse(), kontakt: Kontakt());
-//     readJsonFile('schuelerInfoKlasse12A').then((jsonList) {
-//       var element = jsonList.where((element) => element.contains(name));
-//       if (element != null) {
-//         schuelerInfo = element;
-//       }
-//     });
-//     return schuelerInfo;
-// }
 
   /// Runs the filter based on the provided search keyword.
   ///
@@ -108,7 +82,7 @@ class SchulernListStatr extends State<Schuelern>{
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Schüler der Klasse 12a', style: TextStyle(color: Colors.black), textAlign: TextAlign.center,),
+          title: Text('Schüler der Klasse ${widget.klasseName}', style: const TextStyle(color: Colors.black), textAlign: TextAlign.center,),
           backgroundColor: const Color(0xff48CAE4),
           leading:GestureDetector(
             onTap: () => Navigator.pop(context),
@@ -146,28 +120,18 @@ class SchulernListStatr extends State<Schuelern>{
                 child: ListView.builder(
                   itemCount: filteredSchueler.length,
                   itemBuilder: (context, index) {
-                    final sortedList = filteredSchueler..sort((a, b) => a.vorname.compareTo(b.vorname));
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
                       color: const Color(0xff90E0EF),
                       child: ListTile(
-                        // leading: 
-                        // CircleAvatar(
-                        //   backgroundColor: Colors.blue,
-                        //   child: Text(
-                        //     (index + 1).toString(),
-                        //     style: TextStyle(color: Colors.white),
-                        //   ),
-                        // ),
-                        title: Text(sortedList[index].vorname + ' ' + sortedList[index].nachname, style: const TextStyle(fontSize: 25.0)),
+                        title: Text(filteredSchueler[index].vorname + ' ' + filteredSchueler[index].nachname, style: const TextStyle(fontSize: 25.0)),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SchuelerDetails(schuelerId: sortedList[index].id),
+                              builder: (context) => SchuelerDetails(schuelerName: filteredSchueler[index].vorname),
                             ),
                           );
-                          print('Schüler ${sortedList[index].vorname} ${sortedList[index].nachname} wurde ausgewählt');
                         },
                       )
                     );

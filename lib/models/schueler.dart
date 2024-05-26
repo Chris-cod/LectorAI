@@ -1,7 +1,7 @@
 class Schueler {
-  final int id;
-  final String vorname;
-  final String nachname;
+  int id;
+  String vorname;
+  String nachname;
 
   Schueler({required this.id, required this.vorname, required this.nachname});
 

@@ -1,8 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/Login/LoginPage.dart';
 
-class StartPage extends StatelessWidget {
+class StartPage extends StatefulWidget {
   const StartPage({super.key});
+
+  @override
+  LoadingStartPage createState() => LoadingStartPage();
+}
+
+class LoadingStartPage extends State<StartPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    startTime();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,52 +46,19 @@ class StartPage extends StatelessWidget {
             scale: 1.0, //Die Skalierung des Bildes
           ),
           const SizedBox(height: 95), //Ein weiterer Abstand
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (Context) => const LoginPage()),
-              );
-              // Die Aktion, die passiert, wenn der Button gedrückt wird.
-              // Hier soll man die Navigation zum Login einfügen.
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  const Color(0xFF48CAE4), // Die Hintergrundfarbe des Buttons
-              foregroundColor:
-                  Colors.black, //Die Farbe des Textes und des Icons im Button
-              textStyle:
-                  const TextStyle(fontSize: 35), // Die Textgröße im Button
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 35, vertical: 1), // Der Innenabstand des Buttons
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.0), // Abgerundete Ecken
-                side: const BorderSide(color: Colors.black), //Schwarz Umrandung
-              ),
-            ),
-            child: Row(
-              mainAxisSize:
-                  MainAxisSize.min, //Button-Inhalt so klein wie möglich halten
-              mainAxisAlignment: MainAxisAlignment
-                  .spaceBetween, //Verteilt den Raum gleich zwischen den Children
-              children: <Widget>[
-                const Text(
-                  '   Starten',
-                  style: TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-                const SizedBox(width: 15), //Icon nach dem Text
-                Image.asset(
-                  'assets/Bilder/Icon_play.png',
-                  width: 100,
-                  height: 75,
-                ),
-              ],
-            ),
-          ),
         ],
       )),
     );
+  }
+
+  startTime() async {
+    var duration = new Duration(seconds: 10);
+    return new Timer(duration, route);
+  }
+route() {
+    Navigator.pushReplacement(context, MaterialPageRoute(
+        builder: (context) => LoginPage()
+      )
+    ); 
   }
 }

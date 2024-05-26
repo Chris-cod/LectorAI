@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'dart:convert'; // Für das Konvertieren von JSON
 import 'package:flutter/services.dart'
     show rootBundle; // Für den Zugriff auf die Asset-Ressourcen
+import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
 
@@ -14,6 +15,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  Lehrer lehrer = Lehrer(); // Instanz der Lehrer-Klasse
   bool _isSecret = true; // Zustand zum Verbergen oder Anzeigen des Passworts
   final TextEditingController _usernameController =
       TextEditingController(); // Controller für Benutzername
@@ -34,13 +36,13 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    bool loggedIn = await repository.login(username, password);
-    if (loggedIn) 
+    lehrer = await repository.login(username, password);
+    if (lehrer.isloggedin) 
     {
       //Navigator.of(context)
       //    .pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => HomePage(username: username), // Übergibt den Benutzernamen
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) => HomePage(lehrer: lehrer), // Übergibt den Benutzernamen
       ));
     } 
     else {

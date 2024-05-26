@@ -1,8 +1,15 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.lectorai.lectorai_app">
+
+    <!-- Berechtigungen für den Zugriff auf den externen Speicher -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    
     <application
-        android:label="lectorai_frontend"
+        android:label="LectorAI_App"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/lectorai_logo">
         <activity
             android:name=".MainActivity"
             android:exported="true"
