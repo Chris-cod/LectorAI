@@ -7,7 +7,7 @@ class SchuelerInfo{
   Adresse adresse;
   int id;
   String klasse;
-  List<String> ags;
+  List<dynamic> ags;
   Kontakt kontakt;
 
   SchuelerInfo({
