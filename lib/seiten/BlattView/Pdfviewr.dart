@@ -17,9 +17,10 @@ class PdfViwerState extends State<PdfViwer> {
   int? currentPage = 0;
   bool pdfReady = false;
   OverlayEntry? _overlayEntry;
-  final Completer<PDFViewController> _controller = Completer<PDFViewController>();
+  final Completer<PDFViewController> _controller =
+      Completer<PDFViewController>();
   String? path;
-  Map<String,dynamic> _jsonData = {};
+  Map<String, dynamic> _jsonData = {};
   bool dataLoaded = false;
   int _currentIndex = 0;
 
@@ -27,14 +28,16 @@ class PdfViwerState extends State<PdfViwer> {
   void initState() {
     super.initState();
     readJson().then((value) => setState(() {
-      _showOverlay(context);
-    }));
+          _showOverlay(context);
+        }));
   }
 
   Future<void> readJson() async {
-    final String response = await rootBundle.loadString('assets/Daten/ag_sample.json');
+    final String response =
+        await rootBundle.loadString('assets/Daten/ag_sample.json');
     var responseJson = await json.decode(response);
-    var f = await getFileFromAsset("assets/Doc/${responseJson['doc_type']}.pdf");
+    var f =
+        await getFileFromAsset("assets/Doc/${responseJson['doc_type']}.pdf");
     setState(() {
       _jsonData = responseJson;
       path = f.path;
@@ -59,14 +62,13 @@ class PdfViwerState extends State<PdfViwer> {
     return completer.future;
   }
 
-
   @override
   void dispose() {
     _overlayEntry?.remove();
     super.dispose();
   }
 
-  void _showOverlay(BuildContext context) { // Nur Overlay anzeigen, wenn Daten geladen sind
+  void _showOverlay(BuildContext context) {
     _overlayEntry = _createOverlayEntry(context);
     if (_overlayEntry != null) {
       Overlay.of(context)!.insert(_overlayEntry!);
@@ -75,7 +77,8 @@ class PdfViwerState extends State<PdfViwer> {
 
   void _nextData() {
     setState(() {
-      _currentIndex = ((_currentIndex + 1) % _jsonData['students'].length).toInt();
+      _currentIndex =
+          ((_currentIndex + 1) % _jsonData['students'].length).toInt();
       _overlayEntry?.remove();
       _showOverlay(context);
     });
@@ -83,7 +86,9 @@ class PdfViwerState extends State<PdfViwer> {
 
   void _prevData() {
     setState(() {
-      _currentIndex = ((_currentIndex - 1 + _jsonData['students'].length) % _jsonData['students'].length).toInt();
+      _currentIndex = ((_currentIndex - 1 + _jsonData['students'].length) %
+              _jsonData['students'].length)
+          .toInt();
       _overlayEntry?.remove();
       _showOverlay(context);
     });
@@ -140,140 +145,261 @@ class PdfViwerState extends State<PdfViwer> {
   OverlayEntry _createOverlayEntry(BuildContext context) {
     try {
       print(_jsonData['doc_type']);
-      if(_jsonData['doc_type'] == 'Adresse'){
+      if (_jsonData['doc_type'] == 'Adresse') {
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
               Positioned(
-                width: MediaQuery.of(context).size.width * 0.72,
+                width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.height * 0.15,
                 top: MediaQuery.of(context).size.height * 0.46,
-                left: MediaQuery.of(context).size.width * 0.15,
+                left: MediaQuery.of(context).size.width * 0.05,
                 child: GestureDetector(
                   onTap: () {
-                    print("Overlay tapped");
+                    print("Overlay getippt");
                   },
                   child: _buildOverlayBox(
-                    'test',//'${parent['nachname']['value']}\n${parent['vorname']['value']}\n${parent['email']['value']}\n${parent['telefon']['value']}',
+                    'test',
                     220,
                     80,
                     Colors.blue.withOpacity(0.5),
-                    0.78
+                    0.78,
                   ),
                 ),
               ),
+              // Position für Button-Container
               Positioned(
-                width: MediaQuery.of(context).size.width * 0.5,
+                width: MediaQuery.of(context).size.width *
+                    0.1, // Breite des Button-Containers
+                height: MediaQuery.of(context).size.height * 0.15,
+                top: MediaQuery.of(context).size.height * 0.46,
+                left: MediaQuery.of(context).size.width *
+                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit,
+                          color: Colors.blue), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check,
+                          color: Colors.green), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.height * 0.108,
                 top: MediaQuery.of(context).size.height * 0.40,
-                left: MediaQuery.of(context).size.width * 0.12,
+                left: MediaQuery.of(context).size.width * 0.05,
                 child: GestureDetector(
                   onTap: () {
-                    print("Overlay tapped");
+                    print("Overlay getippt");
                   },
                   child: _buildOverlayBox(
-                    'test',//'${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',
+                    'test',
                     220,
                     80,
                     Colors.blue.withOpacity(0.5),
-                    0.48
+                    0.48,
                   ),
                 ),
               ),
+              // Position für Button-Container
               Positioned(
-                width: MediaQuery.of(context).size.width * 0.5,
+                width: MediaQuery.of(context).size.width *
+                    0.1, // Breite des Button-Containers
+                height: MediaQuery.of(context).size.height * 0.108,
+                top: MediaQuery.of(context).size.height * 0.40,
+                left: MediaQuery.of(context).size.width *
+                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit,
+                          color: Colors.blue), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check,
+                          color: Colors.green), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.height * 0.22,
                 top: MediaQuery.of(context).size.height * 0.86,
-                left: MediaQuery.of(context).size.width * 0.15,
+                left: MediaQuery.of(context).size.width * 0.05,
                 child: GestureDetector(
                   onTap: () {
-                    print("Overlay tapped");
+                    print("Overlay getippt");
                   },
                   child: _buildOverlayBox(
-                    'test',//'${address['street_name']['value']}\n${address['location']['postal_code']}\n${address['location']['location_name']}',
+                    'test',
                     220,
                     80,
                     Colors.blue.withOpacity(0.5),
-                    0.56
+                    0.56,
                   ),
+                ),
+              ),
+              // Position für Button-Container
+              Positioned(
+                width: MediaQuery.of(context).size.width *
+                    0.1, // Breite des Button-Containers
+                height: MediaQuery.of(context).size.height * 0.22,
+                top: MediaQuery.of(context).size.height * 0.86,
+                left: MediaQuery.of(context).size.width *
+                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit,
+                          color: Colors.blue), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check,
+                          color: Colors.green), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        var student = _jsonData['students'][_currentIndex];
+        var ags = _jsonData['AGS'];
+        return OverlayEntry(
+          builder: (context) => Stack(
+            children: [
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.108,
+                top: MediaQuery.of(context).size.height * 0.508,
+                left: MediaQuery.of(context).size.width * 0.05,
+                child: GestureDetector(
+                  onTap: () {
+                    print("Overlay getippt");
+                  },
+                  child: _buildOverlayBox(
+                    '${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',
+                    220,
+                    80,
+                    Colors.white.withOpacity(0.5),
+                    student['similarityScorePerson'],
+                  ),
+                ),
+              ),
+              // Position für Button-Container
+              Positioned(
+                width: MediaQuery.of(context).size.width *
+                    0.1, // Breite des Button-Containers
+                height: MediaQuery.of(context).size.height * 0.108,
+                top: MediaQuery.of(context).size.height * 0.508,
+                left: MediaQuery.of(context).size.width *
+                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit,
+                          color: Colors.blue), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check,
+                          color: Colors.green), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.108,
+                top: MediaQuery.of(context).size.height * 0.62,
+                left: MediaQuery.of(context).size.width * 0.05,
+                child: GestureDetector(
+                  onTap: () {
+                    print("Overlay getippt");
+                  },
+                  child: _buildOverlayBox(
+                    '${ags[0]['Ag_name']['value']}\n${ags[1]['Ag_name']['value']}\nChor',
+                    220,
+                    80,
+                    Colors.white.withOpacity(0.5),
+                    ags[0]['Ag_name']['score'],
+                  ),
+                ),
+              ),
+              // Position für Button-Container
+              Positioned(
+                width: MediaQuery.of(context).size.width *
+                    0.1, // Breite des Button-Containers
+                height: MediaQuery.of(context).size.height * 0.108,
+                top: MediaQuery.of(context).size.height * 0.62,
+                left: MediaQuery.of(context).size.width *
+                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit,
+                          color: Colors.blue), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.check,
+                          color: Colors.green), // Button-Farbe ändern
+                      onPressed: () {
+                        //Pageroute hinzufügen
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         );
       }
-      else{
-        var student = _jsonData['students'][_currentIndex];
-        var ags = _jsonData['AGS'];
-        return OverlayEntry(builder: (context) => Stack(
-          children: [
-            Positioned(
-              width: MediaQuery.of(context).size.width * 0.72,
-              height: MediaQuery.of(context).size.height * 0.108,
-              top: MediaQuery.of(context).size.height * 0.508,
-              left: MediaQuery.of(context).size.width * 0.09,
-              child: GestureDetector(
-                onTap: () {
-                  print("Overlay tapped");
-                },
-                child: _buildOverlayBox(
-                  '${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',//'${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',
-                  220,
-                  80,
-                  Colors.white.withOpacity(0.5),
-                  student['similarityScorePerson']
-                ),
-              ),
-            ),
-            Positioned(
-              width: MediaQuery.of(context).size.width * 0.72,
-              height: MediaQuery.of(context).size.height * 0.108,
-              top: MediaQuery.of(context).size.height * 0.62,
-              left: MediaQuery.of(context).size.width * 0.09,
-              child: GestureDetector(
-                onTap: () {
-                  print("Overlay tapped");
-                },
-                child: _buildOverlayBox(
-                  '${ags[0]['Ag_name']['value']}\n${ags[1]['Ag_name']['value']}\nChor',//'${ags['Ag_name']['value']}',
-                  220,
-                  80,
-                  Colors.white.withOpacity(0.5),
-                  ags[0]['Ag_name']['score']
-                ),
-              ),
-            ),
-          ],
-        ));
-      }
     } catch (e) {
-      print('Error creating overlay: $e');
+      print('Fehler beim Erstellen des Overlays: $e');
       return OverlayEntry(builder: (context) => Container());
     }
   }
 
-  Widget _buildOverlay(double width, double height, double top, double left, String text) {
-    return Positioned(
-      width: width,
-      height: height,
-      top: top,
-      left: left,
-      child: GestureDetector(
-        onTap: () {
-          print("Overlay tapped");
-        },
-        child: _buildOverlayBox(
-          text,
-          width,
-          height,
-          Colors.blue.withOpacity(0.5),
-          0.12
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOverlayBox(String text, double width, double height, Color color, double score) {
+  Widget _buildOverlayBox(
+      String text, double width, double height, Color color, double score) {
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -297,24 +423,21 @@ class PdfViwerState extends State<PdfViwer> {
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
+            ),
           ),
-          )
-          
         ),
       ),
     );
   }
 
   Color _getColorFromScore(double score) {
-    if (score >= 0.9 ) {
+    if (score >= 0.9) {
       return Colors.green;
     } else if (score >= 0.75) {
       return Colors.orange;
-    }
-    else if(score < 0.75 && score >= 0.5){
+    } else if (score < 0.75 && score >= 0.5) {
       return Colors.yellow;
-    }
-   else {
+    } else {
       return Colors.red;
     }
   }
