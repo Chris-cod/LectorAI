@@ -300,7 +300,7 @@ class PdfViwerState extends State<PdfViwer> {
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.height * 0.108,
                 top: MediaQuery.of(context).size.height * 0.508,
-                left: MediaQuery.of(context).size.width * 0.05,
+                left: MediaQuery.of(context).size.width * 0.1,
                 child: GestureDetector(
                   onTap: () {
                     print("Overlay getippt");
@@ -321,7 +321,7 @@ class PdfViwerState extends State<PdfViwer> {
                 height: MediaQuery.of(context).size.height * 0.108,
                 top: MediaQuery.of(context).size.height * 0.508,
                 left: MediaQuery.of(context).size.width *
-                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                    0.8, // Linke Position anpassen, um Buttons rechts zu platzieren
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -346,7 +346,7 @@ class PdfViwerState extends State<PdfViwer> {
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.height * 0.108,
                 top: MediaQuery.of(context).size.height * 0.62,
-                left: MediaQuery.of(context).size.width * 0.05,
+                left: MediaQuery.of(context).size.width * 0.1,
                 child: GestureDetector(
                   onTap: () {
                     print("Overlay getippt");
@@ -367,7 +367,7 @@ class PdfViwerState extends State<PdfViwer> {
                 height: MediaQuery.of(context).size.height * 0.108,
                 top: MediaQuery.of(context).size.height * 0.62,
                 left: MediaQuery.of(context).size.width *
-                    0.76, // Linke Position anpassen, um Buttons rechts zu platzieren
+                    0.8, // Linke Position anpassen, um Buttons rechts zu platzieren
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
