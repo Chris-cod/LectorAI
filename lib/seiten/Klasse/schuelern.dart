@@ -124,7 +124,7 @@ class SchulernListStatr extends State<Schuelern>{
                       margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
                       color: const Color(0xff90E0EF),
                       child: ListTile(
-                        title: Text(filteredSchueler[index].vorname + ' ' + filteredSchueler[index].nachname, style: const TextStyle(fontSize: 25.0)),
+                        title: Text('${filteredSchueler[index].vorname} ${filteredSchueler[index].nachname}', style: const TextStyle(fontSize: 25.0)),
                         onTap: () {
                           Navigator.push(
                             context,
