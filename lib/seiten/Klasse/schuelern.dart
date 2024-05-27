@@ -129,7 +129,7 @@ class SchulernListStatr extends State<Schuelern>{
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SchuelerDetails(schuelerName: filteredSchueler[index].vorname),
+                              builder: (context) => SchuelerDetails(token: widget.token, schuelerId: filteredSchueler[index].id,),
                             ),
                           );
                         },

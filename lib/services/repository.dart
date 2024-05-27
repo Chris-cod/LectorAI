@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:lectorai_frontend/models/adresse.dart';
 import 'package:lectorai_frontend/models/klasse.dart';
+import 'package:lectorai_frontend/models/kontakt.dart';
 import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/models/schueler.dart';
+import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
   final String backendURL = 'http://localhost:8000';
@@ -63,11 +66,9 @@ class Repository {
         if (gettedClasses.isNotEmpty) {
           // Casten der Klassennamen in Strings.
           // Durchlaufen aller Einträge in 'classes' und Extrahieren der Klassennamen.
-          for (int i = 0; i < gettedClasses.length; i++) {
-            klasse.klasseId =
-                gettedClasses[i]['id']; // Extrahieren der Klassen-ID.
-            klasse.klasseName = gettedClasses[i]
-                ['class_name']; // Extrahieren des Klassennamens.
+          for (var item in gettedClasses)
+          {
+            Klasse klasse = Klasse(klasseId: item['id'], klasseName: item['class_name']); // Instanzierung eines Klasse-Objekts
             classes.add(klasse); // Hinzufügen des Klassennamens zur Liste.
           }
           return classes;
@@ -152,4 +153,62 @@ class Repository {
       return [];
     }
   }
+
+
+  Future<SchuelerInfo> getStudentInformation(String authToken, int studentId) async 
+  {
+    // Erstellen der vollständigen URL zum Abrufen der Infomation eines bestimmten Schüler.
+    var url = Uri.parse('$LocalUrlAsIp/student/$studentId');
+    try 
+    {
+      // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
+      var response = await http.get
+      (
+        url,
+        headers: 
+        {
+          // Nutzt das zuvor gespeicherte Auth-Token.
+          "token": authToken,
+        },
+      );
+      /* Überprüfung, ob der HTTP-Statuscode 200 OK ist, 
+       was auf eine erfolgreiche Anfrage hinweist.*/
+      if (response.statusCode == 200) 
+      {
+        var jsonData = json.decode(response.body); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
+
+
+        if (jsonData.isNotEmpty) 
+        {
+          var adresse = jsonData['address'];
+          var kontakt = jsonData['parent'];
+          var ags = jsonData['ags'];
+          print(ags);
+          Adresse studentAdresse = Adresse(strasse: adresse['street_name'], hausnummer: adresse['house_number'], postleitzahl: adresse['postal_code'], ort: adresse['location_name']);
+          Kontakt erzieher = Kontakt(vorname: kontakt['firstname'], nachname: kontakt['lastname'], telefonnummer: kontakt['phone_number'], email: kontakt['email']);
+          SchuelerInfo info = SchuelerInfo(id : jsonData['person_id'], vorname: jsonData['firstname'], nachname: jsonData['lastname'], adresse: studentAdresse, ags: ags, kontakt: erzieher); // Instanzierung eines Schueler-Objekts
+          print(info.ags);
+          return info;
+         } 
+         else 
+         {
+          print('es wurde Keine Daten uber diese Schueler gefunden');
+          return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: '')); 
+       }
+     } 
+      else 
+      {
+        // Bei jedem anderen Statuscode als 200 wird eine Fehlermeldung ausgegeben.
+        print("Fehler beim Abrufen der Daten: ${response.statusCode}");
+        return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: ''));
+      }
+    } 
+    catch (e) 
+    {
+      // Fangen von Ausnahmen, die während der HTTP-Anfrage auftreten können,
+      // und Ausgabe einer Fehlermeldung.
+      print("Exception caught: $e");
+      return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: ''));
+    }
+ }
 }

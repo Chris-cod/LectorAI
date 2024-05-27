@@ -1,12 +1,14 @@
 class Adresse {
   String strasse;
-  int hausnummer;
+  String hausnummer;
   int postleitzahl;
+  String ort;
 
   Adresse({
     this.strasse = '',
-    this.hausnummer = 0,
+    this.hausnummer = '',
     this.postleitzahl = 0,
+    this.ort = '',
   });
 
   factory Adresse.fromJson(Map<String, dynamic> json) {

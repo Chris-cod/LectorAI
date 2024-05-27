@@ -5,12 +5,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lectorai_frontend/models/schueler_info.dart';
+import 'package:lectorai_frontend/services/repository.dart';
 
 class SchuelerDetails extends StatefulWidget {
   
-  const SchuelerDetails({super.key, required this.schuelerName});
+  const SchuelerDetails({super.key, required this.token, required this.schuelerId});
 
-  final String schuelerName;
+  final String token;
+  final int schuelerId;
 
   @override
   ShowSchuelerDetails createState() => ShowSchuelerDetails();
@@ -19,6 +21,7 @@ class SchuelerDetails extends StatefulWidget {
 
 class ShowSchuelerDetails extends State<SchuelerDetails>{
   SchuelerInfo? schuelerInfo;
+  Repository repository = Repository();
 
   @override
   void initState() {
@@ -26,27 +29,14 @@ class ShowSchuelerDetails extends State<SchuelerDetails>{
     initList();
   }
 
-  initList() {
-    readJsonFile('schuelerInfoKlasse12A').then((jsonList) {
-      final alleSchueler = jsonList.map((json) => SchuelerInfo.fromJson(json)).toList();
+  initList() async {
+    var schulerInformation = await repository.getStudentInformation(widget.token, widget.schuelerId);
       //schuelerInfo = alleSchueler.firstWhere((element) => element.id == widget.schuelerId);
       setState(() {
-        schuelerInfo = alleSchueler.firstWhere((element) => element.vorname == widget.schuelerName);
+        schuelerInfo = schulerInformation;
       });
-    });
   }
 
-  Future<List<dynamic>> readJsonFile(String fileName) async {
-    try {
-      final String response = await rootBundle.loadString('assets/Daten/$fileName.json');
-      final schulerData = await json.decode(response);
-      var slist = schulerData["schueler"] as List<dynamic>;
-      return slist;
-    } catch (e) {
-      print('Fehler beim Laden der Schülerdaten: $e');
-      return List.empty();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
