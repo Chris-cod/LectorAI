@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:lectorai_frontend/models/adresse.dart';
 import 'package:lectorai_frontend/models/klasse.dart';
@@ -211,4 +212,31 @@ class Repository {
       return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: ''));
     }
  }
+
+// Methode zum Senden des Bildes
+  Future<void> sendImage(String authToken, Uint8List imageBytes) async {
+    // Konvertiert Byte-Daten zu einem Base64-String
+    String base64Image = base64Encode(imageBytes);
+
+    try {
+      var response = await http.post(
+        Uri.parse('$backendURL/image'), // URL für das Senden des Bildes
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'token $authToken',
+        },
+        body: jsonEncode({'image': base64Image}),
+      );
+
+      if (response.statusCode == 200) {
+        print('Bild erfolgreich gesendet!');
+      } else {
+        print('Fehler beim Senden des Bildes: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception caught while sending the image: $e');
+    }
+  }
+
+ 
 }
