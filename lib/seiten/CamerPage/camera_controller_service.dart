@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+
+import 'package:flutter/services.dart';
 
 class CameraControllerService 
 {
   CameraController? controller;
   Future<void>? initializeControllerFuture;
   Uint8List? imageBytes;
+
 
   // Initialisiert die Kamera und stellt sicher, dass die Kamera bereit ist
   Future<void> initCamera(BuildContext context) async 
@@ -53,11 +59,18 @@ class CameraControllerService
     if (controller != null && controller!.value.isInitialized) 
     {
       try {
+        await controller!.lockCaptureOrientation(DeviceOrientation.portraitUp);
         // Macht ein Foto und liest die Bilddaten
         final image = await controller!.takePicture();
-        final bytes = await image.readAsBytes();
+        
+        
+        print(image.path);
+        File img = File(image.path);
+        //print(img);
+        Uint8List as = img.readAsBytesSync();
+        
         setState(() {
-          imageBytes = bytes; // Setzt die Bilddaten
+          imageBytes = as; // Setzt die Bilddaten
           controller?.pausePreview(); // Pausiert die Vorschau
         });
       } 
