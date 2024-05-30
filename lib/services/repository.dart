@@ -10,12 +10,12 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
   final String backendURL = 'http://localhost:8000';
-  final String LocalUrlAsIp = 'http://192.168.178.52:8000';
+  final String LocalUrlAsIp = 'http://192.168.0.166:8000';
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 
   Future<Lehrer> login(String username, String password) async {
-    var url = Uri.parse('$backendURL/login');
+    var url = Uri.parse('$LocalUrlAsIp/login');
     try {
       var response = await http.post(
         url,
@@ -47,7 +47,7 @@ class Repository {
         []; // Initialisierung einer leeren Liste für Klassennamen.
     List gettedClasses = [];
     // Erstellen der vollständigen URL zum Abrufen der Klassen eines bestimmten Lehrers.
-    var url = Uri.parse('$backendURL/teacher/$id/classes');
+    var url = Uri.parse('$LocalUrlAsIp/teacher/$id/classes');
     try {
       // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
       var response = await http.get(
@@ -99,7 +99,7 @@ class Repository {
     List<dynamic> gettedStudent = [];
     // Erstellen der vollständigen URL zum Abrufen der Klassen eines bestimmten Lehrers.
     var url =
-        Uri.parse('$backendURL/teacher/$lehrerId/class/$klasseId/students');
+        Uri.parse('$LocalUrlAsIp/teacher/$lehrerId/class/$klasseId/students');
     try {
       // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
       var response = await http.get(
@@ -214,13 +214,13 @@ class Repository {
  }
 
 // Methode zum Senden des Bildes
-  Future<void> sendImage(String authToken, Uint8List imageBytes) async {
+  Future<Map<String,dynamic>> sendImage(String authToken, Uint8List imageBytes) async {
     // Konvertiert Byte-Daten zu einem Base64-String
     String base64Image = base64Encode(imageBytes);
 
     try {
       var response = await http.post(
-        Uri.parse('$backendURL/image'), // URL für das Senden des Bildes
+        Uri.parse('$LocalUrlAsIp/image'), // URL für das Senden des Bildes
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'token $authToken',
@@ -229,12 +229,15 @@ class Repository {
       );
 
       if (response.statusCode == 200) {
-        print('Bild erfolgreich gesendet!');
+        var data = jsonDecode(response.body);
+        return data;
       } else {
         print('Fehler beim Senden des Bildes: ${response.statusCode}');
+        return {};
       }
     } catch (e) {
       print('Exception caught while sending the image: $e');
+      return {};
     }
   }
 
