@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                     // Verwenden des Navigators zum Öffnen der CameraPage
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const CameraPage()),
+                      MaterialPageRoute(builder: (context) => CameraPage(token: widget.lehrer.tokenRaw)),
                       );
                     },
           child: Container(
