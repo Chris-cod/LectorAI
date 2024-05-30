@@ -3,11 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:lectorai_frontend/services/repository.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PdfViwer extends StatefulWidget {
-  const PdfViwer({Key? key}) : super(key: key);
+  const PdfViwer({super.key, required this.authToken, required this.imageBytes});
+
+  final String authToken;
+  final Uint8List imageBytes;
 
   @override
   PdfViwerState createState() => PdfViwerState();
@@ -23,6 +28,8 @@ class PdfViwerState extends State<PdfViwer> {
   Map<String, dynamic> _jsonData = {};
   bool dataLoaded = false;
   int _currentIndex = 0;
+  Repository repository = Repository();
+  
 
   @override
   void initState() {
@@ -33,9 +40,8 @@ class PdfViwerState extends State<PdfViwer> {
   }
 
   Future<void> readJson() async {
-    final String response =
-        await rootBundle.loadString('assets/Daten/ag_sample.json');
-    var responseJson = await json.decode(response);
+    //final String response =await rootBundle.loadString('assets/Daten/ag_sample.json');
+    var responseJson = await repository.sendImage(widget.authToken, widget.imageBytes);
     var f =
         await getFileFromAsset("assets/Doc/${responseJson['doc_type']}.pdf");
     setState(() {

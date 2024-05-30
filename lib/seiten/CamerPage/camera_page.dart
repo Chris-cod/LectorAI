@@ -5,7 +5,9 @@ import 'image_display_widget.dart';
 
 class CameraPage extends StatefulWidget 
 {
-  const CameraPage({super.key});
+  const CameraPage({super.key, required this.token});
+
+  final String token;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -92,6 +94,7 @@ class _CameraPageState extends State<CameraPage>
                   _cameraControllerService.resetImage();
                 });
               },
+              token: widget.token,
             ),
           // Zeigt einen Zurück-Button in der oberen linken Ecke
           Positioned(
