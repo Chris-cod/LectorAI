@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/BlattView/Pdfviewr.dart';
 import 'dart:typed_data';
@@ -9,9 +11,12 @@ class ImageDisplayWidget extends StatelessWidget
   final Uint8List imageBytes;
   final VoidCallback onRetake;
   final String token;
+  
 
-  const ImageDisplayWidget({super.key, required this.imageBytes, required this.onRetake, required this.token});
+   ImageDisplayWidget({super.key,required this.imageBytes, required this.onRetake, required this.token});
 
+  
+  
   @override
   Widget build(BuildContext context) 
   {
@@ -45,7 +50,7 @@ class ImageDisplayWidget extends StatelessWidget
                     // Navigiert zur UploadPage und übergibt die imageBytes
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => PdfViwer(authToken: token,imageBytes: imageBytes),
+                        builder: (_) => PdfViwer(authToken: token, imageBytes: imageBytes),
                       ),
                     );
                   },

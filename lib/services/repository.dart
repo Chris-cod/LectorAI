@@ -10,7 +10,7 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
   final String backendURL = 'http://localhost:8000';
-  final String LocalUrlAsIp = 'http://192.168.0.166:8000';
+  final String LocalUrlAsIp = 'http://172.20.10.7:8000';
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 
@@ -214,25 +214,28 @@ class Repository {
  }
 
 // Methode zum Senden des Bildes
-  Future<Map<String,dynamic>> sendImage(String authToken, Uint8List imageBytes) async {
+  Future<Map<String,dynamic>> sendImage(String authToken, List<int> imageBytes) async {
     // Konvertiert Byte-Daten zu einem Base64-String
+    
     String base64Image = base64Encode(imageBytes);
+    //print(base64Image);
+    var toSend = jsonEncode({'image': base64Image});
 
     try {
       var response = await http.post(
         Uri.parse('$LocalUrlAsIp/image'), // URL für das Senden des Bildes
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'token $authToken',
+          'token': authToken,
         },
-        body: jsonEncode({'image': base64Image}),
-      );
+        body: toSend,
+      ).timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         return data;
       } else {
-        print('Fehler beim Senden des Bildes: ${response.statusCode}');
+        print('Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
         return {};
       }
     } catch (e) {
