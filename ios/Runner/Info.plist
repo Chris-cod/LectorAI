@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	 <key>NSCameraUsageDescription</key>
+  <string>Wir benötigen Zugriff auf Ihre Kamera, um Bilder aufzunehmen.</string>
 </dict>
 </plist>

@@ -166,8 +166,8 @@ class PdfViwerState extends State<PdfViwer> {
                   },
                   child: _buildOverlayBox(
                     'test',
-                    220,
-                    80,
+                    MediaQuery.of(context).size.width * 0.7,
+                    MediaQuery.of(context).size.height * 0.15,
                     Colors.blue.withOpacity(0.5),
                     0.78,
                   ),
@@ -188,7 +188,7 @@ class PdfViwerState extends State<PdfViwer> {
                       icon: Icon(Icons.edit,
                           color: Colors.blue), // Button-Farbe ändern
                       onPressed: () {
-                        //Pageroute hinzufügen
+                        _showOverlayList(context, 'Adresse'); // **Geändert**
                       },
                     ),
                     IconButton(
@@ -212,8 +212,8 @@ class PdfViwerState extends State<PdfViwer> {
                   },
                   child: _buildOverlayBox(
                     'test',
-                    220,
-                    80,
+                    MediaQuery.of(context).size.width * 0.7,
+                    MediaQuery.of(context).size.height * 0.108,
                     Colors.blue.withOpacity(0.5),
                     0.48,
                   ),
@@ -234,7 +234,7 @@ class PdfViwerState extends State<PdfViwer> {
                       icon: Icon(Icons.edit,
                           color: Colors.blue), // Button-Farbe ändern
                       onPressed: () {
-                        //Pageroute hinzufügen
+                        _showOverlayList(context, 'Adresse'); // **Geändert**
                       },
                     ),
                     IconButton(
@@ -258,8 +258,8 @@ class PdfViwerState extends State<PdfViwer> {
                   },
                   child: _buildOverlayBox(
                     'test',
-                    220,
-                    80,
+                    MediaQuery.of(context).size.width * 0.7,
+                    MediaQuery.of(context).size.height * 0.22,
                     Colors.blue.withOpacity(0.5),
                     0.56,
                   ),
@@ -280,7 +280,7 @@ class PdfViwerState extends State<PdfViwer> {
                       icon: Icon(Icons.edit,
                           color: Colors.blue), // Button-Farbe ändern
                       onPressed: () {
-                        //Pageroute hinzufügen
+                        _showOverlayList(context, 'Adresse'); // **Geändert**
                       },
                     ),
                     IconButton(
@@ -313,8 +313,8 @@ class PdfViwerState extends State<PdfViwer> {
                   },
                   child: _buildOverlayBox(
                     '${student['nachname']['value']}\n${student['vorname']['value']}\n${student['class']['value']}',
-                    220,
-                    80,
+                    MediaQuery.of(context).size.width * 0.7,
+                    MediaQuery.of(context).size.height * 0.108,
                     Colors.white.withOpacity(0.5),
                     student['similarityScorePerson'],
                   ),
@@ -335,7 +335,7 @@ class PdfViwerState extends State<PdfViwer> {
                       icon: Icon(Icons.edit,
                           color: Colors.blue), // Button-Farbe ändern
                       onPressed: () {
-                        //Pageroute hinzufügen
+                        _showOverlayList(context, 'students'); // **Geändert**
                       },
                     ),
                     IconButton(
@@ -359,8 +359,8 @@ class PdfViwerState extends State<PdfViwer> {
                   },
                   child: _buildOverlayBox(
                     '${ags[0]['Ag_name']['value']}\n${ags[1]['Ag_name']['value']}\nChor',
-                    220,
-                    80,
+                    MediaQuery.of(context).size.width * 0.7,
+                    MediaQuery.of(context).size.height * 0.108,
                     Colors.white.withOpacity(0.5),
                     ags[0]['Ag_name']['score'],
                   ),
@@ -381,7 +381,7 @@ class PdfViwerState extends State<PdfViwer> {
                       icon: Icon(Icons.edit,
                           color: Colors.blue), // Button-Farbe ändern
                       onPressed: () {
-                        //Pageroute hinzufügen
+                        _showOverlayList(context, 'AGS'); // **Geändert**
                       },
                     ),
                     IconButton(
@@ -404,6 +404,37 @@ class PdfViwerState extends State<PdfViwer> {
     }
   }
 
+  void _showOverlayList(BuildContext context, String dataType) {
+    // **Geändert**
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) {
+        List<Map<String, dynamic>> dataList = dataType == 'students'
+            ? List<Map<String, dynamic>>.from(_jsonData['students'])
+            : List<Map<String, dynamic>>.from(_jsonData['AGS']);
+        return Positioned(
+          width: MediaQuery.of(context).size.width * 0.7,
+          height: MediaQuery.of(context).size.height * 0.3,
+          top: MediaQuery.of(context).size.height * 0.1,
+          left: MediaQuery.of(context).size.width * 0.15,
+          child: Material(
+            color: Colors.transparent,
+            child: _buildOverlayList(
+                dataList,
+                MediaQuery.of(context).size.width * 0.7,
+                MediaQuery.of(context).size.height * 0.3,
+                Colors.blueGrey),
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context)!.insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 5), () {
+      overlayEntry.remove();
+    });
+  }
+
   Widget _buildOverlayBox(
       String text, double width, double height, Color color, double score) {
     return Material(
@@ -421,6 +452,8 @@ class PdfViwerState extends State<PdfViwer> {
         ),
         child: Center(
           child: FittedBox(
+            fit: BoxFit
+                .scaleDown, // FittedBox hinzugefügt, um den Text responsiv zu machen
             child: Text(
               text,
               style: const TextStyle(
@@ -434,6 +467,79 @@ class PdfViwerState extends State<PdfViwer> {
         ),
       ),
     );
+  }
+
+  Widget _buildOverlayList(List<Map<String, dynamic>> dataList, double width,
+      double height, Color color) {
+    // **Geändert**
+    if (dataList.isNotEmpty) {
+      return Material(
+        color: Colors.transparent,
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+            child: ListView.builder(
+              itemCount: dataList.length,
+              itemBuilder: (context, index) {
+                var data = dataList[index];
+                if (data.containsKey('vorname') &&
+                    data.containsKey('nachname') &&
+                    data.containsKey('class')) {
+                  return FittedBox(
+                    child: Text(
+                      '${data['vorname']['value']} ${data['nachname']['value']} ${data['class']['value']}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else {
+                  return FittedBox(
+                    child: Text(
+                      data['Ag_name']['value'],
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Center(
+        child: Container(
+          width: width,
+          height: height,
+          child: const Center(
+            child: FittedBox(
+              child: Text(
+                'Keine Daten vorhanden',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   Color _getColorFromScore(double score) {
