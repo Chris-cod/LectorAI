@@ -45,7 +45,8 @@ class SchulernListStatr extends State<Schuelern>{
     if(allStudent.isNotEmpty){
         setState(() {
         alleSchueler = allStudent.toList();
-        filteredSchueler = alleSchueler..sort((a, b) => a.vorname.compareTo(b.vorname));
+        alleSchueler.sort((a, b) => a.nachname.compareTo(b.nachname));
+        filteredSchueler = alleSchueler;
       });
     }
     else{
@@ -59,17 +60,20 @@ class SchulernListStatr extends State<Schuelern>{
   /// Otherwise, the [filteredSchueler] list will be set to a filtered version of the [alleSchueler] list,
   /// where the [vorname] or [nachname] of each [Schueler] object contains the [searchKeyword] (case-insensitive).
   /// Finally, it refreshes the UI by calling [setState] and updating the [filteredSchueler] list.
-  void _runFilter(String searchKeyword) {
+  void _runFilter(String searchKeyword, String filterType) {
     List<Schueler> results = [];
 
     if (searchKeyword.isEmpty) {
       results = alleSchueler;
     } else {
-      results = alleSchueler.where((element) =>
-          element.vorname.toLowerCase().contains(searchKeyword.toLowerCase()) ||
-          element.nachname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
+      if (filterType == 'vorname') {
+        results = alleSchueler.where((element) =>
+            element.vorname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
+      } else if (filterType == 'nachname') {
+        results = alleSchueler.where((element) =>
+            element.nachname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
+      }
     }
-
     // refresh the UI
     setState(() {
       filteredSchueler = results;
@@ -82,16 +86,23 @@ class SchulernListStatr extends State<Schuelern>{
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Schüler der Klasse ${widget.klasseName}', style: const TextStyle(color: Colors.black), textAlign: TextAlign.center,),
+          title: Text(
+            'Schüler der Klasse ${widget.klasseName}',
+            style: const TextStyle(color: Colors.black),
+            textAlign: TextAlign.center,
+          ),
           backgroundColor: const Color(0xff48CAE4),
-          leading:GestureDetector(
+          leading: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
               padding: const EdgeInsets.all(15.0),
               height: 10,
-              child: Image.asset('assets/Bilder/angle-left.png', color: Colors.black, scale: 1.0,),
-            )
-            
+              child: Image.asset(
+                'assets/Bilder/angle-left.png',
+                color: Colors.black,
+                scale: 1.0,
+              ),
+            ),
           ),
         ),
         body: Container(
@@ -99,52 +110,100 @@ class SchulernListStatr extends State<Schuelern>{
           color: const Color(0xFF0077B6),
           child: Column(
             children: [
-              SizedBox(
-                width: 210,
-                height: 35,
-                child: TextField(
-                  onChanged: (value) => _runFilter(value),
-                  decoration: InputDecoration(
-                    fillColor: Color.fromARGB(255, 15, 15, 15),
-                    labelText: 'Suchen',
-                    labelStyle: const TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(35.0)),
-                    prefixIcon:  Container(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Image.asset('assets/Bilder/search.png', color: Colors.black, scale: 1.0,),
-                    )
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 35,
+                      child: TextField(
+                        onChanged: (value) => _runFilter(value, 'nachname'),
+                        decoration: InputDecoration(
+                          fillColor: Color.fromARGB(255, 15, 15, 15),
+                          labelText: 'Nachname suchen',
+                          labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(35.0)),
+                          prefixIcon: Icon(Icons.search, color: Colors.black),
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                      height: 35,
+                      child: TextField(
+                        onChanged: (value) => _runFilter(value, 'vorname'),
+                        decoration: InputDecoration(
+                          fillColor: Color.fromARGB(255, 15, 15, 15),
+                          labelText: 'Vorname suchen',
+                          labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(35.0)),
+                          prefixIcon: Icon(Icons.search, color: Colors.black),
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
                   itemCount: filteredSchueler.length,
                   itemBuilder: (context, index) {
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
-                      color: const Color(0xff90E0EF),
-                      child: ListTile(
-                        title: Text('${filteredSchueler[index].vorname} ${filteredSchueler[index].nachname}', style: const TextStyle(fontSize: 25.0)),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SchuelerDetails(token: widget.token, schuelerId: filteredSchueler[index].id,),
+                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 8.0),
+                      color: Colors.transparent, // Transparent background for the card
+                      elevation: 0, // No shadow for the card
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 1.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                padding: const EdgeInsets.all(2.0),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff90E0EF),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  filteredSchueler[index].nachname,
+                                  style: const TextStyle(fontSize: 12.0),
+                                ),
+                              ),
                             ),
-                          );
-                        },
-                      )
+                            const SizedBox(width: 10),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                padding: const EdgeInsets.all(2.0),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff90E0EF),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  filteredSchueler[index].vorname,
+                                  style: const TextStyle(fontSize: 12.0),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     );
-                  }
-                    
+                  },
                 ),
               ),
             ],
+          ),
         ),
-        )
       ),
     );
   }
 
- 
+
 }
