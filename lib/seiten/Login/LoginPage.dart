@@ -5,6 +5,7 @@ import 'package:flutter/services.dart'
     show rootBundle; // Für den Zugriff auf die Asset-Ressourcen
 import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
+import 'package:lectorai_frontend/seiten/SettingsPage/settings_page.dart'; // Import für die Einstellungsseite
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
 
 class LoginPage extends StatefulWidget {
@@ -37,15 +38,15 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     lehrer = await repository.login(username, password);
-    if (lehrer.isloggedin) 
-    {
-      //Navigator.of(context)
-      //    .pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) => HomePage(lehrer: lehrer), // Übergibt den Benutzernamen
-      ));
-    } 
-    else {
+    if (lehrer.isloggedin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              HomePage(lehrer: lehrer), // Übergibt den Benutzernamen
+        ),
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Anmeldung fehlgeschlagen')),
       );
@@ -56,34 +57,39 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          const Color(0xFF0077B6), // Setzt die Hintergrundfarbe der Login-Seite
+          const Color(0xFFB9B5C6), // Setzt die Hintergrundfarbe der Login-Seite
       body: Stack(
         children: [
-          // Positioned(
-          //   left: 23,
-          //   top: 75, // Position des Zurück-Buttons
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       Navigator.pop(context); // Navigiert zurück zur HomePage
-          //     },
-          //     child: Image.asset(
-          //       'assets/Bilder/_.png', // Das Bild als Zurück-Button
-          //     ),
-          //   ),
-          // ),
+          Positioned(
+            right: 20,
+            top: 70, // Position des Einstellungs-Icons nach unten verschoben
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        SettingsPage(), // Navigiert zur Einstellungsseite
+                  ),
+                );
+              },
+              child: Icon(
+                Icons.settings,
+                color: Colors.black,
+                size: 40,
+              ),
+            ),
+          ),
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 60), // Platz für den Zurück-Button
-                  const Text(
-                    "Willkommen Zurück",
-                    style: TextStyle(
-                        fontSize: 30,
-                        color: Colors
-                            .black), // Setzt Stil für den Text "Willkommen Zurück"
+                  const SizedBox(height: 60), // Platz für das Einstellungs-Icon
+                  Image.asset(
+                    'assets/Bilder/lectorAI_Logo.png',
+                    scale: 2.0, // Verkleinerung des Logos
                   ),
                   const SizedBox(
                       height: 30), // Vertikaler Abstand zwischen den Elementen
@@ -102,18 +108,40 @@ class _LoginPageState extends State<LoginPage> {
                       height: 30), // Vertikaler Abstand vor dem Anmeldebutton
                   ElevatedButton(
                     onPressed: _login,
-                    
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                          0xFF48CAE4), // Setzt die Hintergrundfarbe des Buttons
+                      backgroundColor: Color(
+                          0xFFB4C2E6), // Setzt die Hintergrundfarbe des Buttons
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40,
                           vertical: 10), // Padding für den Button
                     ),
-                    child: const Text("ANMELDEN",
-                        style: TextStyle(
-                            color: Colors.black)), // Textinhalt des Buttons
+                    child: const Text(
+                      "ANMELDEN",
+                      style: TextStyle(
+                          color: Colors.black), // Textinhalt des Buttons
+                    ),
                   ),
+                  const SizedBox(
+                      height: 20), // Vertikaler Abstand nach dem Anmeldebutton
+
+                  // Auskommentiertes Einstellungs-Icon unter dem Anmelde-Button
+                  /*
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SettingsPage(), // Navigiert zur Einstellungsseite
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      Icons.settings,
+                      color: Colors.black,
+                      size: 40,
+                    ),
+                  ),
+                  */
                 ],
               ),
             ),
@@ -123,10 +151,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildInputField(
-      {required String prefixImage,
-      required String hintText,
-      required TextEditingController controller}) {
+  Widget _buildInputField({
+    required String prefixImage,
+    required String hintText,
+    required TextEditingController controller,
+  }) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -136,8 +165,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         hintText: hintText, // Setzt den Platzhaltertext für das Eingabefeld
         filled: true,
-        fillColor: const Color(
-            0xFFADE8F4), // Setzt die Hintergrundfarbe des Eingabefelds
+        fillColor:
+            Color(0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
               25.0), // Abgerundete Ecken für das Eingabefeld
@@ -173,7 +202,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         hintText: 'Kennwort', // Platzhaltertext für das Passwortfeld
         filled: true,
-        fillColor: const Color(0xFFADE8F4), // Hintergrundfarbe des Eingabefelds
+        fillColor:
+            Color(0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
               25.0), // Abgerundete Ecken für das Eingabefeld
