@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/Login/LoginPage.dart';
 
@@ -11,7 +10,6 @@ class StartPage extends StatefulWidget {
 }
 
 class LoadingStartPage extends State<StartPage> {
-
   @override
   void initState() {
     super.initState();
@@ -22,8 +20,8 @@ class LoadingStartPage extends State<StartPage> {
   Widget build(BuildContext context) {
     // Scaffold bietet das Grundgerüst für unser App-Layout
     return Scaffold(
-      backgroundColor: const Color(
-          0xFF0077B6), //Hier wird der Hintergrund gesetzt (Honolulu Blue)
+      backgroundColor:
+          const Color(0xFFB9B5C6), // Hintergrundfarbe geändert auf ein Hellgrau
       body: SafeArea(
           // SafeArea sorgt dafür, dass der Inhalt innerhalb der sicheren Bereiche der Anzeige bleibt
           child: Column(
@@ -35,30 +33,33 @@ class LoadingStartPage extends State<StartPage> {
             'LectorAI',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.black, //Textfarbe
+              color: Colors.black, // Textfarbe
               fontSize: 66,
             ),
           ),
           const SizedBox(
               height: 45), // Ein Abstand zwischen dem Text und dem Bild
           Image.asset(
-            'assets/Bilder/lectorAI_Logo.png', //Der Pfad zu dem Bild-Asset
-            scale: 1.0, //Die Skalierung des Bildes
+            'assets/Bilder/lectorAI_Logo.png', // Der Pfad zu dem Bild-Asset
+            scale: 1.0, // Die Skalierung des Bildes
           ),
-          const SizedBox(height: 95), //Ein weiterer Abstand
+          const SizedBox(height: 95), // Ein weiterer Abstand
+          Image.asset(
+            'assets/Bilder/Logo_HSB_Hochschule_Bremen.png', // Der Pfad zu dem HSB Bild-Asset
+            scale: 8.0, // Die Skalierung des HSB-Logos weiter verkleinert
+          ),
         ],
       )),
     );
   }
 
   startTime() async {
-    var duration = new Duration(seconds: 5);
-    return new Timer(duration, route);
+    var duration = Duration(seconds: 5);
+    return Timer(duration, route);
   }
-route() {
-    Navigator.pushReplacement(context, MaterialPageRoute(
-        builder: (context) => LoginPage()
-      )
-    ); 
+
+  route() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }
