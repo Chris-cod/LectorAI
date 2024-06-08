@@ -107,7 +107,7 @@ class SchulernListStatr extends State<Schuelern>{
         ),
         body: Container(
           padding: const EdgeInsets.all(10.0),
-          color: const Color(0xFF0077B6),
+          color: const Color(0xFFB9B5C6),
           child: Column(
             children: [
               Row(
@@ -154,16 +154,24 @@ class SchulernListStatr extends State<Schuelern>{
                 child: ListView.builder(
                   itemCount: filteredSchueler.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 8.0),
-                      color: Colors.transparent, // Transparent background for the card
-                      elevation: 0, // No shadow for the card
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 1.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SchuelerDetails(
+                                      token: widget.token,
+                                      schuelerId: filteredSchueler[index].id,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: Container(
                                 padding: const EdgeInsets.all(2.0),
                                 decoration: BoxDecoration(
@@ -176,9 +184,22 @@ class SchulernListStatr extends State<Schuelern>{
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              flex: 1,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: 1,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SchuelerDetails(
+                                      token: widget.token,
+                                      schuelerId: filteredSchueler[index].id,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: Container(
                                 padding: const EdgeInsets.all(2.0),
                                 decoration: BoxDecoration(
@@ -191,8 +212,8 @@ class SchulernListStatr extends State<Schuelern>{
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
