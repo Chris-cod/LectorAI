@@ -5,6 +5,7 @@ import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/CamerPage/camera_page.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/services/repository.dart';
+import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -60,7 +61,20 @@ class _HomePageState extends State<HomePage> {
         child: const Icon(Icons.person, size: 48.0),
       ),
       title: Text(widget.lehrer.username, style: TextStyle(fontSize: iconAndTextSize)),
+
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage())
+            );
+          },
+        ),
+      ],
     );
+
   }
 
   Widget _buildBody(BuildContext context) {
@@ -140,6 +154,38 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), // Abgerundete Ecken
       ),
       child: Text(label, style: const TextStyle(fontSize: 38)), // Text des Buttons
+    );
+  }
+
+  Widget build_setting(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0077B6),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'LectorAI',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.white, // Anpassung der Textfarbe zu Weiß
+                  fontSize: 66,
+                  fontWeight: FontWeight.bold // Optional: Fettdruck hinzufügen
+              ),
+            ),
+            const SizedBox(height: 45),
+            Image.asset('assets/Bilder/lectorAI_Logo.png'),
+            const SizedBox(height: 95),
+            ElevatedButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage())
+                ),
+                child: const Text('Einstellungen')
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
