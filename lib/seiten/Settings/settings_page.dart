@@ -25,22 +25,19 @@ class _SettingsPageState extends State<SettingsPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('Settings', style: TextStyle(color: Theme.of(context).textTheme.headlineMedium?.color)),
-        backgroundColor: CupertinoColors.systemGrey6,
+        //backgroundColor: CupertinoColors.systemGrey6,
       ),
-      child: Container(
-        color: CupertinoColors.systemGrey6,
-        child: ListView(
-          children: [
-            buildThemeToggle(),
-            const SizedBox(height: 20),
-            Center(
-              child: CupertinoButton.filled(
-                onPressed: _applyTheme,
-                child: const Text('Apply'),
-              ),
+      child: ListView(
+        children: [
+          buildThemeToggle(),
+          const SizedBox(height: 20),
+          Center(
+            child: CupertinoButton.filled(
+              onPressed: _applyTheme,
+              child: const Text('Apply'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -89,7 +86,6 @@ class CupertinoListTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: const BoxDecoration(
-        color: CupertinoColors.white,
         border: Border(
           bottom: BorderSide(
             color: CupertinoColors.systemGrey4,
@@ -103,7 +99,7 @@ class CupertinoListTile extends StatelessWidget {
           DefaultTextStyle(
             style: const TextStyle(
               fontSize: 16,
-              color: CupertinoColors.black,
+              //color: CupertinoColors.black,
             ),
             child: title,
           ),

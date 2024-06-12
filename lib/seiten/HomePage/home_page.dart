@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      backgroundColor: const Color(0xFF48CAE4),
+      //backgroundColor: const Color(0xFF48CAE4),
       leading: Padding(
         padding: const EdgeInsets.all(5.0),
         child: const Icon(Icons.person, size: 48.0),
@@ -79,16 +79,16 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody(BuildContext context) {
     return Container(
-      color: const Color(0xFF0077B6),
+      //color: const Color(0xFF0077B6),
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Dokument einscannen', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const Divider(color: Colors.black),
+     //     const Divider(color: Colors.black),
           _buildCameraButton(),
           const Text('Betreute Klassen', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const Divider(color: Colors.black),
+    //      const Divider(color: Colors.black),
           _buildClassButtons(context),
         ],
       ),
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
             height: 130,
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
-              color: const Color(0xff48CAE4),
+          //    color: const Color(0xff48CAE4),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Center(child: Icon(Icons.camera_alt_rounded, size: cameraIconSize)),
@@ -148,8 +148,8 @@ class _HomePageState extends State<HomePage> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => Schuelern(klasseId: id, token: widget.lehrer.tokenRaw, lehrerId: widget.lehrer.lehrerId, klasseName: label,)));
       },
       style: ElevatedButton.styleFrom(
-        foregroundColor: const Color.fromARGB(255, 0, 0, 0), // Textfarbe
-        backgroundColor: const Color(0xff48CAE4), // Hintergrundfarbe
+    //    foregroundColor: const Color.fromARGB(255, 0, 0, 0), // Textfarbe
+   //     backgroundColor: const Color(0xff48CAE4), // Hintergrundfarbe
         minimumSize: const Size(110, 110), // Minimale Größe
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), // Abgerundete Ecken
       ),
@@ -159,7 +159,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget build_setting(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0077B6),
+     // backgroundColor: const Color(0xFF0077B6),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
               'LectorAI',
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.white, // Anpassung der Textfarbe zu Weiß
+       //           color: Colors.white, // Anpassung der Textfarbe zu Weiß
                   fontSize: 66,
                   fontWeight: FontWeight.bold // Optional: Fettdruck hinzufügen
               ),
