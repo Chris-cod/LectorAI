@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
               color: const Color(0xff48CAE4),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(70),
             ),
             child: const Center(child: Icon(Icons.camera_alt_rounded, size: cameraIconSize)),
           ),

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/CamerPage/ViewImagePage.dart';
