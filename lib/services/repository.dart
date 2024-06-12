@@ -11,6 +11,7 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 class Repository {
   final String backendURL = 'http://localhost:8000';
   final String LocalUrlAsIp = 'http://192.168.0.104:8000';
+
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 
