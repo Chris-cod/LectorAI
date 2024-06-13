@@ -16,22 +16,112 @@
           "similarityScore": 0.96
         },
         "similarityScorePerson": 0.92
-      }
-    ],
-    "AGS": [
-      {
-        "Ag_id": 1,
-        "Ag_name": {
-          "value": "Programmierung",
-          "score": 0.1
-        }
       },
       {
-        "Ag_id": 1,
-        "Ag_name": {
-          "value": "Robotik",
-          "score": 0.1
-        }
+        "id": 1,
+        "vorname": {
+          "value": "Iwoa",
+          "similarityScore": 0.92
+        },
+        "nachname": {
+          "value": "Andes",
+          "similarityScore": 0.91
+        },
+        "class": {
+          "value": "12A",
+          "similarityScore": 0.96
+        },
+        "similarityScorePerson": 0.92
+      },
+      {
+        "id": 1,
+        "vorname": {
+          "value": "Ivan",
+          "similarityScore": 0.92
+        },
+        "nachname": {
+          "value": "Anders",
+          "similarityScore": 0.91
+        },
+        "class": {
+          "value": "12A",
+          "similarityScore": 0.96
+        },
+        "similarityScorePerson": 0.92
       }
-    ]
+    ],
+    "AGS": {
+      "AG1": [
+        {
+          "id": 7,
+          "name": {
+            "value": "Programmierung",
+            "score": 0.1
+          }
+        },
+        {
+          "id": 8,
+          "name": {
+            "value": "Robotik",
+            "score": 0.1
+          }
+        },
+        {
+          "id": 9,
+          "name": {
+            "value": "Chor",
+            "score": 0.1
+          }
+        }
+      ],
+      "AG2": [
+        {
+          "id": 7,
+          "name": {
+            "value": "Band",
+            "score": 0.1
+          }
+        },
+        {
+          "id": 8,
+          "name": {
+            "value": "Robotik",
+            "score": 0.1
+          }
+        },
+        {
+          "id": 9,
+          "name": {
+            "value": "Basketball",
+            "score": 0.1
+          }
+        }
+      ],
+      "AG3": [
+        {
+          "id": 7,
+          "name": {
+            "value": "Volleyball",
+            "score": 0.1
+          }
+        },
+        {
+          "id": 8,
+          "name": {
+            "value": "Fussball",
+            "score": 0.1
+          }
+        },
+        {
+          "id": 9,
+          "name": {
+            "value": "Chor",
+            "score": 0.1
+          }
+        }
+      ]
+    }
+      
+      
+    
   }

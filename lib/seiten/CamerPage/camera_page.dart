@@ -6,9 +6,10 @@ import 'image_display_widget.dart';
 
 class CameraPage extends StatefulWidget 
 {
-  const CameraPage({super.key, required this.token});
+  const CameraPage({super.key, required this.token, required this.dmodus});
 
   final String token;
+  final bool dmodus;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -64,6 +65,7 @@ class _CameraPageState extends State<CameraPage>
                 });
               },
               token: widget.token,
+              test: widget.dmodus,
             ),
           Positioned(
             top: 30,

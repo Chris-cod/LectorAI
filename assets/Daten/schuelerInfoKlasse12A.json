@@ -6,7 +6,7 @@
       "Nachname": "Huhn",
       "Adresse": {
         "Straße": "Aachener Straße",
-        "Hausnummer": 5,
+        "Hausnummer": "5",
         "Postleitzahl": 28327
       },
       "Klasse": "12A",
@@ -24,7 +24,7 @@
       "Nachname": "Zahn",
       "Adresse": {
         "Straße": "Achterdiek",
-        "Hausnummer": 37,
+        "Hausnummer": "37",
         "Postleitzahl": 28359
       },
       "Klasse": "12A",
@@ -42,7 +42,7 @@
       "Nachname": "Hahn",
       "Adresse": {
         "Straße": "Adlerweg",
-        "Hausnummer": 100,
+        "Hausnummer": "100",
         "Postleitzahl": 28219
       },
       "Klasse": "12A",
@@ -60,7 +60,7 @@
       "Nachname": "Schmiedt-Müde",
       "Adresse": {
         "Straße": "Bahlumer Weg",
-        "Hausnummer": 15,
+        "Hausnummer": "15",
         "Postleitzahl": 28277
       },
       "Klasse": "12A",
@@ -78,7 +78,7 @@
       "Nachname": "Heydrich",
       "Adresse": {
         "Straße": "Balgebrückstraße",
-        "Hausnummer": 20,
+        "Hausnummer": "20",
         "Postleitzahl": 28195
       },
       "Klasse": "12A",
@@ -96,7 +96,7 @@
       "Nachname": "Liebelt",
       "Adresse": {
         "Straße": "Borgfelder Heerstraße",
-        "Hausnummer": 36,
+        "Hausnummer": "36",
         "Postleitzahl": 28357
       },
       "Klasse": "12A",
@@ -114,7 +114,7 @@
       "Nachname": "Reising",
       "Adresse": {
         "Straße": "Crüsemannallee",
-        "Hausnummer": 30,
+        "Hausnummer": "30",
         "Postleitzahl": 28213
       },
       "Klasse": "12A",
@@ -132,7 +132,7 @@
       "Nachname": "Dussen",
       "Adresse": {
         "Straße": "Cuxhavener Straße",
-        "Hausnummer": 4,
+        "Hausnummer": "4",
         "Postleitzahl": 28357
       },
       "Klasse": "12A",
@@ -150,7 +150,7 @@
       "Nachname": "Anders",
       "Adresse": {
         "Straße": "Dahlwas",
-        "Hausnummer": 19,
+        "Hausnummer": "19",
         "Postleitzahl": 28307
       },
       "Klasse": "12A",
@@ -168,7 +168,7 @@
       "Nachname": "Kreusel",
       "Adresse": {
         "Straße": "Danziger Straße",
-        "Hausnummer": 8,
+        "Hausnummer": "8",
         "Postleitzahl": 28237
       },
       "Klasse": "12A",
@@ -186,7 +186,7 @@
       "Nachname": "Schäfer",
       "Adresse": {
         "Straße": "Delfter Straße",
-        "Hausnummer": 13,
+        "Hausnummer": "13",
         "Postleitzahl": 28259
       },
       "Klasse": "12A",
@@ -204,7 +204,7 @@
       "Nachname": "Güde",
       "Adresse": {
         "Straße": "Dietrichstraße",
-        "Hausnummer": 12,
+        "Hausnummer": "12",
         "Postleitzahl": 28217
       },
       "Klasse": "12A",
@@ -222,7 +222,7 @@
       "Nachname": "Gutknecht",
       "Adresse": {
         "Straße": "Dötlinger Straße",
-        "Hausnummer": 12,
+        "Hausnummer": "12",
         "Postleitzahl": 28197
       },
       "Klasse": "12A",
@@ -240,7 +240,7 @@
       "Nachname": "Fischer",
       "Adresse": {
         "Straße": "Edithweg",
-        "Hausnummer": 3,
+        "Hausnummer": "3",
         "Postleitzahl": 28201
       },
       "Klasse": "12A",
@@ -258,7 +258,7 @@
       "Nachname": "Fiebig",
       "Adresse": {
         "Straße": "Ellenerbrokweg",
-        "Hausnummer": 39,
+        "Hausnummer": "39",
         "Postleitzahl": 28325
       },
       "Klasse": "12A",
@@ -276,7 +276,7 @@
       "Nachname": "Hettner",
       "Adresse": {
         "Straße": "Emmastraße",
-        "Hausnummer": 2,
+        "Hausnummer": "2",
         "Postleitzahl": 28213
       },
       "Klasse": "12A",
@@ -294,7 +294,7 @@
       "Nachname": "Jacob",
       "Adresse": {
         "Straße": "Emmastraße",
-        "Hausnummer": 8,
+        "Hausnummer": "8",
         "Postleitzahl": 28213
       },
       "Klasse": "12A",
@@ -312,7 +312,7 @@
       "Nachname": "Gorlitz-Aumann",
       "Adresse": {
         "Straße": "Erlenstraße",
-        "Hausnummer": 50,
+        "Hausnummer": "50",
         "Postleitzahl": 28199
       },
       "Klasse": "12A",
@@ -330,7 +330,7 @@
       "Nachname": "Buchholz-Hering",
       "Adresse": {
         "Straße": "Fesenfeld",
-        "Hausnummer": 2,
+        "Hausnummer": "2",
         "Postleitzahl": 28203
       },
       "Klasse": "12A",
@@ -348,7 +348,7 @@
       "Nachname": "Pröschke",
       "Adresse": {
         "Straße": "Fesenfeld",
-        "Hausnummer": 17,
+        "Hausnummer": "17",
         "Postleitzahl": 28203
       },
       "Klasse": "12A",
@@ -366,7 +366,7 @@
       "Nachname": "Schinke",
       "Adresse": {
         "Straße": "Findorffstraß",
-        "Hausnummer": 30,
+        "Hausnummer": "30",
         "Postleitzahl": 28215
       },
       "Klasse": "12A",
@@ -384,7 +384,7 @@
       "Nachname": "Anders",
       "Adresse": {
         "Straße": "Gastfeldstraße",
-        "Hausnummer": 62,
+        "Hausnummer": "62",
         "Postleitzahl": 28201
       },
       "Klasse": "12A",
@@ -402,7 +402,7 @@
       "Nachname": "Noack",
       "Adresse": {
         "Straße": "Getrudenweg",
-        "Hausnummer": 5,
+        "Hausnummer": "5",
         "Postleitzahl": 28201
       },
       "Klasse": "12A",
@@ -420,7 +420,7 @@
       "Nachname": "Atzler",
       "Adresse": {
         "Straße": "Hans-Bredow-Straße",
-        "Hausnummer": 56,
+        "Hausnummer": "56",
         "Postleitzahl": 28307
       },
       "Klasse": "12A",
@@ -438,7 +438,7 @@
       "Nachname": "Buchholz",
       "Adresse": {
         "Straße": "Hans-Bredow-Straße",
-        "Hausnummer": 50,
+        "Hausnummer": "50",
         "Postleitzahl": 28307
       },
       "Klasse": "12A",

@@ -14,7 +14,8 @@ class Schuelern extends StatefulWidget {
   final int lehrerId;
   final String token;
   final String klasseName;
-  const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName});
+  final bool demoModus;
+  const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName, required this.demoModus});
 
   @override
   SchulernListStatr createState() => SchulernListStatr();
@@ -39,7 +40,13 @@ class SchulernListStatr extends State<Schuelern>{
   }
 
   void initList() async{
-    var allStudent = await repository.getClassStudents(widget.token, widget.lehrerId, widget.klasseId);
+    List<Schueler> allStudent;
+        if(widget.demoModus){
+          allStudent = await repository.fetchStudentFromLocalJson(widget.token, widget.lehrerId, widget.klasseId);
+        }
+        else{
+          allStudent = await repository.getClassStudents(widget.token, widget.lehrerId, widget.klasseId);
+        }
     String allStudentString = allStudent.toString();
     print("alle schueler von backend: $allStudentString");
     if(allStudent.isNotEmpty){
@@ -53,6 +60,7 @@ class SchulernListStatr extends State<Schuelern>{
       isLoading = true;
     }
   }
+
 
   /// Runs the filter based on the provided search keyword.
   ///
@@ -168,6 +176,7 @@ class SchulernListStatr extends State<Schuelern>{
                                     builder: (context) => SchuelerDetails(
                                       token: widget.token,
                                       schuelerId: filteredSchueler[index].id,
+                                      demoModus: widget.demoModus,
                                     ),
                                   ),
                                 );
@@ -196,6 +205,7 @@ class SchulernListStatr extends State<Schuelern>{
                                     builder: (context) => SchuelerDetails(
                                       token: widget.token,
                                       schuelerId: filteredSchueler[index].id,
+                                      demoModus: widget.demoModus,
                                     ),
                                   ),
                                 );

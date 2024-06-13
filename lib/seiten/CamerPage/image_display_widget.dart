@@ -9,8 +9,9 @@ class ImageDisplayWidget extends StatelessWidget
   final Uint8List imageBytes;
   final VoidCallback onRetake;
   final String token;
+  final bool test; 
   
-   ImageDisplayWidget({super.key,required this.imageBytes, required this.onRetake, required this.token});
+   ImageDisplayWidget({super.key,required this.imageBytes, required this.onRetake, required this.token, required this.test});
 
   @override
   Widget build(BuildContext context) 
@@ -62,11 +63,11 @@ class ImageDisplayWidget extends StatelessWidget
                     // Navigiert zur PdfViwer und übergibt die imageBytes
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => PdfViwer(authToken: token, imageBytes: imageBytes),
+                        builder: (_) => PdfViwer(authToken: token, imageBytes: imageBytes, demoModus: test),
                       ),
                     );
                   },
-                  child: const Text('Hochladen'),
+                  child: const Text('KI-Analyse starten'),
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -11,10 +12,12 @@ import 'package:lectorai_frontend/services/repository.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PdfViwer extends StatefulWidget {
-  const PdfViwer({super.key, required this.authToken, required this.imageBytes});
+  
+  const PdfViwer({super.key, required this.authToken, required this.imageBytes, required this.demoModus});
 
   final String authToken;
   final Uint8List imageBytes;
+  final bool demoModus;
 
   @override
   PdfViwerState createState() => PdfViwerState();
@@ -27,11 +30,12 @@ class PdfViwerState extends State<PdfViwer> {
   OverlayEntry? _secondOverlay;
   final Completer<PDFViewController> _controller =
       Completer<PDFViewController>();
-  String? path, displayText;
+  String? path, displayTextErzieher, displayTextStudent, displayTextAdresse, displayTextAG;
   Map<String, dynamic> _jsonData = {};
   bool dataLoaded = false;
   int _currentIndex = 0;
   Repository repository = Repository();
+  List<String> type = ['ad', 'ag'];
   
 
   @override
@@ -43,8 +47,17 @@ class PdfViwerState extends State<PdfViwer> {
   }
 
   Future<void> readJson() async {
-    //final String response =await rootBundle.loadString('assets/Daten/ag_sample.json');
-    var responseJson = await repository.sendImage(widget.authToken, widget.imageBytes);
+    Map<String, dynamic> responseJson;
+    if(widget.demoModus){
+      String doc_type = getRandomDemoDocType(type);
+      final String response = await rootBundle.loadString('assets/Daten/${doc_type}_sample.json');
+      responseJson = json.decode(response);
+    }
+    else{
+      responseJson = await repository.sendImage(widget.authToken, widget.imageBytes);
+    }
+    
+    
     var f = await getFileFromAsset("assets/Doc/${responseJson['doc_type']}.pdf");
     setState(() {
       _jsonData = responseJson;
@@ -70,6 +83,12 @@ class PdfViwerState extends State<PdfViwer> {
     return completer.future;
   }
 
+  String getRandomDemoDocType(List<String> list) {
+    final random = Random();
+    int index = random.nextInt(list.length);
+    return list[index];
+  }
+
   @override
   void dispose() {
     _overlayEntry?.remove();
@@ -88,6 +107,11 @@ class PdfViwerState extends State<PdfViwer> {
     Overlay.of(context)?.insert(_secondOverlay!);
   }
 
+  void removeFirstOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
   void removeSecondOverlay() {
     _secondOverlay?.remove();
     _secondOverlay = null;
@@ -97,16 +121,31 @@ class PdfViwerState extends State<PdfViwer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Erfasste Schüler Blatt"),
+        title: const Text("Erfasste Schüler Blatt"),
+        leading:GestureDetector(
+          onTap: () {
+            removeFirstOverlay();
+            removeSecondOverlay();
+            Navigator.pop(context);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(15.0),
+            height: 10,
+            child: Image.asset('assets/Bilder/_.png', color: Colors.black, scale: 1.0,),
+          )
+          
+        ),
         actions: [
           Positioned(
               top: MediaQuery.of(context).size.height * 0.05,
               left: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width * 0.1 / 2),
               child: IconButton(
-                icon: Icon(Icons.remove_red_eye, size: MediaQuery.of(context).size.width * 0.1),
+                icon: Icon(Icons.remove_red_eye, size: MediaQuery.of(context).size.width * 0.05),
                 onPressed: () 
                 {
-                  // Navigieren zur ViewImagePage mit dem Byte-Array
+                  removeFirstOverlay();
+                  removeSecondOverlay();
+                  //Navigieren zur ViewImagePage mit dem Byte-Array
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => ViewImagePage(imageBytes: widget.imageBytes)
                   ));
@@ -143,7 +182,7 @@ class PdfViwerState extends State<PdfViwer> {
                 ),
               ],
             )
-          : Center(child: CircularProgressIndicator()),
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -151,32 +190,46 @@ class PdfViwerState extends State<PdfViwer> {
     try {
       print(_jsonData['doc_type']);
       if (_jsonData['doc_type'] == 'Adresse') {
+        var student = _jsonData['students'];
+        Map<String,dynamic> firststudent = student[_currentIndex];
+        displayTextStudent = '${firststudent['vorname']['value']}\n${firststudent['nachname']['value']}\n${firststudent['class']['value']}';
+        var parent = student[_currentIndex]['parents'];
+        displayTextErzieher = '${parent[_currentIndex]['vorname']['value']}\n${parent[_currentIndex]['nachname']['value']}\n${parent[_currentIndex]['email']['value']}\n${parent[_currentIndex]['telefone']['value']}';
+        var newAdress = _jsonData['addresses'];
+        Map<String,dynamic> firstNewAdress = newAdress[0];
+        displayTextAdresse = '${firstNewAdress['street_name']['value']}\n${firstNewAdress['location']['location_name']}\n${firstNewAdress['location']['postal_code']}';
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
-              _positionedOverlaywithText('test', 0.7, 0.108, 0.508, 0.1, 0.40),
+              
               // Position für Button-Container
-              _iconsOverlay(0.508, 0.76, 'student', 'studentBox'),
+              _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40),
+              _iconsOverlay(0.445, 0.68, student, 'erzieher'),
+              _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40),
+              _iconsOverlay(0.547, 0.68, student, 'schueler'),
+              _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40),
+              _iconsOverlay(0.65, 0.68, newAdress, 'addresse'),
             ],
           ),
         );
       } else {
         List<dynamic> student = _jsonData['students'];
         Map<String,dynamic> fs = student[0];
-        List<dynamic> ags = _jsonData['AGS'];
+        displayTextStudent = '${fs["vorname"]['value']}\n${fs['nachname']['value']}\n${fs['class']['value']}';
+        var ags = _jsonData['AGS'];
+        List<dynamic> firstAG = ags['AG1'];
+        displayTextAG = '${firstAG[0]['name']['value']}\n${firstAG[1]['name']['value']}\n${firstAG[2]['name']['value']}';
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
               // Position für Schüler-Daten-Container
-              _positionedOverlaywithText('${fs["nachname"]['value']}\n${fs['vorname']['value']}\n${fs['class']['value']}', 
-                0.7, 0.108, 0.508, 0.1, fs['similarityScorePerson']),
+              _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, fs['similarityScorePerson']),
               // Position für Button-Container
-              _iconsOverlay(0.508, 0.8, student, 'schueler'),
+              _iconsOverlay(0.495, 0.675, student, 'schueler'),
               // Position für AG-Container
-              _positionedOverlaywithText('${ags[0]['Ag_name']['value']}\n${ags[1]['Ag_name']['value']}\nChor', 
-               0.7, 0.108, 0.62, 0.1, ags[0]['Ag_name']['score']),
-              // Position für Button-Container
-              _iconsOverlay(0.62, 0.8, ags, 'ag')
+              _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, firstAG[0]['name']['score']),
+              // // Position für Button-Container
+               _iconsOverlay(0.61, 0.675, ags, 'ag')
             ],
           ),
         );
@@ -200,7 +253,19 @@ class PdfViwerState extends State<PdfViwer> {
             items: data,
             onItemSelected: (selectedItem) {
               setState(() {
-                displayText = selectedItem;
+                if (boxname == 'erzieher') {
+                  displayTextErzieher = selectedItem;
+                  _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40);
+                } else if (boxname == 'schueler') {
+                  displayTextStudent = selectedItem;
+                  _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40);
+                } else if (boxname == 'addresse') {
+                  displayTextAdresse = selectedItem;
+                  _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40);
+                } else if (boxname == 'ag') {
+                  displayTextAG = selectedItem;
+                  _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, 0.40);
+                }
               });
               removeSecondOverlay();
             }, boxname: boxname,
@@ -231,11 +296,11 @@ class PdfViwerState extends State<PdfViwer> {
 
   Widget _iconsOverlay(double topMultiplicator, double leftMultiplicator, var data, String infoBox) {
     return Positioned(
-      width: MediaQuery.of(context).size.width * 0.1,
-      height: MediaQuery.of(context).size.height * 0.1,
+      width: 180,
+      height: 100,
       top: MediaQuery.of(context).size.height * topMultiplicator,
       left: MediaQuery.of(context).size.width * leftMultiplicator,
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
