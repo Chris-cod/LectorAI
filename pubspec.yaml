@@ -39,10 +39,14 @@ dependencies:
   cupertino_icons: ^1.0.6
   readmore: ^3.0.0
 
-  camera: ^0.10.5+9  # Aktualisierte Version
+  camera: ^0.11.0+1  # Aktualisierte Version
+  cunning_document_scanner: ^1.2.2
   
-  image: ^3.0.1  # Zum Bearbeiten und Konvertieren von Bildern
-  permission_handler: ^10.2.0 #  Berechtigungen zur Laufzeit zu verwalten
+  image: ^4.2.0  # Zum Bearbeiten und Konvertieren von Bildern
+  permission_handler: ^11.3.1 #  Berechtigungen zur Laufzeit zu verwalten
+
+  provider: ^6.0.2
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
@@ -53,7 +57,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

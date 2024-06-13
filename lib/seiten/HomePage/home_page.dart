@@ -112,8 +112,13 @@ class _HomePageState extends State<HomePage> {
             height: 130,
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
+           farben_switch_system
           //    color: const Color(0xff48CAE4),
               borderRadius: BorderRadius.circular(20),
+
+              color: const Color(0xff48CAE4),
+              borderRadius: BorderRadius.circular(70),
+              main
             ),
             child: const Center(child: Icon(Icons.camera_alt_rounded, size: cameraIconSize)),
           ),
