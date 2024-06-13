@@ -10,8 +10,7 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
   final String backendURL = 'http://localhost:8000';
-  final String LocalUrlAsIp = 'http://192.168.0.104:8000';
-
+  final String LocalUrlAsIp = 'http://192.168.0.181:8000';
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 
@@ -68,9 +67,11 @@ class Repository {
         if (gettedClasses.isNotEmpty) {
           // Casten der Klassennamen in Strings.
           // Durchlaufen aller Einträge in 'classes' und Extrahieren der Klassennamen.
-          for (var item in gettedClasses)
-          {
-            Klasse klasse = Klasse(klasseId: item['id'], klasseName: item['class_name']); // Instanzierung eines Klasse-Objekts
+          for (var item in gettedClasses) {
+            Klasse klasse = Klasse(
+                klasseId: item['id'],
+                klasseName:
+                    item['class_name']); // Instanzierung eines Klasse-Objekts
             classes.add(klasse); // Hinzufügen des Klassennamens zur Liste.
           }
           return classes;
@@ -156,87 +157,114 @@ class Repository {
     }
   }
 
-
-  Future<SchuelerInfo> getStudentInformation(String authToken, int studentId) async 
-  {
+  Future<SchuelerInfo> getStudentInformation(
+      String authToken, int studentId) async {
     // Erstellen der vollständigen URL zum Abrufen der Infomation eines bestimmten Schüler.
     var url = Uri.parse('$LocalUrlAsIp/student/$studentId');
-    try 
-    {
+    try {
       // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
-      var response = await http.get
-      (
+      var response = await http.get(
         url,
-        headers: 
-        {
+        headers: {
           // Nutzt das zuvor gespeicherte Auth-Token.
           "token": authToken,
         },
       );
       /* Überprüfung, ob der HTTP-Statuscode 200 OK ist, 
        was auf eine erfolgreiche Anfrage hinweist.*/
-      if (response.statusCode == 200) 
-      {
-        var jsonData = json.decode(response.body); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response
+            .body); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
 
-
-        if (jsonData.isNotEmpty) 
-        {
+        if (jsonData.isNotEmpty) {
           var adresse = jsonData['address'];
           var kontakt = jsonData['parent'];
           var ags = jsonData['ags'];
           print(ags);
-          Adresse studentAdresse = Adresse(strasse: adresse['street_name'], hausnummer: adresse['house_number'], postleitzahl: adresse['postal_code'], ort: adresse['location_name']);
-          Kontakt erzieher = Kontakt(vorname: kontakt['firstname'], nachname: kontakt['lastname'], telefonnummer: kontakt['phone_number'], email: kontakt['email']);
-          SchuelerInfo info = SchuelerInfo(id : jsonData['person_id'], vorname: jsonData['firstname'], nachname: jsonData['lastname'], adresse: studentAdresse, ags: ags, kontakt: erzieher); // Instanzierung eines Schueler-Objekts
+          Adresse studentAdresse = Adresse(
+              strasse: adresse['street_name'],
+              hausnummer: adresse['house_number'],
+              postleitzahl: adresse['postal_code'],
+              ort: adresse['location_name']);
+          Kontakt erzieher = Kontakt(
+              vorname: kontakt['firstname'],
+              nachname: kontakt['lastname'],
+              telefonnummer: kontakt['phone_number'],
+              email: kontakt['email']);
+          SchuelerInfo info = SchuelerInfo(
+              id: jsonData['person_id'],
+              vorname: jsonData['firstname'],
+              nachname: jsonData['lastname'],
+              adresse: studentAdresse,
+              ags: ags,
+              kontakt: erzieher); // Instanzierung eines Schueler-Objekts
           print(info.ags);
           return info;
-         } 
-         else 
-         {
+        } else {
           print('es wurde Keine Daten uber diese Schueler gefunden');
-          return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: '')); 
-       }
-     } 
-      else 
-      {
+          return SchuelerInfo(
+              id: 0,
+              vorname: '',
+              nachname: '',
+              adresse: Adresse(
+                  strasse: '', hausnummer: '', postleitzahl: 0, ort: ''),
+              kontakt: Kontakt(
+                  vorname: '', nachname: '', telefonnummer: '', email: ''));
+        }
+      } else {
         // Bei jedem anderen Statuscode als 200 wird eine Fehlermeldung ausgegeben.
         print("Fehler beim Abrufen der Daten: ${response.statusCode}");
-        return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: ''));
+        return SchuelerInfo(
+            id: 0,
+            vorname: '',
+            nachname: '',
+            adresse:
+                Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''),
+            kontakt: Kontakt(
+                vorname: '', nachname: '', telefonnummer: '', email: ''));
       }
-    } 
-    catch (e) 
-    {
+    } catch (e) {
       // Fangen von Ausnahmen, die während der HTTP-Anfrage auftreten können,
       // und Ausgabe einer Fehlermeldung.
       print("Exception caught: $e");
-      return SchuelerInfo(id : 0, vorname: '', nachname: '', adresse: Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''), kontakt: Kontakt(vorname: '', nachname: '', telefonnummer: '', email: ''));
+      return SchuelerInfo(
+          id: 0,
+          vorname: '',
+          nachname: '',
+          adresse:
+              Adresse(strasse: '', hausnummer: '', postleitzahl: 0, ort: ''),
+          kontakt:
+              Kontakt(vorname: '', nachname: '', telefonnummer: '', email: ''));
     }
- }
+  }
 
 // Methode zum Senden des Bildes
-  Future<Map<String,dynamic>> sendImage(String authToken, List<int> imageBytes) async {
+  Future<Map<String, dynamic>> sendImage(
+      String authToken, List<int> imageBytes) async {
     // Konvertiert Byte-Daten zu einem Base64-String
-    
+
     String base64Image = base64Encode(imageBytes);
     //print(base64Image);
     var toSend = jsonEncode({'image': base64Image});
 
     try {
-      var response = await http.post(
-        Uri.parse('$LocalUrlAsIp/image'), // URL für das Senden des Bildes
-        headers: {
-          'Content-Type': 'application/json',
-          'token': authToken,
-        },
-        body: toSend,
-      ).timeout(const Duration(seconds: 60));
+      var response = await http
+          .post(
+            Uri.parse('$LocalUrlAsIp/image'), // URL für das Senden des Bildes
+            headers: {
+              'Content-Type': 'application/json',
+              'token': authToken,
+            },
+            body: toSend,
+          )
+          .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         return data;
       } else {
-        print('Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
+        print(
+            'Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
         return {};
       }
     } catch (e) {
@@ -244,6 +272,4 @@ class Repository {
       return {};
     }
   }
-
- 
 }
