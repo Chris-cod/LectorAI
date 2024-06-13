@@ -1,5 +1,12 @@
 {
-    "username": "wilfrid",
-    "password": "wilfrid123"
+    "id": 1,
+    "teacher_name":  "Patrick Draheim",
+    "username": "pdraheim",
+    "password": "2pdraheim3",
+    "classes": [{
+        "classe_id": 1,
+        "classe_name": "12A"
+    }],
+    "token_raw": "eyJhbG0123654789"
 }
   

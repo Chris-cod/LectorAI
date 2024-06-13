@@ -53,7 +53,29 @@
         "value": "3B",
         "similarityScore": 0.91
       },
-      "similarityScorePerson": 0.91
+      "similarityScorePerson": 0.91,
+      "parents": [
+        {
+          "id": 7,
+          "vorname": {
+            "value": "Muster",
+            "similarityScore": 0.92
+          },
+          "nachname": {
+            "value": "Doe",
+            "similarityScore": 0.91
+          },
+          "email": {
+            "value": "dmusterg@geburt.de",
+            "similarityScore": 0.91
+          },
+          "telefone": {
+            "value": "0127182171",
+            "similarityScore": 0.93
+          },
+          "similarityScorePerson": 0.92
+        }
+      ]
     },
     {
       "id": 3,
@@ -69,7 +91,29 @@
         "value": "9B",
         "similarityScore": 0.70
       },
-      "similarityScorePerson": 0.70
+      "similarityScorePerson": 0.70,
+      "parents": [
+        {
+          "id": 7,
+          "vorname": {
+            "value": "Alex",
+            "similarityScore": 0.72
+          },
+          "nachname": {
+            "value": "Doe",
+            "similarityScore": 0.71
+          },
+          "email": {
+            "value": "dmusterg@geburt.de",
+            "similarityScore": 0.71
+          },
+          "telefone": {
+            "value": "0127182171",
+            "similarityScore": 0.73
+          },
+          "similarityScorePerson": 0.70
+        }
+      ]
     }
   ],
   "addresses": [
@@ -94,8 +138,21 @@
       },
       "location": {
         "location_id": 102,
-        "location_name": "Munchen",
-        "postal_code": 80331,
+        "location_name": "Berlin",
+        "postal_code": 10331,
+        "similarityScore": 0.92
+      }
+    },
+    {
+      "id": 2,
+      "street_name": {
+        "value": "Oben am Berg",
+        "similarityScore": 0.94
+      },
+      "location": {
+        "location_id": 102,
+        "location_name": "Berlin",
+        "postal_code": 10331,
         "similarityScore": 0.92
       }
     }

@@ -10,8 +10,9 @@ import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 
 class HomePage extends StatefulWidget {
   final Lehrer lehrer;
+  final bool demoModus;
 
-  const HomePage({super.key, required this.lehrer});
+  const HomePage({super.key, required this.lehrer, required this.demoModus});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -31,7 +32,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   void loadClasses() async {
-    var fetchedClasses = await repository.fetchTeacherClasses(widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
+    List<Klasse> fetchedClasses;
+    if(widget.demoModus){
+      fetchedClasses = await repository.getClassesFromLocalJson(widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
+    }
+    else{
+      fetchedClasses = await repository.fetchTeacherClasses(widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
+    }
+
     if (fetchedClasses.isNotEmpty) {
       setState(() {
         classes = fetchedClasses;
@@ -104,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                     // Verwenden des Navigators zum Öffnen der CameraPage
                       Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CameraPage(token: widget.lehrer.tokenRaw)),
+                      MaterialPageRoute(builder: (context) => CameraPage(token: widget.lehrer.tokenRaw, dmodus: widget.demoModus,)),
                       );
                     },
           child: Container(
@@ -112,13 +120,13 @@ class _HomePageState extends State<HomePage> {
             height: 130,
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
-           farben_switch_system
+              //farben_switch_system
           //    color: const Color(0xff48CAE4),
               borderRadius: BorderRadius.circular(20),
 
               color: const Color(0xff48CAE4),
-              borderRadius: BorderRadius.circular(70),
-              main
+              // borderRadius: BorderRadius.circular(70),
+              // main
             ),
             child: const Center(child: Icon(Icons.camera_alt_rounded, size: cameraIconSize)),
           ),
@@ -150,7 +158,8 @@ class _HomePageState extends State<HomePage> {
       onPressed: () {
         final int id = classes.firstWhere((element) => element.klasseName == label).klasseId;
         print("Button $label wurde gedrückt.");
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Schuelern(klasseId: id, token: widget.lehrer.tokenRaw, lehrerId: widget.lehrer.lehrerId, klasseName: label,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Schuelern(klasseId: id, 
+              token: widget.lehrer.tokenRaw, lehrerId: widget.lehrer.lehrerId, klasseName: label,demoModus: widget.demoModus,)));
       },
       style: ElevatedButton.styleFrom(
     //    foregroundColor: const Color.fromARGB(255, 0, 0, 0), // Textfarbe

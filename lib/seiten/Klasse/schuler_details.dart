@@ -9,10 +9,11 @@ import 'package:lectorai_frontend/services/repository.dart';
 
 class SchuelerDetails extends StatefulWidget {
   
-  const SchuelerDetails({super.key, required this.token, required this.schuelerId});
+  const SchuelerDetails({super.key, required this.token, required this.schuelerId, required this.demoModus});
 
   final String token;
   final int schuelerId;
+  final bool demoModus;
 
   @override
   ShowSchuelerDetails createState() => ShowSchuelerDetails();
@@ -29,7 +30,13 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
   }
 
   initList() async {
-    var schulerInformation = await repository.getStudentInformation(widget.token, widget.schuelerId);
+    SchuelerInfo schulerInformation;
+    if(widget.demoModus){
+      schulerInformation = await repository.fetchStudentInfoFromLocalJson(widget.token, widget.schuelerId);
+    }
+    else{
+      schulerInformation = await repository.getStudentInformation(widget.token, widget.schuelerId);
+    }
       //schuelerInfo = alleSchueler.firstWhere((element) => element.id == widget.schuelerId);
       setState(() {
         schuelerInfo = schulerInformation;

@@ -37,14 +37,19 @@ class _LoginPageState extends State<LoginPage> {
       );
       return;
     }
-
-    lehrer = await repository.login(username, password);
+    if(isDemoMode){
+      lehrer = await repository.loginFromLocalJson(username, password);
+    }
+    else{
+      lehrer = await repository.login(username, password);
+    }
+    
     if (lehrer.isloggedin) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              HomePage(lehrer: lehrer), // Übergibt den Benutzernamen
+              HomePage(lehrer: lehrer, demoModus: isDemoMode,), // Übergibt den Benutzernamen
         ),
       );
     } else {
@@ -53,6 +58,8 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
