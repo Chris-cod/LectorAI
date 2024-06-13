@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   Lehrer lehrer = Lehrer(); // Instanz der Lehrer-Klasse
   bool _isSecret = true; // Zustand zum Verbergen oder Anzeigen des Passworts
+  bool isDemoMode = false; // Zustand für den Demo-Modus
   final TextEditingController _usernameController =
       TextEditingController(); // Controller für Benutzername
   final TextEditingController _passwordController =
@@ -36,14 +37,19 @@ class _LoginPageState extends State<LoginPage> {
       );
       return;
     }
-
-    lehrer = await repository.login(username, password);
+    if(isDemoMode){
+      lehrer = await repository.loginFromLocalJson(username, password);
+    }
+    else{
+      lehrer = await repository.login(username, password);
+    }
+    
     if (lehrer.isloggedin) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              HomePage(lehrer: lehrer), // Übergibt den Benutzernamen
+              HomePage(lehrer: lehrer, demoModus: isDemoMode,), // Übergibt den Benutzernamen
         ),
       );
     } else {
@@ -52,6 +58,8 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +150,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   */
+                  // Demo-Modus
+                  ListTile(
+                    title: Text(
+                      'Demo-Modus',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Checkbox(
+                      value: isDemoMode,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isDemoMode = value ?? false;
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

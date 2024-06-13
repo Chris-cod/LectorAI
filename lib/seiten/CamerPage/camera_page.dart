@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'camera_controller_service.dart';
@@ -5,9 +6,10 @@ import 'image_display_widget.dart';
 
 class CameraPage extends StatefulWidget 
 {
-  const CameraPage({super.key, required this.token});
+  const CameraPage({super.key, required this.token, required this.dmodus});
 
   final String token;
+  final bool dmodus;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -16,6 +18,7 @@ class CameraPage extends StatefulWidget
 class _CameraPageState extends State<CameraPage> 
 {
   late CameraControllerService _cameraControllerService;
+   bool _overlayBeforeStart = true; // Zustand, ob das Overlay angezeigt wird
 
   @override
   void initState() 
@@ -23,18 +26,6 @@ class _CameraPageState extends State<CameraPage>
     super.initState();
     // Initialisiert den Kamera-Controller-Dienst
     _cameraControllerService = CameraControllerService();
-    _initializeCamera();
-  }
-
-  // Initialisiert die Kamera 
-  void _initializeCamera() async 
-  {
-    await _cameraControllerService.initCamera(context);
-    if (mounted) 
-    {
-      // Aktualisiert den Zustand, nachdem die Kamera initialisiert wurde
-      setState(() {});
-    }
   }
 
   @override
@@ -45,66 +36,68 @@ class _CameraPageState extends State<CameraPage>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) 
-  {
+  void _confirmOverlay() {
+    setState(() {
+      _overlayBeforeStart = false;  // Overlay ausblenden, wenn der Benutzer bestätigt
+    });
+    _capturePictures();  // Startet die Bilderfassung, nachdem das Overlay bestätigt wurde
+  }
+
+  void _capturePictures() async {
+    await _cameraControllerService.capturePictures(context, setState);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+   @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Zeigt die Kamera-Vorschau, wenn der Controller verfügbar ist und kein Bild aufgenommen wurde
-          if (_cameraControllerService.controller != null && _cameraControllerService.imageBytes == null)
-            FutureBuilder<void>(
-              future: _cameraControllerService.initializeControllerFuture,
-              builder: (context, snapshot) 
-              {
-                if (snapshot.connectionState == ConnectionState.done) 
-                {
-                  // Kamera-Vorschau anzeigen, wenn der Controller initialisiert ist
-                  return SizedBox.expand(child: CameraPreview(_cameraControllerService.controller!));
-                } 
-                else 
-                {
-                  // Zeigt einen Lade-Indikator, während der Controller initialisiert wird
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-          // Zeigt den Auslöser-Button, wenn kein Bild aufgenommen wurde
-          if (_cameraControllerService.imageBytes == null)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FloatingActionButton(
-                  child: const Icon(Icons.camera),
-                  // Nimmt ein Bild auf und navigiert zur Bildanzeige
-                  onPressed: () => _cameraControllerService.captureAndNavigate(context, setState),
-                ),
-              ),
-            ),
-          // Zeigt das aufgenommene Bild und die Option, ein neues Bild aufzunehmen
           if (_cameraControllerService.imageBytes != null)
+            // Zeigt das aufgenommene Bild an
             ImageDisplayWidget(
               imageBytes: _cameraControllerService.imageBytes!,
-              // Setzt das Bild zurück, um ein neues Bild aufzunehmen
-              onRetake: () 
-              {
-                setState(() 
-                {
+              onRetake: () {
+                setState(() {
                   _cameraControllerService.resetImage();
                 });
               },
               token: widget.token,
+              test: widget.dmodus,
             ),
-          // Zeigt einen Zurück-Button in der oberen linken Ecke
           Positioned(
             top: 30,
             left: 10,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
+          if (_overlayBeforeStart)
+            Positioned.fill(
+              child: Container(
+                color: Color.fromARGB(137, 223, 20, 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        "Bitte stellen Sie sicher, dass das Foto ohne Verdeckungen, Schatten oder ähnliche Beeinträchtigungen aufgenommen wird.",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _confirmOverlay,
+                      child: Text('Verstanden'),
+                    )
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

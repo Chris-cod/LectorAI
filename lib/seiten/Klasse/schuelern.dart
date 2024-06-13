@@ -14,7 +14,8 @@ class Schuelern extends StatefulWidget {
   final int lehrerId;
   final String token;
   final String klasseName;
-  const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName});
+  final bool demoModus;
+  const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName, required this.demoModus});
 
   @override
   SchulernListStatr createState() => SchulernListStatr();
@@ -39,7 +40,13 @@ class SchulernListStatr extends State<Schuelern>{
   }
 
   void initList() async{
-    var allStudent = await repository.getClassStudents(widget.token, widget.lehrerId, widget.klasseId);
+    List<Schueler> allStudent;
+        if(widget.demoModus){
+          allStudent = await repository.fetchStudentFromLocalJson(widget.token, widget.lehrerId, widget.klasseId);
+        }
+        else{
+          allStudent = await repository.getClassStudents(widget.token, widget.lehrerId, widget.klasseId);
+        }
     String allStudentString = allStudent.toString();
     print("alle schueler von backend: $allStudentString");
     if(allStudent.isNotEmpty){
@@ -53,6 +60,7 @@ class SchulernListStatr extends State<Schuelern>{
       isLoading = true;
     }
   }
+
 
   /// Runs the filter based on the provided search keyword.
   ///
@@ -88,10 +96,10 @@ class SchulernListStatr extends State<Schuelern>{
         appBar: AppBar(
           title: Text(
             'Schüler der Klasse ${widget.klasseName}',
-            style: const TextStyle(color: Colors.black),
+      //      style: const TextStyle(color: Colors.black),
             textAlign: TextAlign.center,
           ),
-          backgroundColor: const Color(0xff48CAE4),
+        //  backgroundColor: const Color(0xff48CAE4),
           leading: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
@@ -99,7 +107,7 @@ class SchulernListStatr extends State<Schuelern>{
               height: 10,
               child: Image.asset(
                 'assets/Bilder/angle-left.png',
-                color: Colors.black,
+      //          color: Colors.black,
                 scale: 1.0,
               ),
             ),
@@ -107,7 +115,7 @@ class SchulernListStatr extends State<Schuelern>{
         ),
         body: Container(
           padding: const EdgeInsets.all(10.0),
-          color: const Color(0xFFB9B5C6),
+        //  color: const Color(0xFF0077B6),
           child: Column(
             children: [
               Row(
@@ -120,9 +128,9 @@ class SchulernListStatr extends State<Schuelern>{
                         decoration: InputDecoration(
                           fillColor: Color.fromARGB(255, 15, 15, 15),
                           labelText: 'Nachname suchen',
-                          labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
+      //                    labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(35.0)),
-                          prefixIcon: Icon(Icons.search, color: Colors.black),
+      //                    prefixIcon: Icon(Icons.search, color: Colors.black),
                           contentPadding: EdgeInsets.symmetric(vertical: 8.0),
                         ),
                         style: TextStyle(fontSize: 12.0),
@@ -136,11 +144,11 @@ class SchulernListStatr extends State<Schuelern>{
                       child: TextField(
                         onChanged: (value) => _runFilter(value, 'vorname'),
                         decoration: InputDecoration(
-                          fillColor: Color.fromARGB(255, 15, 15, 15),
+       //                   fillColor: Color.fromARGB(255, 15, 15, 15),
                           labelText: 'Vorname suchen',
-                          labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
+      //                    labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(35.0)),
-                          prefixIcon: Icon(Icons.search, color: Colors.black),
+   //                       prefixIcon: Icon(Icons.search, color: Colors.black),
                           contentPadding: EdgeInsets.symmetric(vertical: 8.0),
                         ),
                         style: TextStyle(fontSize: 12.0),
@@ -168,6 +176,7 @@ class SchulernListStatr extends State<Schuelern>{
                                     builder: (context) => SchuelerDetails(
                                       token: widget.token,
                                       schuelerId: filteredSchueler[index].id,
+                                      demoModus: widget.demoModus,
                                     ),
                                   ),
                                 );
@@ -175,7 +184,7 @@ class SchulernListStatr extends State<Schuelern>{
                               child: Container(
                                 padding: const EdgeInsets.all(2.0),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xff90E0EF),
+//                                  color: const Color(0xff90E0EF),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Text(
@@ -196,6 +205,7 @@ class SchulernListStatr extends State<Schuelern>{
                                     builder: (context) => SchuelerDetails(
                                       token: widget.token,
                                       schuelerId: filteredSchueler[index].id,
+                                      demoModus: widget.demoModus,
                                     ),
                                   ),
                                 );
@@ -203,7 +213,7 @@ class SchulernListStatr extends State<Schuelern>{
                               child: Container(
                                 padding: const EdgeInsets.all(2.0),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xff90E0EF),
+  //                                color: const Color(0xff90E0EF),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Text(
