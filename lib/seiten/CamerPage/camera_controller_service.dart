@@ -1,48 +1,40 @@
 import 'dart:io';
-
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
+import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 
-import 'package:flutter/services.dart';
+class CameraControllerService {
+  Uint8List? imageBytes; // Gespeichertes Bild in Byte-Array-Form
 
-class CameraControllerService 
-{
-  CameraController? controller;
-  Future<void>? initializeControllerFuture;
-  Uint8List? imageBytes;
-
-
-  // Initialisiert die Kamera und stellt sicher, dass die Kamera bereit ist
-  Future<void> initCamera(BuildContext context) async 
-  {
-    try 
-    {
-      // Holt die verfügbare Kameraliste
-      final cameras = await availableCameras();
-      if (cameras.isNotEmpty) 
-      {
-        // Initialisiert die Kamera mit der höchsten Auflösung und deaktiviert Audio
-        controller = CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
-        initializeControllerFuture = controller?.initialize();
-        // Wartet auf die Initialisierung
-        await initializeControllerFuture;
+  // Nimmt Bilder auf und konvertiert sie in ein Byte-Array, speichert es in imageBytes
+  Future<void> capturePictures(BuildContext context, Function setState) async {
+    List<String> picturesPaths;
+    try {
+      // Versucht Bilder mit dem Dokumentenscanner-Paket zu bekommen
+      picturesPaths = await CunningDocumentScanner.getPictures() ?? [];
+      if (!mounted(context)) return; // Überprüft, ob das Widget noch montiert ist
+      if (picturesPaths.isNotEmpty) {
+        // Liest das erste Bild als Beispiel und konvertiert es in ein Byte-Array
+        final file = File(picturesPaths.first);
+        final bytes = await file.readAsBytes();
+        setState(() {
+          imageBytes = bytes; // Speichert das Byte-Array im Zustand
+        });
       }
-    } catch (e) 
-    {
-      _showCameraErrorDialog(context, e); // Zeigt bei Fehlern einen Dialog an
+    } catch (e) {
+      // Fehlerdialog anzeigen, wenn ein Fehler auftritt
+      _showErrorDialog(context, e.toString());
     }
   }
 
-  // Zeigt einen Fehlerdialog bei Kamerafehlern an
-  void _showCameraErrorDialog(BuildContext context, dynamic e) 
-  {
+  // Zeigt einen Fehlerdialog an
+  void _showErrorDialog(BuildContext context, String errorMessage) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Kamerafehler'),
-        content: Text('Fehler beim Zugriff auf die Kamera: $e'),
+        title: const Text('Fehler'), // Titel des Dialogs
+        content: Text('Fehler: $errorMessage'), // Fehlernachricht
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -53,45 +45,18 @@ class CameraControllerService
     );
   }
 
-  // Nimmt ein Bild auf und aktualisiert den Zustand mit den Bilddaten
-  void captureAndNavigate(BuildContext context, Function setState) async 
-  {
-    if (controller != null && controller!.value.isInitialized) 
-    {
-      try {
-        await controller!.lockCaptureOrientation(DeviceOrientation.portraitUp);
-        // Macht ein Foto und liest die Bilddaten
-        final image = await controller!.takePicture();
-        
-        
-        print(image.path);
-        File img = File(image.path);
-        //print(img);
-        Uint8List as = img.readAsBytesSync();
-        
-        setState(() {
-          imageBytes = as; // Setzt die Bilddaten
-          controller?.pausePreview(); // Pausiert die Vorschau
-        });
-      } 
-      catch (e) 
-      {
-        // Gibt einen Fehler bei der Aufnahme aus
-        print('Fehler beim Aufnehmen des Bildes: $e');  
-      }
-    }
+  // Methode zum Freigeben von Ressourcen
+  void dispose() {
+    // Ressourcen freigeben, falls erforderlich
   }
 
-  // Setzt das Bild zurück und setzt die Vorschau fort
-  void resetImage() 
-  {
+  // Methode zum Zurücksetzen des Bildes
+  void resetImage() {
     imageBytes = null;
-    controller?.resumePreview();  // Setzt die Vorschau fort
   }
 
-  // Räumt die Kameraressourcen auf
-  void dispose() 
-  {
-    controller?.dispose();
+  // Überprüft, ob das Widget noch montiert ist
+  bool mounted(BuildContext context) {
+    return context.findRenderObject()?.attached ?? false;
   }
 }
