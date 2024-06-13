@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   Lehrer lehrer = Lehrer(); // Instanz der Lehrer-Klasse
   bool _isSecret = true; // Zustand zum Verbergen oder Anzeigen des Passworts
+  bool isDemoMode = false; // Zustand für den Demo-Modus
   final TextEditingController _usernameController =
       TextEditingController(); // Controller für Benutzername
   final TextEditingController _passwordController =
@@ -142,6 +143,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   */
+                  // Demo-Modus
+                  ListTile(
+                    title: Text(
+                      'Demo-Modus',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Checkbox(
+                      value: isDemoMode,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isDemoMode = value ?? false;
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
