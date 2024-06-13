@@ -6,7 +6,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool isDemoMode = false; // Zustand für den Demo-Modus
+  // bool isDemoMode = false; // Zustand für den Demo-Modus
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SizedBox(height: 20),
 
             // Demo-Modus
-            ListTile(
+            /* ListTile(
               title: Text(
                 'Demo-Modus',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -59,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   });
                 },
               ),
-            ),
+            ),*/
           ],
         ),
       ),
