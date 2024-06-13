@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/Login/LoginPage.dart';
 
+
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
 
@@ -63,3 +64,4 @@ class LoadingStartPage extends State<StartPage> {
         context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }
+
