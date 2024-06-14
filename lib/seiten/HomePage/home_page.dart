@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
           //    color: const Color(0xff48CAE4),
               borderRadius: BorderRadius.circular(20),
 
-              color: const Color(0xff48CAE4),
+              color: const Color(0xff3d7c88),
               // borderRadius: BorderRadius.circular(70),
               // main
             ),

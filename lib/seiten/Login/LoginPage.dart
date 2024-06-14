@@ -5,7 +5,6 @@ import 'package:flutter/services.dart'
     show rootBundle; // Für den Zugriff auf die Asset-Ressourcen
 import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
-import 'package:lectorai_frontend/seiten/SettingsPage/settings_page.dart'; // Import für die Einstellungsseite
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
 
 class LoginPage extends StatefulWidget {
@@ -64,117 +63,55 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          const Color(0xFFB9B5C6), // Setzt die Hintergrundfarbe der Login-Seite
-      body: Stack(
-        children: [
-          Positioned(
-            right: 20,
-            top: 70, // Position des Einstellungs-Icons nach unten verschoben
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        SettingsPage(), // Navigiert zur Einstellungsseite
-                  ),
-                );
-              },
-              child: Icon(
-                Icons.settings,
-                color: Colors.black,
-                size: 40,
+      backgroundColor: const Color(0xFFB9B5C6),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/Bilder/lectorAI_Logo.png',
+                scale: 2.0,
               ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 60), // Platz für das Einstellungs-Icon
-                  Image.asset(
-                    'assets/Bilder/lectorAI_Logo.png',
-                    scale: 2.0, // Verkleinerung des Logos
-                  ),
-                  const SizedBox(
-                      height: 30), // Vertikaler Abstand zwischen den Elementen
-                  _buildInputField(
-                    prefixImage: 'assets/Bilder/User.png',
-                    hintText:
-                        'E-Mail oder Benutzer Name', // Textfeld für Benutzernamen
-                    controller:
-                        _usernameController, // Benutzt den Controller für den Benutzernamen
-                  ),
-                  const SizedBox(
-                      height:
-                          20), // Vertikaler Abstand zwischen den Eingabefeldern
-                  _buildPasswordField(),
-                  const SizedBox(
-                      height: 30), // Vertikaler Abstand vor dem Anmeldebutton
-                  ElevatedButton(
-                    onPressed: _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(
-                          0xFFB4C2E6), // Setzt die Hintergrundfarbe des Buttons
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 10), // Padding für den Button
-                    ),
-                    child: const Text(
-                      "ANMELDEN",
-                      style: TextStyle(
-                          color: Colors.black), // Textinhalt des Buttons
-                    ),
-                  ),
-                  const SizedBox(
-                      height: 20), // Vertikaler Abstand nach dem Anmeldebutton
-
-                  // Auskommentiertes Einstellungs-Icon unter dem Anmelde-Button
-                  /*
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SettingsPage(), // Navigiert zur Einstellungsseite
-                        ),
-                      );
-                    },
-                    child: Icon(
-                      Icons.settings,
-                      color: Colors.black,
-                      size: 40,
-                    ),
-                  ),
-                  */
-                  // Demo-Modus
-                  ListTile(
-                    title: Text(
-                      'Demo-Modus',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    trailing: Checkbox(
-                      value: isDemoMode,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          isDemoMode = value ?? false;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 30),
+              _buildInputField(
+                prefixImage: 'assets/Bilder/User.png',
+                hintText: 'E-Mail oder Benutzer Name',
+                controller: _usernameController,
               ),
-            ),
+              const SizedBox(height: 20),
+              _buildPasswordField(),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFB4C2E6),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                ),
+                child: const Text("ANMELDEN", style: TextStyle(color: Colors.black)),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                title: Text(
+                  'Demo-Modus',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                trailing: Checkbox(
+                  value: isDemoMode,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isDemoMode = value ?? false;
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
-
   Widget _buildInputField({
     required String prefixImage,
     required String hintText,

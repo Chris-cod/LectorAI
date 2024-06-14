@@ -305,7 +305,7 @@ class PdfViwerState extends State<PdfViwer> {
         children: [
           IconButton(
             icon: Icon(Icons.edit,
-                color: Colors.blue), // Button-Farbe ändern
+                color: Color(0xff3d7c88)), // Button-Farbe ändern
             onPressed: () {
               _showSecondOverlay(data, infoBox);
             },
