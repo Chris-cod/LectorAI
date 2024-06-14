@@ -12,7 +12,7 @@ class OverlayList extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Colors.cyan,
+          color: Color(0xff3d7c88),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(

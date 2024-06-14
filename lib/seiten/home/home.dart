@@ -24,33 +24,32 @@ class LoadingStartPage extends State<StartPage> {
       backgroundColor:
           const Color(0xFFB9B5C6), // Hintergrundfarbe geändert auf ein Hellgrau
       body: SafeArea(
-          // SafeArea sorgt dafür, dass der Inhalt innerhalb der sicheren Bereiche der Anzeige bleibt
+        child: SingleChildScrollView( // Add SingleChildScrollView here
           child: Column(
-        // Ein Column-Widget wird verwendet, um Widgets vertikal anzuordnen
-        mainAxisAlignment:
-            MainAxisAlignment.center, // Zentriert die Elemente vertikal
-        children: <Widget>[
-          const Text(
-            'LectorAI',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black, // Textfarbe
-              fontSize: 66,
-            ),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'LectorAI',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 66,
+                ),
+              ),
+              const SizedBox(height: 45),
+              Image.asset(
+                'assets/Bilder/lectorAI_Logo.png',
+                scale: 1.0,
+              ),
+              const SizedBox(height: 95),
+              Image.asset(
+                'assets/Bilder/Logo_HSB_Hochschule_Bremen.png',
+                scale: 8.0,
+              ),
+            ],
           ),
-          const SizedBox(
-              height: 45), // Ein Abstand zwischen dem Text und dem Bild
-          Image.asset(
-            'assets/Bilder/lectorAI_Logo.png', // Der Pfad zu dem Bild-Asset
-            scale: 1.0, // Die Skalierung des Bildes
-          ),
-          const SizedBox(height: 95), // Ein weiterer Abstand
-          Image.asset(
-            'assets/Bilder/Logo_HSB_Hochschule_Bremen.png', // Der Pfad zu dem HSB Bild-Asset
-            scale: 8.0, // Die Skalierung des HSB-Logos weiter verkleinert
-          ),
-        ],
-      )),
+        ),
+      ),
     );
   }
 
