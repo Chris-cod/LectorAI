@@ -103,37 +103,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCameraButton() {
+  Widget _buildCameraButton() 
+  {
     return Expanded(
       child: Center(
-        child: GestureDetector(
-          onTap: () {
-                    print("Kamera-Button gedrückt");
-                    // Verwenden des Navigators zum Öffnen der CameraPage
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CameraPage(token: widget.lehrer.tokenRaw, dmodus: widget.demoModus,)),
-                      );
-                    },
-          child: Container(
-            width: 250,
-            height: 130,
-            padding: const EdgeInsets.all(5.0),
-            decoration: BoxDecoration(
-              //farben_switch_system
-          //    color: const Color(0xff48CAE4),
-              borderRadius: BorderRadius.circular(20),
-
-              color: const Color(0xff3d7c88),
-              // borderRadius: BorderRadius.circular(70),
-              // main
-            ),
-            child: const Center(child: Icon(Icons.camera_alt_rounded, size: cameraIconSize)),
+        child: ElevatedButton(
+          onPressed: () 
+          {
+            print("Kamera-Button gedrückt");
+            // Verwenden des Navigators zum Öffnen der CameraPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => 
+                CameraPage(token: widget.lehrer.tokenRaw, 
+                          dmodus: widget.demoModus
+               ,)
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            //primary: const Color(0xff48CAE4), // Hintergrundfarbe des Buttons
+            minimumSize: const Size(250, 130), // Größe des Buttons
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), // Abgerundete Ecken
           ),
+          child: const Icon(Icons.camera_alt_rounded, size: 120.0), // Das Icon in der Mitte des Buttons
         ),
       ),
     );
   }
+
 
   Widget _buildClassButtons(BuildContext context) {
     if (classes.isEmpty) {
