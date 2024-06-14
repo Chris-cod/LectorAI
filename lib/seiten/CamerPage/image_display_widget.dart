@@ -51,12 +51,13 @@ class ImageDisplayWidget extends StatelessWidget
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Schaltfläche zum Wiederholen
                 ElevatedButton(
-                  onPressed: onRetake,
-                  child: const Text('Wiederholen'),
+                  onPressed: ()
+                  {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Abbrechen'),
                 ),
-                // Schaltfläche zum Hochladen
                 ElevatedButton(
                   onPressed: () 
                   {

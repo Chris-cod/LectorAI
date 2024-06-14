@@ -37,7 +37,11 @@ class CameraControllerService {
         content: Text('Fehler: $errorMessage'), // Fehlernachricht
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: ()
+            {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
             child: const Text('OK'),
           ),
         ],
