@@ -128,7 +128,7 @@ class CupertinoListTile extends StatelessWidget {
           DefaultTextStyle(
             style: TextStyle(
               fontSize: 16,
-              color: textColor, // Dynamische Textfarbe
+              color: textColor,
             ),
             child: title,
           ),
