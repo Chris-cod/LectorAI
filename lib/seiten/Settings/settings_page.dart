@@ -1,8 +1,9 @@
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart'; //
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -22,27 +23,45 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Settings', style: TextStyle(color: Theme.of(context).textTheme.headlineMedium?.color)),
-        //backgroundColor: CupertinoColors.systemGrey6,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Einstellungen'),
       ),
-      child: ListView(
-        children: [
-          buildThemeToggle(),
-          const SizedBox(height: 20),
-          Center(
-            child: CupertinoButton.filled(
-              onPressed: _applyTheme,
-              child: const Text('Apply'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            ListTile(
+              title: Text(
+                'Serversetup',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Column(
+                children: [
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Serveradresse',
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 20),
+            buildThemeToggle(),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
 
   Widget buildThemeToggle() {
+    var themeProvider = Provider.of<ThemeProvider>(context, listen: false);  // listen: false hinzugefügt, um unerwünschte Rebuilds zu vermeiden
+
     return CupertinoListTile(
       title: const Text('Dark Mode'),
       trailing: CupertinoSwitch(
@@ -50,12 +69,17 @@ class _SettingsPageState extends State<SettingsPage> {
         onChanged: (value) {
           setState(() {
             isDarkMode = value;
+            // Direktes Anwenden des Themes ohne zusätzlichen Apply-Button
+            themeProvider.applyTheme(isDarkMode ? ThemeMode.dark : ThemeMode.light);
             _saveSettings();
           });
         },
       ),
     );
   }
+
+
+
 
   void _applyTheme() {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
@@ -83,6 +107,12 @@ class CupertinoListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Zugriff auf das aktuelle Theme
+    var themeProvider = Provider.of<ThemeProvider>(context);
+    var textColor = themeProvider.themeData.brightness == Brightness.dark
+        ? Colors.white  // Weiße Schrift im Dark Mode
+        : Colors.black; // Schwarze Schrift im Light Mode
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: const BoxDecoration(
@@ -97,9 +127,9 @@ class CupertinoListTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           DefaultTextStyle(
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              //color: CupertinoColors.black,
+              color: textColor,
             ),
             child: title,
           ),

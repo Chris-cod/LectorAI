@@ -8,8 +8,7 @@ import 'package:lectorai_frontend/services/repository.dart';
 import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 
 
-class HomePage extends StatefulWidget 
-{
+class HomePage extends StatefulWidget {
   final Lehrer lehrer;
   final bool demoModus;
 
@@ -19,8 +18,7 @@ class HomePage extends StatefulWidget
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> 
-{
+class _HomePageState extends State<HomePage> {
   static const double iconAndTextSize = 36.0;
   static const double cameraIconSize = 120.0;
   List<Klasse> classes = [];
@@ -28,51 +26,42 @@ class _HomePageState extends State<HomePage>
   Repository repository = Repository(); // Erstellung einer Instanz der Repository-Klasse
 
   @override
-  void initState() 
-  {
+  void initState() {
     super.initState();
     loadClasses();
   }
 
-  void loadClasses() async 
-  {
+  void loadClasses() async {
     List<Klasse> fetchedClasses;
-    if(widget.demoModus)
-    {
+    if(widget.demoModus){
       fetchedClasses = await repository.getClassesFromLocalJson(widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
     }
     else{
       fetchedClasses = await repository.fetchTeacherClasses(widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
     }
 
-    if (fetchedClasses.isNotEmpty) 
-    {
-      setState(() 
-      {
+    if (fetchedClasses.isNotEmpty) {
+      setState(() {
         classes = fetchedClasses;
         isLoading = false;
       });
-    } else 
-    {
+    } else {
       // Fehlerbehandlung, z. B. Anzeigen einer Nachricht, dass das Laden fehlgeschlagen ist
-      setState(() 
-      {
+      setState(() {
         isLoading = false;
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
       body: isLoading ? Center(child: CircularProgressIndicator()) : _buildBody(context),
     );
   }
 
-  AppBar _buildAppBar() 
-  {
+  AppBar _buildAppBar() {
     return AppBar(
       //backgroundColor: const Color(0xFF48CAE4),
       leading: Padding(
@@ -80,6 +69,7 @@ class _HomePageState extends State<HomePage>
         child: const Icon(Icons.person, size: 48.0),
       ),
       title: Text(widget.lehrer.username, style: TextStyle(fontSize: iconAndTextSize)),
+
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.settings),
@@ -92,10 +82,10 @@ class _HomePageState extends State<HomePage>
         ),
       ],
     );
+
   }
 
-  Widget _buildBody(BuildContext context)
-  {
+  Widget _buildBody(BuildContext context) {
     return Container(
       //color: const Color(0xFF0077B6),
       padding: const EdgeInsets.all(16.0),
@@ -142,10 +132,9 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Widget _buildClassButtons(BuildContext context) 
-  {
-    if (classes.isEmpty) 
-    {
+
+  Widget _buildClassButtons(BuildContext context) {
+    if (classes.isEmpty) {
       return const Expanded(
         child: Center(child: Text("Keine Klassen verfügbar")),
       );
