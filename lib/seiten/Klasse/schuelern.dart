@@ -106,7 +106,7 @@ class SchulernListStatr extends State<Schuelern>{
               padding: const EdgeInsets.all(15.0),
               height: 10,
               child: Image.asset(
-                'assets/Bilder/angle-left.png',
+                'assets/Bilder/_.png',
       //          color: Colors.black,
                 scale: 1.0,
               ),

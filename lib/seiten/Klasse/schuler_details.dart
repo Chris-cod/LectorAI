@@ -53,6 +53,18 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
           style: const TextStyle(color: Colors.black),
           textAlign: TextAlign.center,
         ),
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            padding: const EdgeInsets.all(15.0),
+            height: 10,
+            child: Image.asset(
+              'assets/Bilder/_.png',
+    //          color: Colors.black,
+              scale: 1.0,
+            ),
+          ),
+        ),
         backgroundColor: const Color(0xff48CAE4),
       ),
       body: schuelerInfo == null
