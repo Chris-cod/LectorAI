@@ -44,10 +44,10 @@ dependencies:
   
   image: ^4.2.0  # Zum Bearbeiten und Konvertieren von Bildern
   permission_handler: ^11.3.1 #  Berechtigungen zur Laufzeit zu verwalten
+  provider: ^6.1.2
+  shared_preferences: ^2.2.3
 
-  provider: ^6.0.2
-  shared_preferences: ^2.0.15
-  flutter_dotenv: ^5.1.0
+
 
 dev_dependencies:
   flutter_test:

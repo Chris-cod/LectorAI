@@ -126,7 +126,7 @@ class SchulernListStatr extends State<Schuelern>{
                       child: TextField(
                         onChanged: (value) => _runFilter(value, 'nachname'),
                         decoration: InputDecoration(
-                          fillColor: Color.fromARGB(255, 15, 15, 15),
+                         // fillColor: Color.fromARGB(255, 15, 15, 15),
                           labelText: 'Nachname suchen',
       //                    labelStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(35.0)),

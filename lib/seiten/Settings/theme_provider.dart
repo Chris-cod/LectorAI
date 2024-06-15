@@ -17,8 +17,8 @@ class ThemeProvider extends ChangeNotifier {
 
     if (mode == ThemeMode.dark) {
       newThemeData = ThemeData.dark().copyWith(
-        primaryColor: Color(0xFF1E1D1D),
-        scaffoldBackgroundColor: Color(0xFF1E1D1D),
+        primaryColor: const Color(0xFF1E1D1D),
+        scaffoldBackgroundColor: const Color(0xFF1E1D1D),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF1E1D1D),
           iconTheme: IconThemeData(color: Colors.white),
@@ -36,23 +36,25 @@ class ThemeProvider extends ChangeNotifier {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber,
-            foregroundColor: Colors.black,
+            backgroundColor: Colors.blueGrey,
+            // Helle Farbe für bessere Sichtbarkeit
+            foregroundColor: Colors
+                .white, // Weiße Schrift für besseren Kontrast
           ),
         ),
       );
     } else {
       newThemeData = ThemeData.light().copyWith(
-        primaryColor: Colors.lightBlue,
+        primaryColor: Colors.blueGrey,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: Colors.blueGrey,
           iconTheme: IconThemeData(color: Colors.black),
           titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
           toolbarTextStyle: TextStyle(color: Colors.black, fontSize: 20),
         ),
         colorScheme: const ColorScheme.light(
-          primary: Colors.lightBlue,
+          primary: Colors.blueGrey,
           secondary: Colors.orange,
         ),
         textTheme: const TextTheme(
@@ -62,8 +64,8 @@ class ThemeProvider extends ChangeNotifier {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            foregroundColor: Colors.white,
+            backgroundColor: Colors.blueGrey,
+            foregroundColor: Colors.black,
           ),
         ),
       );
