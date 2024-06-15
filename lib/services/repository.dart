@@ -12,7 +12,7 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
   final String backendURL = 'http://localhost:8000';
-  final String LocalUrlAsIp = dotenv.env['LOCALE_IP']!;
+  final String LocalUrlAsIp = 'http://${dotenv.env['LOCALE_IP']!}:8000';
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 

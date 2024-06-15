@@ -5,7 +5,7 @@ import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
   runApp(const MyApp());
 }
 
