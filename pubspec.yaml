@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^11.3.1 #  Berechtigungen zur Laufzeit zu verwalten
   provider: ^6.1.2
   shared_preferences: ^2.2.3
+  flutter_dotenv: ^5.1.0
 
 
 
