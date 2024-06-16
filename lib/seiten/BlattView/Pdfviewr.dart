@@ -198,16 +198,17 @@ class PdfViwerState extends State<PdfViwer> {
         var newAdress = _jsonData['addresses'];
         Map<String,dynamic> firstNewAdress = newAdress[0];
         displayTextAdresse = '${firstNewAdress['street_name']['value']}\n${firstNewAdress['location']['location_name']}\n${firstNewAdress['location']['postal_code']}';
+        double score = (firstNewAdress['street_name']["similarityScore"] + firstNewAdress['location']["similarityScore"])/2;
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
               
               // Position für Button-Container
-              _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40),
+              _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, firststudent["similarityScorePerson"]),
               _iconsOverlay(0.445, 0.68, student, 'erzieher'),
-              _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40),
+              _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parent["similarityScorePerson"]),
               _iconsOverlay(0.547, 0.68, student, 'schueler'),
-              _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40),
+              _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, score),
               _iconsOverlay(0.65, 0.68, newAdress, 'addresse'),
             ],
           ),
@@ -359,7 +360,7 @@ class PdfViwerState extends State<PdfViwer> {
   Color _getColorFromScore(double score) {
     if (score >= 0.9) {
       return Colors.green;
-    } else if (score >= 0.75) {
+    } else if (score >= 0.75 && score < 0.9) {
       return Colors.orange;
     } else if (score < 0.75 && score >= 0.5) {
       return Colors.yellow;

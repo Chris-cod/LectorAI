@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lectorai_frontend/seiten/home/home.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: "assets/.env");
   runApp(const MyApp());
 }
 
