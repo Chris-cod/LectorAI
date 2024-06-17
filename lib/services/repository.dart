@@ -385,4 +385,31 @@ class Repository {
       return {};
     }
   }
+
+  Future<Map<String, dynamic>> testADOverlay(String token) async{
+    try {
+      var response = await http
+          .post(
+            Uri.parse('$LocalUrlAsIp/image/testAG'), // URL für das Senden des Bildes
+            headers: {
+              'Content-Type': 'application/json',
+              'token': token,
+            },
+          )
+          .timeout(const Duration(seconds: 60));
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        return data;
+      } else {
+        Future.error(
+            'Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
+        return {};
+      }
+    } catch (e) {
+      Future.error('Exception caught while sending the image: $e');
+      return {};
+    }
+  }
+
 }
