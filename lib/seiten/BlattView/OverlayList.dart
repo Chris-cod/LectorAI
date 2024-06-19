@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class OverlayList extends StatelessWidget {
   var items;
   String boxname;
-  final ValueChanged<String> onItemSelected;
+  final ValueChanged<Map<String,dynamic>> onItemSelected;
+  
 
   OverlayList({required this.items, required this.onItemSelected ,required this.boxname});
   @override
@@ -27,26 +28,37 @@ class OverlayList extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     var selectedItem = items[index+1];
+                    int person_id, parent_id, address_id;
                     if(boxname == 'schueler'){
-                      onItemSelected('${selectedItem['firstname']['value']}\n${selectedItem['lastname']['value']}\n${selectedItem['school_class']['value']}');
+                      person_id = selectedItem['id'];
+                      onItemSelected({'text': '${selectedItem['firstname']['value']}\n${selectedItem['lastname']['value']}\n${selectedItem['school_class']['value']}' , 'id': person_id});
                     }
                     else if(boxname == 'erzieher'){
-                      onItemSelected('${selectedItem['parent'][0]['firstname']['value']}\n${selectedItem['parent'][0]['lastname']['value']}\n${selectedItem['parent'][0]['phone_number']['value']}\n${selectedItem['parent'][0]['email']['value']}');
+                      parent_id = selectedItem['parent'][0]['id'];
+                      onItemSelected({'text': '${selectedItem['parent'][0]['firstname']['value']} ${selectedItem['parent'][0]['lastname']['value']}\n${selectedItem['parent'][0]['phone_number']['value']}\n${selectedItem['parent'][0]['email']['value']}' , 'id': parent_id});
                     }
                     else if(boxname == 'addresse'){
-                      onItemSelected('${selectedItem['street_name']['value']} ${selectedItem['house_number']['value']}\n${selectedItem['location']['location_name']}\n${selectedItem['location']['postal_code']}');
+                      address_id = selectedItem['id'];
+                      onItemSelected({'text': '${selectedItem['street_name']['value']} ${selectedItem['house_number']['value']} ${selectedItem['location']['location_name']}, ${selectedItem['location']['postal_code']}' , 'id': address_id});
                     }
                     else{
                       int agPointer = index + 2;
+                      List<int> ag_ids = [];
                       var selectedItemAG = items['ag_$agPointer'];
                       if(selectedItemAG != null && selectedItemAG.length == 3){
-                        onItemSelected('${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}\n${selectedItemAG[2]['ag_name']['value']}');
+                        ag_ids.add(selectedItemAG[0]['id']);
+                        ag_ids.add(selectedItemAG[1]['id']);
+                        ag_ids.add(selectedItemAG[2]['id']);
+                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}\n${selectedItemAG[2]['ag_name']['value']}' , 'id': ag_ids});
                       }
                       else if(selectedItemAG != null && selectedItemAG.length == 2){
-                        onItemSelected('${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}');
+                        ag_ids.add(selectedItemAG[0]['id']);
+                        ag_ids.add(selectedItemAG[1]['id']);
+                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}' , 'id': ag_ids});
                       }
                       else if(selectedItemAG != null && selectedItemAG.length == 1){
-                        onItemSelected('${selectedItemAG[0]['ag_name']['value']}');
+                        ag_ids.add(selectedItemAG[0]['id']);
+                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}' , 'id': ag_ids});
                       }
                       // print(selectedItemAG[0]['name']['value']);
                       // onItemSelected('${selectedItemAG[0]['name']['value']}\n${selectedItemAG[1]['name']['value']}\n${selectedItemAG[2]['name']['value']}');

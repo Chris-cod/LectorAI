@@ -43,4 +43,4 @@ app.*.map.json
 /android/app/release
 
 #ignbore every change in .env file
-assets/.env
+/assets/.env
