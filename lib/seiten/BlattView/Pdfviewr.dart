@@ -33,6 +33,8 @@ class PdfViwerState extends State<PdfViwer> {
   Map<String, dynamic> _jsonData = {};
   bool dataLoaded = false;
   int _currentIndex = 0;
+  int? person_id, parent_id, address_id;
+  List<int> ag_id = [];
   Repository repository = Repository();
   List<String> type = ['ad', 'ag'];
   
@@ -200,16 +202,18 @@ class PdfViwerState extends State<PdfViwer> {
         var student = _jsonData['students'];
         Map<String,dynamic> firststudent = student[_currentIndex];
         displayTextStudent = '${firststudent['firstname']['value']}\n${firststudent['lastname']['value']}\n${firststudent['school_class']['value']}';
+        person_id = firststudent['id'];
         var parent = firststudent['parent'];
         displayTextErzieher = '${parent['firstname']['value']}\n${parent['lastname']['value']}\n${parent['phone_number']['value']}\n${parent['email']['value']}';
+        parent_id = parent['id'];
         var newAdress = _jsonData['addresses'];
         Map<String,dynamic> firstNewAdress = newAdress[0];
         displayTextAdresse = '${firstNewAdress['street_name']['value']} ${firstNewAdress['house_number']}\n${firstNewAdress['location']['location_name']}\n${firstNewAdress['location']['postal_code']}';
         double score = (firstNewAdress["similarity_score"] + firstNewAdress["similarity_score"])/2;
+        address_id = firstNewAdress['id'];
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
-              
               // Position für Button-Container
               _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, firststudent["similarity_score"]),
               _iconsOverlay(0.445, 0.68, student, 'erzieher'),
@@ -224,12 +228,16 @@ class PdfViwerState extends State<PdfViwer> {
         List<dynamic> student = _jsonData['students'];
         Map<String,dynamic> fs = student[0];
         displayTextStudent = '${fs["firstname"]['value']}\n${fs['lastname']['value']}\n${fs['school_class']['value']}';
+        person_id = fs['id'];
         var ags = _jsonData['ag_1'];
         double score = 0.0;
         if(ags.length > 1){
           if(ags.length == 3){
             displayTextAG = '${ags[0]['ag_name']['value']}\n${ags[1]['ag_name']['value']}\n${ags[2]['ag_name']['value']}';
             score = (ags[0]['ag_name']['similarity_score'] + ags[1]['ag_name']['similarity_score'] + ags[2]['ag_name']['similarity_score'])/3;
+            ag_id.add(ags[0]['id']);
+            ag_id.add(ags[1]['id']);
+            ag_id.add(ags[2]['id']);
           }
           else{
             displayTextAG = '${ags[0]['ag_name']['value']}\n${ags[1]['ag_name']['value']}';
@@ -281,16 +289,20 @@ class PdfViwerState extends State<PdfViwer> {
             onItemSelected: (selectedItem) {
               setState(() {
                 if (boxname == 'erzieher') {
-                  displayTextErzieher = selectedItem;
+                  displayTextErzieher = selectedItem['text'];
+                  person_id = selectedItem['id'];
                   _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40);
                 } else if (boxname == 'schueler') {
-                  displayTextStudent = selectedItem;
+                  displayTextStudent = selectedItem['text'];
+                  parent_id = selectedItem['id'];
                   _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40);
                 } else if (boxname == 'addresse') {
-                  displayTextAdresse = selectedItem;
+                  displayTextAdresse = selectedItem['text'];
+                  address_id = selectedItem['id'];
                   _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40);
                 } else if (boxname == 'ag') {
-                  displayTextAG = selectedItem;
+                  ag_id = selectedItem['id'];
+                  displayTextAG = selectedItem['text'];
                   _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, 0.40);
                 }
               });
