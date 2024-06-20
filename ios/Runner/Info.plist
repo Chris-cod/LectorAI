@@ -47,6 +47,8 @@
 	<true/>
 	 <key>NSCameraUsageDescription</key>
   <string>Die App benötigt Zugriff auf die Kamera, um Dokumente zu scannen.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Die App benötigt Zugriff auf die Fotobibliothek, um gescannte Bilder zu speichern.</string>
      <key>MinimumOSVersion</key>
   <string>13.0</string>
 </dict>

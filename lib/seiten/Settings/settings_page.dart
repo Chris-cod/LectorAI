@@ -14,6 +14,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool isDarkMode = false;
+  bool no_db = false;
+  bool no_change = false;
 
   @override
   void initState() {
@@ -32,7 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: ListView(
           children: [
             ListTile(
-              title: Text(
+              title: const Text(
                 'Serversetup',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -47,6 +49,36 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+              ListTile(
+                title: const Text(
+                  'Aenderung von Datenbank abholen',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                trailing: Checkbox(
+                  value: no_db,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      no_db = value ?? false;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                title: const Text(
+                  'Change nicht übertragen',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                trailing: Checkbox(
+                  value: no_change,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      no_change = value ?? false;
+                    });
+                  },
+                ),
+              ),
                 ],
               ),
             ),

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class OverlayList extends StatelessWidget {
   var items;
   String boxname;
-  final ValueChanged<String> onItemSelected;
+  final ValueChanged<Map<String,dynamic>> onItemSelected;
+  
 
   OverlayList({required this.items, required this.onItemSelected ,required this.boxname});
   @override
@@ -27,20 +28,40 @@ class OverlayList extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     var selectedItem = items[index+1];
+                    int person_id, parent_id, address_id;
                     if(boxname == 'schueler'){
-                      onItemSelected('${selectedItem['vorname']['value']}\n${selectedItem['nachname']['value']}\n${selectedItem['class']['value']}');
+                      person_id = selectedItem['id'];
+                      onItemSelected({'text': '${selectedItem['firstname']['value']}\n${selectedItem['lastname']['value']}\n${selectedItem['school_class']['value']}' , 'id': person_id});
                     }
                     else if(boxname == 'erzieher'){
-                      onItemSelected('${selectedItem['parents'][0]['vorname']['value']}\n${selectedItem['parents'][0]['nachname']['value']}\n${selectedItem['parents'][0]['email']['value']}\n${selectedItem['parents'][0]['telefone']['value']}');
+                      parent_id = selectedItem['parent'][0]['id'];
+                      onItemSelected({'text': '${selectedItem['parent'][0]['firstname']['value']} ${selectedItem['parent'][0]['lastname']['value']}\n${selectedItem['parent'][0]['phone_number']['value']}\n${selectedItem['parent'][0]['email']['value']}' , 'id': parent_id});
                     }
                     else if(boxname == 'addresse'){
-                      onItemSelected('${selectedItem['street_name']['value']}\n${selectedItem['location']['location_name']}\n${selectedItem['location']['postal_code']}');
+                      address_id = selectedItem['id'];
+                      onItemSelected({'text': '${selectedItem['street_name']['value']} ${selectedItem['house_number']['value']} ${selectedItem['location']['location_name']}, ${selectedItem['location']['postal_code']}' , 'id': address_id});
                     }
                     else{
                       int agPointer = index + 2;
-                      var selectedItemAG = items['AG$agPointer'];
-                      print(selectedItemAG[0]['name']['value']);
-                      onItemSelected('${selectedItemAG[0]['name']['value']}\n${selectedItemAG[1]['name']['value']}\n${selectedItemAG[2]['name']['value']}');
+                      List<int> ag_ids = [];
+                      var selectedItemAG = items['ag_$agPointer'];
+                      if(selectedItemAG != null && selectedItemAG.length == 3){
+                        ag_ids.add(selectedItemAG[0]['id']);
+                        ag_ids.add(selectedItemAG[1]['id']);
+                        ag_ids.add(selectedItemAG[2]['id']);
+                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}\n${selectedItemAG[2]['ag_name']['value']}' , 'id': ag_ids});
+                      }
+                      else if(selectedItemAG != null && selectedItemAG.length == 2){
+                        ag_ids.add(selectedItemAG[0]['id']);
+                        ag_ids.add(selectedItemAG[1]['id']);
+                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}' , 'id': ag_ids});
+                      }
+                      else if(selectedItemAG != null && selectedItemAG.length == 1){
+                        ag_ids.add(selectedItemAG[0]['id']);
+                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}' , 'id': ag_ids});
+                      }
+                      // print(selectedItemAG[0]['name']['value']);
+                      // onItemSelected('${selectedItemAG[0]['name']['value']}\n${selectedItemAG[1]['name']['value']}\n${selectedItemAG[2]['name']['value']}');
                     }
                     //onItemSelected(items[index]);
                     print('tapped Item $index');
@@ -96,17 +117,29 @@ class OverlayList extends StatelessWidget {
     final String listText;
     int pointer = index + 1;
     if(boxname == 'schueler'){
-      listText = '${data[pointer]['vorname']['value']} ${data[pointer]['nachname']['value']}, ${data[pointer]['class']['value']}';
+      listText = '${data[pointer]['firstname']['value']} ${data[pointer]['lastname']['value']}, ${data[pointer]['school_class']['value']}';
     }
     else if(boxname  == 'erzieher'){
-      listText = '${data[pointer]['parents'][0]['vorname']['value']} ${data[pointer]['parents'][0]['nachname']['value']},${data[pointer]['parents'][0]['email']['value']}, ${data[pointer]['parents'][0]['telefone']['value']}';
+      listText = '${data[pointer]['parent'][0]['firstname']['value']} ${data[pointer]['parent'][0]['lastname']['value']},${data[pointer]['parent'][0]['phone_number']['value']}, ${data[pointer]['parent'][0]['email']['value']}';
     }
     else if(boxname == 'addresse'){
-      listText = '${data[pointer]['street_name']['value']} ${data[pointer]['location']['location_name']}, ${data[pointer]['location']['postal_code']}';
+      listText = '${data[pointer]['street_name']['value']} ${data[pointer]['house_number']['value']} ${data[pointer]['location']['location_name']}, ${data[pointer]['location']['postal_code']}';
     }
     else{
       int agPointer = pointer + 1;
-      listText = '${data['AG$agPointer'][0]['name']['value']} ${data['AG$agPointer'][1]['name']['value']} ${data['AG$agPointer'][2]['name']['value']}';
+      var ag = data['ag_$agPointer'];
+      if(ag != null && ag.length == 3){
+        listText = '${ag[0]['ag_name']['value']} ${ag[1]['ag_name']['value']} ${ag[2]['ag_name']['value']}';
+      }
+      else if(ag != null && ag.length == 2){
+        listText = '${ag[0]['ag_name']['value']} ${ag[1]['ag_name']['value']}';
+      }
+      else if(ag != null && ag.length == 1){
+        listText = '${ag[0]['ag_name']['value']}';
+      }
+      else{
+        listText = 'Keine AGs gefunden';
+      }
     }
     return FittedBox(
       child: Text(

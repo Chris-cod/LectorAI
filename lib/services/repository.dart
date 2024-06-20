@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:lectorai_frontend/models/adresse.dart';
 import 'package:lectorai_frontend/models/klasse.dart';
@@ -11,7 +12,7 @@ import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
   final String backendURL = 'http://localhost:8000';
-  final String LocalUrlAsIp = 'http://192.168.178.52:8000';
+  final String LocalUrlAsIp = 'http://${dotenv.env['LOCALE_IP']!}:8000';
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 
@@ -384,4 +385,31 @@ class Repository {
       return {};
     }
   }
+
+  Future<Map<String, dynamic>> testADOverlay(String token) async{
+    try {
+      var response = await http
+          .post(
+            Uri.parse('$LocalUrlAsIp/image/testAG'), // URL für das Senden des Bildes
+            headers: {
+              'Content-Type': 'application/json',
+              'token': token,
+            },
+          )
+          .timeout(const Duration(seconds: 60));
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        return data;
+      } else {
+        Future.error(
+            'Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
+        return {};
+      }
+    } catch (e) {
+      Future.error('Exception caught while sending the image: $e');
+      return {};
+    }
+  }
+
 }
