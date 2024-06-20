@@ -90,6 +90,7 @@ class SchulernListStatr extends State<Schuelern>{
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -105,10 +106,9 @@ class SchulernListStatr extends State<Schuelern>{
             child: Container(
               padding: const EdgeInsets.all(15.0),
               height: 10,
-              child: Image.asset(
-                'assets/Bilder/_.png',
-      //          color: Colors.black,
-                scale: 1.0,
+              child: Icon(
+                Icons.arrow_back,
+                color: theme.brightness == Brightness.dark ? Colors.white : Colors.black,  // Dynamically set color based on theme
               ),
             ),
           ),
