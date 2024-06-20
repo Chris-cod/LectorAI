@@ -28,7 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-
   }
 
   void toggleDemoMode(bool value) {
@@ -36,8 +35,10 @@ class _LoginPageState extends State<LoginPage> {
       isDemoMode = value;
       if (isDemoMode) {
         // Setze die Felder auf Demo-Daten, wenn der Demo-Modus aktiviert ist.
-        _usernameController.text = dotenv.get('DEMO_USERNAME', fallback: 'defaultUser');
-        _passwordController.text = dotenv.get('DEMO_PASSWORD', fallback: 'defaultPassword');
+        _usernameController.text =
+            dotenv.get('DEMO_USERNAME', fallback: 'defaultUser');
+        _passwordController.text =
+            dotenv.get('DEMO_PASSWORD', fallback: 'defaultPassword');
       } else {
         // Leere die Felder, wenn der Demo-Modus deaktiviert wird.
         _usernameController.clear();
@@ -45,9 +46,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
   }
-
-
-
 
   void _login() async {
     final username = _usernameController.text;
@@ -61,19 +59,19 @@ class _LoginPageState extends State<LoginPage> {
       );
       return;
     }
-    if(isDemoMode){
+    if (isDemoMode) {
       lehrer = await repository.loginFromLocalJson(username, password);
-    }
-    else{
+    } else {
       lehrer = await repository.login(username, password);
     }
-    
+
     if (lehrer.isloggedin) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              HomePage(lehrer: lehrer, demoModus: isDemoMode,), // Übergibt den Benutzernamen
+          builder: (context) => HomePage(
+              lehrer: lehrer,
+              demoModus: isDemoMode), // Übergibt den Benutzernamen
         ),
       );
     } else {
@@ -83,26 +81,31 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFB9B5C6),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SingleChildScrollView(
+          // Ermöglicht das Scrollen, falls der Bildschirm zu klein ist
+          padding:
+              const EdgeInsets.symmetric(horizontal: 20), // Padding für Ränder
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/Bilder/lectorAI_Logo.png',
-                scale: 2.0,
+              FractionallySizedBox(
+                widthFactor:
+                    0.6, // Setzt die Breite des Logos auf 60% der Bildschirmbreite
+                child: Image.asset(
+                  'assets/Bilder/lectorAI_Logo.png',
+                  fit: BoxFit
+                      .contain, // Passt das Bild innerhalb der Box an, behält Seitenverhältnis
+                ),
               ),
               const SizedBox(height: 30),
               _buildInputField(
                 prefixImage: 'assets/Bilder/User.png',
-                hintText: 'E-Mail oder Benutzer Name',
+                hintText: 'E-Mail oder Benutzername',
                 controller: _usernameController,
               ),
               const SizedBox(height: 20),
@@ -111,14 +114,16 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: _login,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFB4C2E6),
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  backgroundColor: const Color(0xFFB4C2E6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                 ),
-                child: const Text("ANMELDEN", style: TextStyle(color: Colors.black)),
+                child: const Text("ANMELDEN",
+                    style: TextStyle(color: Colors.black)),
               ),
               const SizedBox(height: 20),
               ListTile(
-                title: Text(
+                title: const Text(
                   'Demo-Modus',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
@@ -135,6 +140,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
   Widget _buildInputField({
     required String prefixImage,
     required String hintText,
@@ -149,8 +155,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         hintText: hintText, // Setzt den Platzhaltertext für das Eingabefeld
         filled: true,
-        fillColor:
-            Color(0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
+        fillColor: const Color(
+            0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
               25.0), // Abgerundete Ecken für das Eingabefeld
@@ -186,8 +192,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         hintText: 'Kennwort', // Platzhaltertext für das Passwortfeld
         filled: true,
-        fillColor:
-            Color(0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
+        fillColor: const Color(
+            0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
               25.0), // Abgerundete Ecken für das Eingabefeld
