@@ -221,6 +221,15 @@ class PdfViwerState extends State<PdfViwer> {
               _iconsOverlay(0.547, 0.68, student, 'schueler'),
               _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, score),
               _iconsOverlay(0.65, 0.68, newAdress, 'addresse'),
+              // Add signature box
+              _positionedOverlaywithText(
+                'Signature: ${_jsonData['signature_box_found'] ? "Found" : "Not Found"}',
+                0.5,
+                0.07,
+                0.78,
+                0.15,
+                _jsonData['signature_box_found'] ? 1.0 : 0.0,
+              ),
             ],
           ),
         );
@@ -263,8 +272,17 @@ class PdfViwerState extends State<PdfViwer> {
               _iconsOverlay(0.495, 0.675, student, 'schueler'),
               // Position für AG-Container
               _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, score),
-              // // Position für Button-Container
-               _iconsOverlay(0.61, 0.675, _jsonData, 'ag')
+              // Position für Button-Container
+              _iconsOverlay(0.61, 0.675, _jsonData, 'ag'),
+              // Add signature box
+              _positionedOverlaywithText(
+                'Signature: ${_jsonData['signature_box_found'] ? "Found" : "Not Found"}',
+                0.5,
+                0.07,
+                0.78,
+                0.15,
+                _jsonData['signature_box_found'] ? 1.0 : 0.0,
+              ),
             ],
           ),
         );
