@@ -18,10 +18,10 @@ class Schuelern extends StatefulWidget {
   const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName, required this.demoModus});
 
   @override
-  SchulernListStatr createState() => SchulernListStatr();
+  SchulernListState createState() => SchulernListState();
 }
 
-class SchulernListStatr extends State<Schuelern> {
+class SchulernListState extends State<Schuelern> {
   List<Schueler> alleSchueler = [];
   List<Schueler> filteredSchueler = [];
   Repository repository = Repository();
@@ -43,31 +43,6 @@ class SchulernListStatr extends State<Schuelern> {
       alleSchueler = allStudent.toList()..sort((a, b) => a.nachname.compareTo(b.nachname));
       filteredSchueler = alleSchueler;
       isLoading = alleSchueler.isEmpty;
-    });
-  }
-  /// Runs the filter based on the provided search keyword.
-  ///
-  /// If the [searchKeyword] is empty, the [filteredSchueler] list will be set to the [alleSchueler] list.
-  /// Otherwise, the [filteredSchueler] list will be set to a filtered version of the [alleSchueler] list,
-  /// where the [vorname] or [nachname] of each [Schueler] object contains the [searchKeyword] (case-insensitive).
-  /// Finally, it refreshes the UI by calling [setState] and updating the [filteredSchueler] list.
-  void _runFilter(String searchKeyword, String filterType) {
-    List<Schueler> results = [];
-
-    if (searchKeyword.isEmpty) {
-      results = alleSchueler;
-    } else {
-      if (filterType == 'vorname') {
-        results = alleSchueler.where((element) =>
-            element.vorname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
-      } else if (filterType == 'nachname') {
-        results = alleSchueler.where((element) =>
-            element.nachname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
-      }
-    }
-
-    setState(() {
-      filteredSchueler = results;
     });
   }
 
@@ -104,6 +79,7 @@ class SchulernListStatr extends State<Schuelern> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ListTile(
+                        leading: Icon(Icons.person, color: theme.iconTheme.color), // Adjust icon color based on theme
                         onTap: () {
                           _navigateToDetails(context, filteredSchueler[index].id);
                         },
@@ -123,6 +99,7 @@ class SchulernListStatr extends State<Schuelern> {
                             ),
                           ],
                         ),
+                        trailing: Icon(Icons.arrow_forward, color: theme.iconTheme.color), // Adjust icon color based on theme
                       ),
                     );
                   },
@@ -138,14 +115,34 @@ class SchulernListStatr extends State<Schuelern> {
   Widget buildSearchRow(ThemeData theme) {
     return Row(
       children: [
-        buildSearchField(theme, 'Nachname...', 'nachname'),
+        buildSearchField(theme, 'Nachname...', 'nachname', Icons.search),
         const SizedBox(width: 10),
-        buildSearchField(theme, 'Vorname...', 'vorname'),
+        buildSearchField(theme, 'Vorname...', 'vorname', Icons.search),
       ],
     );
   }
+  void _runFilter(String searchKeyword, String filterType) {
+    List<Schueler> results = [];
 
-  Widget buildSearchField(ThemeData theme, String labelText, String filterType) {
+    if (searchKeyword.isEmpty) {
+      results = alleSchueler;
+    } else {
+      if (filterType == 'vorname') {
+        results = alleSchueler.where((schueler) =>
+            schueler.vorname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
+      } else if (filterType == 'nachname') {
+        results = alleSchueler.where((schueler) =>
+            schueler.nachname.toLowerCase().contains(searchKeyword.toLowerCase())).toList();
+      }
+    }
+
+    setState(() {
+      filteredSchueler = results;
+    });
+  }
+
+
+  Widget buildSearchField(ThemeData theme, String labelText, String filterType, IconData icon) {
     return Expanded(
       child: Container(
         height: 35,
@@ -163,6 +160,10 @@ class SchulernListStatr extends State<Schuelern> {
         child: TextField(
           onChanged: (value) => _runFilter(value, filterType),
           decoration: InputDecoration(
+            icon: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Icon(icon, color: theme.iconTheme.color), // Adjust icon color based on theme
+            ),
             labelText: labelText,
             labelStyle: TextStyle(
               color: theme.brightness == Brightness.dark ? Colors.white70 : Colors.black54,
@@ -171,13 +172,14 @@ class SchulernListStatr extends State<Schuelern> {
               borderRadius: BorderRadius.circular(35.0),
               borderSide: BorderSide.none,
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            contentPadding: EdgeInsets.symmetric(vertical: 8.0),
           ),
           style: TextStyle(fontSize: 12.0),
         ),
       ),
     );
   }
+
 
   void _navigateToDetails(BuildContext context, int schuelerId) {
     Navigator.push(
