@@ -1,160 +1,115 @@
 {
-  "doc_type": "Adresse",
+  "doc_type": "AD",
   "students": [
-    {
-      "id": 1,
-      "vorname": {
-        "value": "John",
-        "similarityScore": 0.92
-      },
-      "nachname": {
-        "value": "Doe",
-        "similarityScore": 0.91
-      },
-      "class": {
-        "value": "3B",
-        "similarityScore": 0.96
-      },
-      "similarityScorePerson": 0.92,
-      "parents": [
-        {
-          "id": 7,
-          "vorname": {
-            "value": "Makalena",
-            "similarityScore": 0.92
+      {
+          "id": 149,
+          "firstname": {
+              "value": "Silvio ",
+              "similarity_score": 0.4
           },
-          "nachname": {
-            "value": "Doe",
-            "similarityScore": 0.91
+          "lastname": {
+              "value": "Zimmer",
+              "similarity_score": 0.44444445
           },
-          "email": {
-            "value": "tobi_hat_geburtstag@geburt.de",
-            "similarityScore": 0.91
+          "school_class": {
+              "value": "8D",
+              "similarity_score": 1.0
           },
-          "telefone": {
-            "value": "0127182171",
-            "similarityScore": 0.93
-          },
-          "similarityScorePerson": 0.92
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "vorname": {
-        "value": "Jahn",
-        "similarityScore": 0.91
-      },
-      "nachname": {
-        "value": "Doe",
-        "similarityScore": 0.91
-      },
-      "class": {
-        "value": "3B",
-        "similarityScore": 0.91
-      },
-      "similarityScorePerson": 0.91,
-      "parents": [
-        {
-          "id": 7,
-          "vorname": {
-            "value": "Muster",
-            "similarityScore": 0.92
-          },
-          "nachname": {
-            "value": "Doe",
-            "similarityScore": 0.91
-          },
-          "email": {
-            "value": "dmusterg@geburt.de",
-            "similarityScore": 0.91
-          },
-          "telefone": {
-            "value": "0127182171",
-            "similarityScore": 0.93
-          },
-          "similarityScorePerson": 0.92
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "vorname": {
-        "value": "John",
-        "similarityScore": 0.70
-      },
-      "nachname": {
-        "value": "Does",
-        "similarityScore": 0.70
-      },
-      "class": {
-        "value": "9B",
-        "similarityScore": 0.70
-      },
-      "similarityScorePerson": 0.70,
-      "parents": [
-        {
-          "id": 7,
-          "vorname": {
-            "value": "Alex",
-            "similarityScore": 0.72
-          },
-          "nachname": {
-            "value": "Doe",
-            "similarityScore": 0.71
-          },
-          "email": {
-            "value": "dmusterg@geburt.de",
-            "similarityScore": 0.71
-          },
-          "telefone": {
-            "value": "0127182171",
-            "similarityScore": 0.73
-          },
-          "similarityScorePerson": 0.70
-        }
-      ]
-    }
+          "similarity_score": 0.6148148166666667,
+          "parent": {
+              "id": 150,
+              "firstname": {
+                  "value": "Robert",
+                  "similarity_score": 0.5555556
+              },
+              "lastname": {
+                  "value": "Zimmer",
+                  "similarity_score": 0.4
+              },
+              "phone_number": {
+                  "value": "6532948",
+                  "similarity_score": 0.45454547
+              },
+              "email": {
+                  "value": "zimmer-r@hotmail.de",
+                  "similarity_score": 0.42857143
+              },
+              "similarity_score": 0.45966812500000004
+          }
+      }
   ],
   "addresses": [
-    {
-      "id": 1,
-      "street_name": {
-        "value": "Hauptstraße 5",
-        "similarityScore": 0.95
+      {
+          "id": 1757,
+          "street_name": {
+              "value": "Georg-Bitter-Weg",
+              "similarity_score": 0.84210527
+          },
+          "location": {
+              "location_name": "382 Hastedt",
+              "postal_code": 28207,
+              "id": 52
+          },
+          "house_number": "7",
+          "similarity_score": 0.84210527
       },
-      "location": {
-        "location_id": 101,
-        "location_name": "Berlin",
-        "postal_code": 10115,
-        "similarityScore": 0.98
-      }
-    },
-    {
-      "id": 2,
-      "street_name": {
-        "value": "Nebenstraße 2",
-        "similarityScore": 0.94
+      {
+          "id": 1756,
+          "street_name": {
+              "value": "Georg-Bitter-Straße",
+              "similarity_score": 0.52
+          },
+          "location": {
+              "location_name": "382 Hastedt",
+              "postal_code": 28205,
+              "id": 119
+          },
+          "house_number": "7",
+          "similarity_score": 0.52
       },
-      "location": {
-        "location_id": 102,
-        "location_name": "Berlin",
-        "postal_code": 10331,
-        "similarityScore": 0.92
-      }
-    },
-    {
-      "id": 2,
-      "street_name": {
-        "value": "Oben am Berg",
-        "similarityScore": 0.94
+      {
+          "id": 1755,
+          "street_name": {
+              "value": "Georg-Bitter-Straße",
+              "similarity_score": 0.52
+          },
+          "location": {
+              "location_name": "313 Peterswerder",
+              "postal_code": 28205,
+              "id": 7
+          },
+          "house_number": "7",
+          "similarity_score": 0.52
       },
-      "location": {
-        "location_id": 102,
-        "location_name": "Berlin",
-        "postal_code": 10331,
-        "similarityScore": 0.92
+      {
+          "id": 1760,
+          "street_name": {
+              "value": "Georg-Elser-Weg",
+              "similarity_score": 0.41666666
+          },
+          "location": {
+              "location_name": "335 Neue Vahr Südost",
+              "postal_code": 28327,
+              "id": 23
+          },
+          "house_number": "7",
+          "similarity_score": 0.41666666
+      },
+      {
+          "id": 787,
+          "street_name": {
+              "value": "Binger Weg",
+              "similarity_score": 0.26086956
+          },
+          "location": {
+              "location_name": "373 Tenever",
+              "postal_code": 28325,
+              "id": 80
+          },
+          "house_number": "7",
+          "similarity_score": 0.26086956
       }
-    }
-  ]
+  ],
+  "signature_box_found": true
 }
+

@@ -1,127 +1,63 @@
 {
-    "doc_type": "AG",
-    "students": [
+  "doc_type": "AG",
+  "students": [
       {
-        "id": 1,
-        "vorname": {
-          "value": "Iwona",
-          "similarityScore": 0.92
-        },
-        "nachname": {
-          "value": "Anders",
-          "similarityScore": 0.91
-        },
-        "class": {
-          "value": "12A",
-          "similarityScore": 0.96
-        },
-        "similarityScorePerson": 0.92
-      },
-      {
-        "id": 1,
-        "vorname": {
-          "value": "Iwoa",
-          "similarityScore": 0.92
-        },
-        "nachname": {
-          "value": "Andes",
-          "similarityScore": 0.91
-        },
-        "class": {
-          "value": "12A",
-          "similarityScore": 0.96
-        },
-        "similarityScorePerson": 0.92
-      },
-      {
-        "id": 1,
-        "vorname": {
-          "value": "Ivan",
-          "similarityScore": 0.92
-        },
-        "nachname": {
-          "value": "Anders",
-          "similarityScore": 0.91
-        },
-        "class": {
-          "value": "12A",
-          "similarityScore": 0.96
-        },
-        "similarityScorePerson": 0.92
+          "id": 7,
+          "firstname": {
+              "value": "Ariane",
+              "similarity_score": 1.0
+          },
+          "lastname": {
+              "value": "Atzler",
+              "similarity_score": 1.0
+          },
+          "school_class": {
+              "value": "12A",
+              "similarity_score": 1.0
+          },
+          "similarity_score": 1.0
       }
+  ],
+  "ag_1": [
+      {
+          "id": 1,
+          "ag_name": {
+              "value": "Fussball",
+              "similarity_score": 1.0
+          }
+      },
+      {
+          "id": 3,
+          "ag_name": {
+              "value": "Basketball",
+              "similarity_score": 0.1764706
+          }
+      },
+      {
+          "id": 4,
+          "ag_name": {
+              "value": "Volleyball",
+              "similarity_score": 0.1764706
+          }
+      }
+  ],
+"ag_2": [
+        {
+            "id": 7,
+            "ag_name": {
+                "value": "Chor",
+                "similarity_score": 1.0
+            }
+        }
     ],
-    "AGS": {
-      "AG1": [
+    "ag_3": [
         {
-          "id": 7,
-          "name": {
-            "value": "Programmierung",
-            "score": 0.1
-          }
-        },
-        {
-          "id": 8,
-          "name": {
-            "value": "Robotik",
-            "score": 0.1
-          }
-        },
-        {
-          "id": 9,
-          "name": {
-            "value": "Chor",
-            "score": 0.1
-          }
+            "id": 5,
+            "ag_name": {
+                "value": "Robotik",
+                "similarity_score": 1.0
+            }
         }
-      ],
-      "AG2": [
-        {
-          "id": 7,
-          "name": {
-            "value": "Band",
-            "score": 0.1
-          }
-        },
-        {
-          "id": 8,
-          "name": {
-            "value": "Robotik",
-            "score": 0.1
-          }
-        },
-        {
-          "id": 9,
-          "name": {
-            "value": "Basketball",
-            "score": 0.1
-          }
-        }
-      ],
-      "AG3": [
-        {
-          "id": 7,
-          "name": {
-            "value": "Volleyball",
-            "score": 0.1
-          }
-        },
-        {
-          "id": 8,
-          "name": {
-            "value": "Fussball",
-            "score": 0.1
-          }
-        },
-        {
-          "id": 9,
-          "name": {
-            "value": "Chor",
-            "score": 0.1
-          }
-        }
-      ]
-    }
-      
-      
-    
-  }
+    ],
+    "signature_box_found": true
+}
