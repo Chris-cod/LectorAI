@@ -6,6 +6,7 @@ import 'package:flutter/services.dart'
 import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +24,30 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController =
       TextEditingController(); // Controller für Passwort
   final Repository repository = Repository();
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
+  void toggleDemoMode(bool value) {
+    setState(() {
+      isDemoMode = value;
+      if (isDemoMode) {
+        // Setze die Felder auf Demo-Daten, wenn der Demo-Modus aktiviert ist.
+        _usernameController.text = dotenv.get('DEMO_USERNAME', fallback: 'defaultUser');
+        _passwordController.text = dotenv.get('DEMO_PASSWORD', fallback: 'defaultPassword');
+      } else {
+        // Leere die Felder, wenn der Demo-Modus deaktiviert wird.
+        _usernameController.clear();
+        _passwordController.clear();
+      }
+    });
+  }
+
+
+
 
   void _login() async {
     final username = _usernameController.text;
@@ -100,9 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                 trailing: Checkbox(
                   value: isDemoMode,
                   onChanged: (bool? value) {
-                    setState(() {
-                      isDemoMode = value ?? false;
-                    });
+                    toggleDemoMode(value ?? false);
                   },
                 ),
               ),

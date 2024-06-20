@@ -17,6 +17,8 @@ class ThemeProvider extends ChangeNotifier {
 
     if (mode == ThemeMode.dark) {
       newThemeData = ThemeData.dark().copyWith(
+        cardColor: Color(0xFF333333),  // Darker card color for dark mode
+        shadowColor: Colors.black45,  // Suitable shadow color for dark mode
         primaryColor: const Color(0xFF1E1D1D),
         scaffoldBackgroundColor: const Color(0xFF1E1D1D),
         appBarTheme: const AppBarTheme(
@@ -45,6 +47,8 @@ class ThemeProvider extends ChangeNotifier {
       );
     } else {
       newThemeData = ThemeData.light().copyWith(
+        cardColor: Colors.blueGrey,  // Lighter card color for light mode
+        shadowColor: Colors.grey[200],  // Light shadow for better visibility in light mode
         primaryColor: Colors.blueGrey,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
