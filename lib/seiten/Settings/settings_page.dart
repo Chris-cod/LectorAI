@@ -1,9 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart'; //
+import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,6 +15,10 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isDarkMode = false;
   bool no_db = false;
   bool no_change = false;
+  bool useDefaultIP = true;
+  String serverAddress = '192.168.0.166'; // Default IP-Adresse
+
+  final TextEditingController _ipController = TextEditingController();
 
   @override
   void initState() {
@@ -27,62 +30,14 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Einstellungen'),
+        title: const Text('Einstellungen'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            ListTile(
-              title: const Text(
-                'Serversetup',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Serveradresse',
-                      filled: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-              ListTile(
-                title: const Text(
-                  'Aenderung von Datenbank abholen',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                trailing: Checkbox(
-                  value: no_db,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      no_db = value ?? false;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: const Text(
-                  'Change nicht übertragen',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                trailing: Checkbox(
-                  value: no_change,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      no_change = value ?? false;
-                    });
-                  },
-                ),
-              ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
+            buildServerSetupCard(),
+            const SizedBox(height: 20),
             buildThemeToggle(),
             const SizedBox(height: 20),
           ],
@@ -91,8 +46,103 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget buildServerSetupCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Serversetup',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _ipController,
+              decoration: InputDecoration(
+                labelText: 'Serveradresse',
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabled: !useDefaultIP,
+              ),
+              style: TextStyle(
+                color: useDefaultIP ? Colors.grey : Colors.black,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Checkbox(
+                  value: useDefaultIP,
+                  onChanged: (value) {
+                    setState(() {
+                      useDefaultIP = value ?? true;
+                      if (useDefaultIP) {
+                        serverAddress = '192.168.0.166';
+                        _ipController.text = serverAddress;
+                      }
+                      _saveServerAddress();
+                    });
+                  },
+                ),
+                const Text('Default IP-Adresse verwenden')
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: useDefaultIP ? null : _saveServerAddress,
+                  child: const Text('Speichern'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            buildCheckboxTile(
+              'Datenbankänderungen abrufen',
+              no_db,
+              (value) => setState(() {
+                no_db = value ?? false;
+                _saveSettings();
+              }),
+            ),
+            const SizedBox(height: 20),
+            buildCheckboxTile(
+              'Änderungen nicht übertragen',
+              no_change,
+              (value) => setState(() {
+                no_change = value ?? false;
+                _saveSettings();
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildCheckboxTile(
+      String title, bool value, ValueChanged<bool?> onChanged) {
+    return ListTile(
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 16),
+      ),
+      trailing: Checkbox(
+        value: value,
+        onChanged: onChanged,
+      ),
+    );
+  }
+
   Widget buildThemeToggle() {
-    var themeProvider = Provider.of<ThemeProvider>(context, listen: false);  // listen: false hinzugefügt, um unerwünschte Rebuilds zu vermeiden
+    var themeProvider = Provider.of<ThemeProvider>(context, listen: false);
 
     return CupertinoListTile(
       title: const Text('Dark Mode'),
@@ -101,8 +151,8 @@ class _SettingsPageState extends State<SettingsPage> {
         onChanged: (value) {
           setState(() {
             isDarkMode = value;
-            // Direktes Anwenden des Themes ohne zusätzlichen Apply-Button
-            themeProvider.applyTheme(isDarkMode ? ThemeMode.dark : ThemeMode.light);
+            themeProvider
+                .applyTheme(isDarkMode ? ThemeMode.dark : ThemeMode.light);
             _saveSettings();
           });
         },
@@ -110,24 +160,37 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
-
-
-  void _applyTheme() {
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    themeProvider.applyTheme(isDarkMode ? ThemeMode.dark : ThemeMode.light);
-  }
-
   void _loadSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       isDarkMode = prefs.getBool('isDarkMode') ?? false;
+      no_db = prefs.getBool('no_db') ?? false;
+      no_change = prefs.getBool('no_change') ?? false;
+      serverAddress = prefs.getString('serverAddress') ?? '192.168.0.166';
+      useDefaultIP = serverAddress == '192.168.0.166';
+      _ipController.text = serverAddress;
     });
   }
 
   void _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('isDarkMode', isDarkMode);
+    prefs.setBool('no_db', no_db);
+    prefs.setBool('no_change', no_change);
+    prefs.setString('serverAddress', serverAddress);
+  }
+
+  void _saveServerAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (!useDefaultIP) {
+        serverAddress = _ipController.text;
+      }
+    });
+    prefs.setString('serverAddress', serverAddress);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('IP-Adresse gespeichert')),
+    );
   }
 }
 
@@ -139,15 +202,14 @@ class CupertinoListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Zugriff auf das aktuelle Theme
     var themeProvider = Provider.of<ThemeProvider>(context);
     var textColor = themeProvider.themeData.brightness == Brightness.dark
-        ? Colors.white  // Weiße Schrift im Dark Mode
-        : Colors.black; // Schwarze Schrift im Light Mode
+        ? Colors.white
+        : Colors.black;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
             color: CupertinoColors.systemGrey4,

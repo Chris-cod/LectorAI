@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:lectorai_frontend/models/adresse.dart';
 import 'package:lectorai_frontend/models/klasse.dart';
@@ -11,13 +11,23 @@ import 'package:lectorai_frontend/models/schueler.dart';
 import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
-  final String backendURL = 'http://localhost:8000';
-  final String LocalUrlAsIp = 'http://${dotenv.env['LOCALE_IP']!}:8000';
+  String backendURL = 'http://localhost:8000';
+  String serverAddress = '192.168.0.166'; // Default IP-Adresse
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
 
+  Repository() {
+    _loadServerAddress();
+  }
+
+  Future<void> _loadServerAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    serverAddress = prefs.getString('serverAddress') ?? '192.168.0.166';
+    backendURL = 'http://$serverAddress:8000';
+  }
+
   Future<Lehrer> login(String username, String password) async {
-    var url = Uri.parse('$LocalUrlAsIp/login');
+    var url = Uri.parse('$backendURL/login');
     try {
       var response = await http.post(
         url,
@@ -44,7 +54,6 @@ class Repository {
     }
   }
 
-
   /* Logs in a user using local JSON data.
    This method loads a JSON file from the assets folder and decodes it into a Dart object.
    It then compares the provided username and password with the data from the JSON file.
@@ -56,11 +65,13 @@ class Repository {
   Future<Lehrer> loginFromLocalJson(String username, String password) async {
     var jsonString = await rootBundle.loadString(
         'assets/Daten/user_and_passwort_test.json'); // Lädt die JSON-Datei aus Assets
-    var jsonResponse = jsonDecode(jsonString); // Decodiert die JSON-String zu einem Dart-Objekt
+    var jsonResponse = jsonDecode(
+        jsonString); // Decodiert die JSON-String zu einem Dart-Objekt
 
     if (username == jsonResponse['username'] &&
         password == jsonResponse['password']) {
-      lehrer.username = jsonResponse["teacher_name"]; // Speichert die Daten in der Lehrerinstanz
+      lehrer.username = jsonResponse[
+          "teacher_name"]; // Speichert die Daten in der Lehrerinstanz
       lehrer.tokenRaw = jsonResponse['token_raw'];
       lehrer.lehrerId = jsonResponse['id'];
       lehrer.isloggedin = true;
@@ -75,7 +86,7 @@ class Repository {
         []; // Initialisierung einer leeren Liste für Klassennamen.
     List gettedClasses = [];
     // Erstellen der vollständigen URL zum Abrufen der Klassen eines bestimmten Lehrers.
-    var url = Uri.parse('$LocalUrlAsIp/teacher/$id/classes');
+    var url = Uri.parse('$backendURL/teacher/$id/classes');
     try {
       // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
       var response = await http.get(
@@ -128,7 +139,8 @@ class Repository {
   Future<List<Klasse>> getClassesFromLocalJson(String token, int id) async {
     var jsonString = await rootBundle.loadString(
         'assets/Daten/user_and_passwort_test.json'); // Loads the JSON file from assets
-    var jsonResponse = jsonDecode(jsonString); // Decodes the JSON string into a Dart object
+    var jsonResponse =
+        jsonDecode(jsonString); // Decodes the JSON string into a Dart object
     var gettedClasses = jsonResponse['classes'];
     List<Klasse> classes = [];
     if (gettedClasses.isNotEmpty) {
@@ -157,10 +169,12 @@ class Repository {
   */
   Future<List<Schueler>> getClassStudents(
       String authToken, int lehrerId, int klasseId) async {
-    List<Schueler> students = []; // Initialization of an empty list for student names.
+    List<Schueler> students =
+        []; // Initialization of an empty list for student names.
     List<dynamic> gettedStudent = [];
     // Creating the complete URL to retrieve the students of a specific teacher's class.
-    var url = Uri.parse('$LocalUrlAsIp/teacher/$lehrerId/class/$klasseId/students');
+    var url =
+        Uri.parse('$backendURL/teacher/$lehrerId/class/$klasseId/students');
     try {
       // Executing the HTTP GET request with the authentication token in the header.
       var response = await http.get(
@@ -173,9 +187,11 @@ class Repository {
       /* Checking if the HTTP status code is 200 OK,
        indicating a successful request. */
       if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body); // Outputting the received JSON data for debugging purposes.
+        var jsonData = json.decode(response
+            .body); // Outputting the received JSON data for debugging purposes.
         // Checking if the JSON data object contains the keyword 'persons'.
-        gettedStudent = jsonData['persons']; // Outputting the received JSON data for debugging purposes.
+        gettedStudent = jsonData[
+            'persons']; // Outputting the received JSON data for debugging purposes.
         print('response list: $gettedStudent');
         if (gettedStudent.isNotEmpty) {
           for (var item in gettedStudent) {
@@ -186,7 +202,8 @@ class Repository {
             schueler.id = item['id']; // Extracting the student ID.
             schueler.vorname =
                 item['firstname']; // Extracting the student's first name.
-            schueler.nachname = item['lastname']; // Extracting the student's last name.
+            schueler.nachname =
+                item['lastname']; // Extracting the student's last name.
             students.add(schueler); // Adding the student's name to the list.
           }
           for (var item in students) {
@@ -216,11 +233,15 @@ class Repository {
    Returns a list of [Schueler] objects.
    Throws an error if there is an issue loading the class from the JSON file.
   */
-  Future<List<Schueler>> fetchStudentFromLocalJson(String token, int lehrerid, int classId) async {
+  Future<List<Schueler>> fetchStudentFromLocalJson(
+      String token, int lehrerid, int classId) async {
     List<Schueler> students = [];
-    final String jsonSchueler = await rootBundle.loadString('assets/Daten/Schueler12A.json'); // Loads the JSON file from assets
-    var jsonResponse = jsonDecode(jsonSchueler); // Decodes the JSON string into a Dart object
-    var gettedStudent = jsonResponse['schueler']; // Outputs the received JSON data for debugging purposes.
+    final String jsonSchueler = await rootBundle.loadString(
+        'assets/Daten/Schueler12A.json'); // Loads the JSON file from assets
+    var jsonResponse =
+        jsonDecode(jsonSchueler); // Decodes the JSON string into a Dart object
+    var gettedStudent = jsonResponse[
+        'schueler']; // Outputs the received JSON data for debugging purposes.
     if (gettedStudent.isNotEmpty) {
       for (var item in gettedStudent) {
         Schueler schueler = Schueler(
@@ -230,20 +251,21 @@ class Repository {
         schueler.id = item['id']; // Extracts the student ID.
         schueler.vorname =
             item['vorname']; // Extracts the student's first name.
-        schueler.nachname = item['nachname']; // Extracts the student's last name.
+        schueler.nachname =
+            item['nachname']; // Extracts the student's last name.
         students.add(schueler); // Adds the student to the list.
       }
       return students;
     } else {
-      return Future.error('Fehler beim Laden der Klasse aus der JSON-Datei'); // Throws an error if there is an issue loading the class from the JSON file.
+      return Future.error(
+          'Fehler beim Laden der Klasse aus der JSON-Datei'); // Throws an error if there is an issue loading the class from the JSON file.
     }
   }
-
 
   Future<SchuelerInfo> getStudentInformation(
       String authToken, int studentId) async {
     // Erstellen der vollständigen URL zum Abrufen der Infomation eines bestimmten Schüler.
-    var url = Uri.parse('$LocalUrlAsIp/student/$studentId');
+    var url = Uri.parse('$backendURL/student/$studentId');
     try {
       // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
       var response = await http.get(
@@ -297,13 +319,15 @@ class Repository {
       } else {
         // Bei jedem anderen Statuscode als 200 wird eine Fehlermeldung ausgegeben.
         print("Fehler beim Abrufen der Daten: ${response.statusCode}");
-        return Future.error("es wurde ein Fehler beim Abrufen der Daten gefundene: ${response.statusCode} ${response.body}");
+        return Future.error(
+            "es wurde ein Fehler beim Abrufen der Daten gefundene: ${response.statusCode} ${response.body}");
       }
     } catch (e) {
       // Fangen von Ausnahmen, die während der HTTP-Anfrage auftreten können,
       // und Ausgabe einer Fehlermeldung.
       print("Exception caught: $e");
-      return Future.error("s wurde eine Exception während der Abfrage gefangen: $e");
+      return Future.error(
+          "s wurde eine Exception während der Abfrage gefangen: $e");
     }
   }
 
@@ -314,44 +338,51 @@ class Repository {
    Otherwise, it throws an error indicating a failure in reading the student information from the JSON file. 
    The [id] parameter specifies the ID of the student to fetch information for. Returns a [Future] that completes with the fetched [SchuelerInfo] object.
   */
-  Future<SchuelerInfo> fetchStudentInfoFromLocalJson(String token, int id) async {
-    final String jsonSchueler = await rootBundle.loadString('assets/Daten/schuelerInfoKlasse12A.json'); // Lädt die JSON-Datei aus Assets
-    var jsonResponse = jsonDecode(jsonSchueler); // Decodiert die JSON-String zu einem Dart-Objekt
-    var informations = jsonResponse['schueler']; // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
-    var filteredIinfo = informations.firstWhere((element) => element['ID'] == id);
-    print(filteredIinfo); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
-    if (filteredIinfo.isNotEmpty) { // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
-          var adresse = filteredIinfo['Adresse'];
-          var kontakt = filteredIinfo['Kontakt'];
-          var ags = filteredIinfo['AGs'];
-          print(ags);
-          Adresse studentAdresse = Adresse(
-              strasse: adresse['Straße'],
-              hausnummer: adresse['Hausnummer'],
-              postleitzahl: adresse['Postleitzahl'],
-              ort: 'Bremen'); // 'Ort' ist in der JSON-Datei nicht vorhanden, daher wird ein fester Wert verwendet.
-          Kontakt erzieher = Kontakt(
-              vorname: kontakt['Vorname'],
-              nachname: kontakt['Nachname'],
-              telefonnummer: kontakt['Telefonnummer'],
-              email: kontakt['E-Mail']);
-          SchuelerInfo info = SchuelerInfo(
-              id: filteredIinfo['ID'],
-              vorname: filteredIinfo['Vorname'],
-              nachname: filteredIinfo['Nachname'],
-              adresse: studentAdresse,
-              ags: ags,
-              kontakt: erzieher); // Instanzierung eines Schueler-Objekts
-          print(info.ags);
-          return info;
-    }
-    else {
-      return Future.error('Fehler beim Lesen der Schueler Informationen aus der JSON-Datei');
+  Future<SchuelerInfo> fetchStudentInfoFromLocalJson(
+      String token, int id) async {
+    final String jsonSchueler = await rootBundle.loadString(
+        'assets/Daten/schuelerInfoKlasse12A.json'); // Lädt die JSON-Datei aus Assets
+    var jsonResponse = jsonDecode(
+        jsonSchueler); // Decodiert die JSON-String zu einem Dart-Objekt
+    var informations = jsonResponse[
+        'schueler']; // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
+    var filteredIinfo =
+        informations.firstWhere((element) => element['ID'] == id);
+    print(
+        filteredIinfo); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
+    if (filteredIinfo.isNotEmpty) {
+      // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
+      var adresse = filteredIinfo['Adresse'];
+      var kontakt = filteredIinfo['Kontakt'];
+      var ags = filteredIinfo['AGs'];
+      print(ags);
+      Adresse studentAdresse = Adresse(
+          strasse: adresse['Straße'],
+          hausnummer: adresse['Hausnummer'],
+          postleitzahl: adresse['Postleitzahl'],
+          ort:
+              'Bremen'); // 'Ort' ist in der JSON-Datei nicht vorhanden, daher wird ein fester Wert verwendet.
+      Kontakt erzieher = Kontakt(
+          vorname: kontakt['Vorname'],
+          nachname: kontakt['Nachname'],
+          telefonnummer: kontakt['Telefonnummer'],
+          email: kontakt['E-Mail']);
+      SchuelerInfo info = SchuelerInfo(
+          id: filteredIinfo['ID'],
+          vorname: filteredIinfo['Vorname'],
+          nachname: filteredIinfo['Nachname'],
+          adresse: studentAdresse,
+          ags: ags,
+          kontakt: erzieher); // Instanzierung eines Schueler-Objekts
+      print(info.ags);
+      return info;
+    } else {
+      return Future.error(
+          'Fehler beim Lesen der Schueler Informationen aus der JSON-Datei');
     }
   }
 
-
-// Methode zum Senden des Bildes
+  // Methode zum Senden des Bildes
   Future<Map<String, dynamic>> sendImage(
       String authToken, List<int> imageBytes) async {
     // Konvertiert Byte-Daten zu einem Base64-String
@@ -363,7 +394,7 @@ class Repository {
     try {
       var response = await http
           .post(
-            Uri.parse('$LocalUrlAsIp/image'), // URL für das Senden des Bildes
+            Uri.parse('$backendURL/image'), // URL für das Senden des Bildes
             headers: {
               'Content-Type': 'application/json',
               'token': authToken,
@@ -386,17 +417,15 @@ class Repository {
     }
   }
 
-  Future<Map<String, dynamic>> testADOverlay(String token) async{
+  Future<Map<String, dynamic>> testADOverlay(String token) async {
     try {
-      var response = await http
-          .post(
-            Uri.parse('$LocalUrlAsIp/image/testAG'), // URL für das Senden des Bildes
-            headers: {
-              'Content-Type': 'application/json',
-              'token': token,
-            },
-          )
-          .timeout(const Duration(seconds: 60));
+      var response = await http.post(
+        Uri.parse('$backendURL/image/testAG'), // URL für das Senden des Bildes
+        headers: {
+          'Content-Type': 'application/json',
+          'token': token,
+        },
+      ).timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
@@ -411,5 +440,4 @@ class Repository {
       return {};
     }
   }
-
 }
