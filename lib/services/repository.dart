@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:lectorai_frontend/models/adresse.dart';
@@ -11,22 +12,21 @@ import 'package:lectorai_frontend/models/schueler.dart';
 import 'package:lectorai_frontend/models/schueler_info.dart';
 
 class Repository {
-  String backendURL = 'http://localhost:8000';
-  String serverAddress = '192.168.0.166'; // Default IP-Adresse
+  String? backendURL;
+  String? serverAddress; // Default IP-Adresse
   final Lehrer lehrer = Lehrer();
   Klasse klasse = Klasse(klasseId: 0, klasseName: '');
+  SettingsPage settingsPage = const SettingsPage(loggedIn: false);
 
-  Repository() {
-    _loadServerAddress();
-  }
-
-  Future<void> _loadServerAddress() async {
+  Future<String> _loadServerAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     serverAddress = prefs.getString('serverAddress') ?? '192.168.0.166';
     backendURL = 'http://$serverAddress:8000';
+    return backendURL!;
   }
 
   Future<Lehrer> login(String username, String password) async {
+    await _loadServerAddress();
     var url = Uri.parse('$backendURL/login');
     try {
       var response = await http.post(
@@ -82,6 +82,7 @@ class Repository {
   }
 
   Future<List<Klasse>> fetchTeacherClasses(String authToken, int id) async {
+    await _loadServerAddress();
     List<Klasse> classes =
         []; // Initialisierung einer leeren Liste für Klassennamen.
     List gettedClasses = [];
@@ -169,6 +170,7 @@ class Repository {
   */
   Future<List<Schueler>> getClassStudents(
       String authToken, int lehrerId, int klasseId) async {
+        await _loadServerAddress();
     List<Schueler> students =
         []; // Initialization of an empty list for student names.
     List<dynamic> gettedStudent = [];
@@ -262,8 +264,8 @@ class Repository {
     }
   }
 
-  Future<SchuelerInfo> getStudentInformation(
-      String authToken, int studentId) async {
+  Future<SchuelerInfo> getStudentInformation(String authToken, int studentId) async {
+    await _loadServerAddress();
     // Erstellen der vollständigen URL zum Abrufen der Infomation eines bestimmten Schüler.
     var url = Uri.parse('$backendURL/student/$studentId');
     try {
@@ -384,12 +386,13 @@ class Repository {
 
   // Methode zum Senden des Bildes
   Future<Map<String, dynamic>> sendImage(
-      String authToken, List<int> imageBytes) async {
+      String authToken, List<int> imageBytes, bool notCompareWithDb) async {
     // Konvertiert Byte-Daten zu einem Base64-String
-
+    await _loadServerAddress();
     String base64Image = base64Encode(imageBytes);
     //print(base64Image);
-    var toSend = jsonEncode({'image': base64Image});
+    var toSend = notCompareWithDb? jsonEncode({'no_db': true,'image': base64Image }) : jsonEncode({'image': base64Image});
+    print(toSend);
 
     try {
       var response = await http
@@ -417,27 +420,33 @@ class Repository {
     }
   }
 
-  Future<Map<String, dynamic>> testADOverlay(String token) async {
+  Future<bool> saveChanges(String token, Map<String, dynamic> validData) async{
+    await _loadServerAddress();
     try {
-      var response = await http.post(
-        Uri.parse('$backendURL/image/testAG'), // URL für das Senden des Bildes
-        headers: {
-          'Content-Type': 'application/json',
-          'token': token,
-        },
-      ).timeout(const Duration(seconds: 60));
+      var toSend = jsonEncode(validData);
+      print(toSend);
+      var response = await http
+          .put(
+            Uri.parse('$backendURL/change'), // URL für das Senden des Bildes
+            headers: {
+              'Content-Type': 'application/json',
+              'token': token,
+            },
+            body: toSend,
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        return data;
+        return true;
       } else {
-        Future.error(
-            'Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
-        return {};
+        Future.error('Fehler beim Übertragung der Daten: ${response.statusCode} ${response.body}');
+        return false;
       }
     } catch (e) {
       Future.error('Exception caught while sending the image: $e');
-      return {};
+      return false;
     }
   }
+
 }
+

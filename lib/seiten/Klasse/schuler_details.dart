@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lectorai_frontend/models/schueler_info.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 
