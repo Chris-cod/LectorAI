@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -26,15 +27,20 @@ class PdfViwer extends StatefulWidget {
 class PdfViwerState extends State<PdfViwer> {
   int? currentPage = 0;
   bool pdfReady = false;
-  OverlayEntry? _overlayEntry;
-  OverlayEntry? _secondOverlay;
+  OverlayEntry? _overlayEntry, _secondOverlay;
   late PDFViewController _controller;
   String? path, displayTextErzieher, displayTextStudent, displayTextAdresse, displayTextAG;
   Map<String, dynamic> _jsonData = {};
   bool dataLoaded = false;
+  bool personIsChecked = false;
+  bool parentIsChecked = false;
+  bool addressIsChecked = false;
+  bool agIsChecked = false;
+  bool isChecked = false;
   int _currentIndex = 0;
   int? person_id, parent_id, address_id;
   List<int> ag_id = [];
+  double? person_score, parent_score, address_score, ag_score;
   Repository repository = Repository();
   List<String> type = ['ad', 'ag'];
   
@@ -55,7 +61,8 @@ class PdfViwerState extends State<PdfViwer> {
       responseJson = json.decode(response);
     }
     else{
-      responseJson = await repository.testADOverlay(widget.authToken);//sendImage(widget.authToken, widget.imageBytes);
+      //responseJson = await repository.testADOverlay(widget.authToken);//sendImage(widget.authToken, widget.imageBytes);
+      responseJson = await repository.sendImage(widget.authToken, widget.imageBytes);
     }
     
     
@@ -97,6 +104,7 @@ class PdfViwerState extends State<PdfViwer> {
   }
 
   void _showOverlay(BuildContext context) {
+    _overlayEntry?.remove();
     _overlayEntry = _createOverlayEntry(context);
     if (_overlayEntry != null) {
       Overlay.of(context)!.insert(_overlayEntry!);
@@ -189,6 +197,13 @@ class PdfViwerState extends State<PdfViwer> {
                     onScaleEnd: (_) {},
                   ),
                 ),
+                if (isChecked)
+                  Positioned(
+                    bottom: 20,
+                    left: MediaQuery.of(context).size.width * 0.25,
+                    right: MediaQuery.of(context).size.width * 0.25,
+                    child: buildSaveChangeButton(),
+                  ),
               ],
             )
           : const Center(child: CircularProgressIndicator()),
@@ -203,23 +218,25 @@ class PdfViwerState extends State<PdfViwer> {
         Map<String,dynamic> firststudent = student[_currentIndex];
         displayTextStudent = '${firststudent['firstname']['value']}\n${firststudent['lastname']['value']}\n${firststudent['school_class']['value']}';
         person_id = firststudent['id'];
+        person_score = firststudent['similarity_score'];
         var parent = firststudent['parent'];
         displayTextErzieher = '${parent['firstname']['value']}\n${parent['lastname']['value']}\n${parent['phone_number']['value']}\n${parent['email']['value']}';
         parent_id = parent['id'];
+        parent_score = parent['similarity_score'];
         var newAdress = _jsonData['addresses'];
         Map<String,dynamic> firstNewAdress = newAdress[0];
         displayTextAdresse = '${firstNewAdress['street_name']['value']} ${firstNewAdress['house_number']}\n${firstNewAdress['location']['location_name']}\n${firstNewAdress['location']['postal_code']}';
-        double score = (firstNewAdress["similarity_score"] + firstNewAdress["similarity_score"])/2;
+        address_score = (firstNewAdress["similarity_score"] + firstNewAdress["similarity_score"])/2;
         address_id = firstNewAdress['id'];
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
               // Position für Button-Container
-              _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, firststudent["similarity_score"]),
+              _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, person_score!),
               _iconsOverlay(0.445, 0.68, student, 'erzieher'),
-              _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parent["similarity_score"]),
+              _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parent_score!),
               _iconsOverlay(0.547, 0.68, student, 'schueler'),
-              _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, score),
+              _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, address_score!),
               _iconsOverlay(0.65, 0.68, newAdress, 'addresse'),
               // Add signature box
               _positionedOverlaywithText(
@@ -238,42 +255,27 @@ class PdfViwerState extends State<PdfViwer> {
         Map<String,dynamic> fs = student[0];
         displayTextStudent = '${fs["firstname"]['value']}\n${fs['lastname']['value']}\n${fs['school_class']['value']}';
         person_id = fs['id'];
-        var ags = _jsonData['ag_1'];
-        double score = 0.0;
-        if(ags.length > 1){
-          if(ags.length == 3){
-            displayTextAG = '${ags[0]['ag_name']['value']}\n${ags[1]['ag_name']['value']}\n${ags[2]['ag_name']['value']}';
-            score = (ags[0]['ag_name']['similarity_score'] + ags[1]['ag_name']['similarity_score'] + ags[2]['ag_name']['similarity_score'])/3;
-            ag_id.add(ags[0]['id']);
-            ag_id.add(ags[1]['id']);
-            ag_id.add(ags[2]['id']);
-          }
-          else{
-            displayTextAG = '${ags[0]['ag_name']['value']}\n${ags[1]['ag_name']['value']}';
-            score = (ags[0]['ag_name']['similarity_score'] + ags[1]['ag_name']['similarity_score'])/2;
-          }
-          
-        }
-        else if(ags.length == 1){
-          displayTextAG = '${ags[0]['ag_name']['value']}';
-          score = ags[0]['ag_name']['similarity_score'];
-        }
-        else{
-          displayTextAG = 'Keine AGs gefunden';
-          score = 0.0;
-        }
+        person_score = fs['similarity_score'];
+        var ag1 = _jsonData['ag_1'];
+        var ag2 = _jsonData['ag_2'];
+        var ag3 = _jsonData['ag_3'];
+        displayTextAG = '${ag1[0]['ag_name']['value']}\n${ag2[0]['ag_name']['value']}\n${ag3[0]['ag_name']['value']}';
+        ag_score = (ag1[0]['ag_name']['similarity_score'] + ag2[0]['ag_name']['similarity_score'] + ag3[0]['ag_name']['similarity_score'])/3;
+        ag_id.add(ag1[0]['id']);
+        ag_id.add(ag2[0]['id']);
+        ag_id.add(ag3[0]['id']);
          
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
               // Position für Schüler-Daten-Container
-              _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, fs['similarity_score']),
+              _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, person_score!),
               // Position für Button-Container
               _iconsOverlay(0.495, 0.675, student, 'schueler'),
               // Position für AG-Container
-              _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, score),
-              // Position für Button-Container
-              _iconsOverlay(0.61, 0.675, _jsonData, 'ag'),
+              _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, ag_score!),
+              // // Position für Button-Container
+               _iconsOverlay(0.61, 0.675, _jsonData, 'ag'),
               // Add signature box
               _positionedOverlaywithText(
                 'Signature: ${_jsonData['signature_box_found'] ? "Found" : "Not Found"}',
@@ -309,17 +311,21 @@ class PdfViwerState extends State<PdfViwer> {
                 if (boxname == 'erzieher') {
                   displayTextErzieher = selectedItem['text'];
                   person_id = selectedItem['id'];
+                  print(person_id);
                   _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40);
                 } else if (boxname == 'schueler') {
                   displayTextStudent = selectedItem['text'];
                   parent_id = selectedItem['id'];
+                  print(parent_id);
                   _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40);
                 } else if (boxname == 'addresse') {
                   displayTextAdresse = selectedItem['text'];
                   address_id = selectedItem['id'];
+                  print(address_id);
                   _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40);
                 } else if (boxname == 'ag') {
                   ag_id = selectedItem['id'];
+                  print(ag_id.toString());
                   displayTextAG = selectedItem['text'];
                   _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, 0.40);
                 }
@@ -344,7 +350,7 @@ class PdfViwerState extends State<PdfViwer> {
         text,
         220,
         80,
-        Colors.white.withOpacity(0.5),
+        Colors.white.withOpacity(0.3),
         score,
       ),
     );
@@ -371,7 +377,21 @@ class PdfViwerState extends State<PdfViwer> {
             icon: Icon(Icons.check,
                 color: Colors.green), // Button-Farbe ändern
             onPressed: () {
-              //Pageroute hinzufügen
+              setState(() {
+                if (infoBox == 'schueler') {
+                  personIsChecked = true;
+                } else if (infoBox == 'erzieher') {
+                  parentIsChecked = true;
+                } else if (infoBox == 'addresse') {
+                  addressIsChecked = true;
+                } else if (infoBox == 'ag') {
+                  agIsChecked = true;
+                }
+                if(parentIsChecked && personIsChecked && addressIsChecked || agIsChecked && personIsChecked){
+                  isChecked = true;
+                }
+              });
+              _showOverlay(context);
             },
           ),
         ],
@@ -381,16 +401,14 @@ class PdfViwerState extends State<PdfViwer> {
 
   Widget _buildOverlayBox(
       String text, double width, double height, Color color, double score) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
+    return  Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: color,
+          color:  color,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _getColorFromScore(score),
+            color: isChecked? Colors.green : _getColorFromScore(score),
             width: 2,
           ),
         ),
@@ -409,9 +427,20 @@ class PdfViwerState extends State<PdfViwer> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
+
+  Widget buildSaveChangeButton() {
+    return  Align(
+        alignment: Alignment.bottomCenter,
+        child: ElevatedButton(
+          onPressed: () {
+            //Hier die Daten speichern
+          },
+          child: const Text('Änderungen speichern'),
+        ),
+      );
+  } 
 
   Color _getColorFromScore(double score) {
     if (score >= 0.9) {

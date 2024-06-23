@@ -127,8 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget buildCheckboxTile(
-      String title, bool value, ValueChanged<bool?> onChanged) {
+  Widget buildCheckboxTile(String title, bool value, ValueChanged<bool?> onChanged) {
     return ListTile(
       title: Text(
         title,
@@ -151,8 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
         onChanged: (value) {
           setState(() {
             isDarkMode = value;
-            themeProvider
-                .applyTheme(isDarkMode ? ThemeMode.dark : ThemeMode.light);
+            themeProvider.applyTheme(isDarkMode ? ThemeMode.dark : ThemeMode.light);
             _saveSettings();
           });
         },

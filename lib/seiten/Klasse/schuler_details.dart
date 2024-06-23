@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lectorai_frontend/models/schueler_info.dart';
@@ -45,7 +44,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${schuelerInfo?.vorname ?? 'max'} ${schuelerInfo?.nachname ?? 'muster'}',
+          '${schuelerInfo?.vorname ?? 'Max'} ${schuelerInfo?.nachname ?? 'Muster'}',
           textAlign: TextAlign.center,
         ),
         leading: GestureDetector(
@@ -66,32 +65,35 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
               context,
               'Erziehungsberechtigter',
               [
-                buildInfoField('Vorname', '${schuelerInfo!.kontakt.vorname}'),
-                buildInfoField('Nachname', '${schuelerInfo!.kontakt.nachname}'),
-                buildInfoField('E-mail', '${schuelerInfo!.kontakt.email}'),
-                buildInfoField('Telefon', '${schuelerInfo!.kontakt.telefonnummer}'),
+                buildInfoField('Vorname', '${schuelerInfo!.kontakt.vorname}', Icons.account_circle),
+                buildInfoField('Nachname', '${schuelerInfo!.kontakt.nachname}', Icons.account_circle),
+                buildInfoField('E-mail', '${schuelerInfo!.kontakt.email}', Icons.email),
+                buildInfoField('Telefon', '${schuelerInfo!.kontakt.telefonnummer}', Icons.phone),
               ],
+              Icons.family_restroom,
             ),
             const SizedBox(height: 20.0),
             buildCard(
               context,
               'Adresse',
               [
-                buildInfoField('Straße', '${schuelerInfo!.adresse.strasse}'),
-                buildInfoField('Hausnummer', '${schuelerInfo!.adresse.hausnummer}'),
-                buildInfoField('PLZ', '${schuelerInfo!.adresse.postleitzahl}'),
-                buildInfoField('Stadt', 'Bremen'),
+                buildInfoField('Straße', '${schuelerInfo!.adresse.strasse}', Icons.route),
+                buildInfoField('Hausnummer', '${schuelerInfo!.adresse.hausnummer}', Icons.format_list_numbered),
+                buildInfoField('PLZ', '${schuelerInfo!.adresse.postleitzahl}', Icons.local_post_office),
+                buildInfoField('Stadt', 'Bremen', Icons.location_city),
               ],
+              Icons.home,
             ),
             const SizedBox(height: 20.0),
             buildCard(
               context,
               'AGs',
               [
-                buildInfoField('AG Wahl 1', '${schuelerInfo!.ags[0]}'),
-                buildInfoField('AG Wahl 2', '${schuelerInfo!.ags[1]}'),
-                buildInfoField('AG Wahl 3', '${schuelerInfo!.ags[2]}'),
+                buildInfoField('AG Wahl 1', '${schuelerInfo!.ags[0]}', Icons.check_circle),
+                buildInfoField('AG Wahl 2', '${schuelerInfo!.ags[1]}', Icons.check_circle),
+                buildInfoField('AG Wahl 3', '${schuelerInfo!.ags[2]}', Icons.check_circle),
               ],
+              Icons.group,
             ),
           ],
         ),
@@ -99,7 +101,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     );
   }
 
-  Widget buildCard(BuildContext context, String title, List<Widget> children) {
+  Widget buildCard(BuildContext context, String title, List<Widget> children, IconData titleIcon) {
     return Card(
       elevation: 2.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -108,9 +110,12 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ListTile(
+              leading: Icon(titleIcon),
+              title: Text(
+                title,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 5.0),
             ...children,
@@ -120,7 +125,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     );
   }
 
-  Widget buildInfoField(String label, String value) {
+  Widget buildInfoField(String label, String value, IconData icon) {
     var theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5.0),
@@ -135,9 +140,9 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
+      child: ListTile(
+        leading: Icon(icon, color: theme.iconTheme.color),
+        title: Text(
           '$label: $value',
           style: TextStyle(color: theme.textTheme.bodyMedium!.color),
         ),

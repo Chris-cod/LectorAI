@@ -38,6 +38,7 @@ class ThemeProvider extends ChangeNotifier {
             borderSide: BorderSide.none,
           ),
         ),
+        // Your dark mode theme data here
       );
     }
 
