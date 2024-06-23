@@ -7,6 +7,7 @@ import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -84,59 +85,77 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFB9B5C6),
-      body: Center(
-        child: SingleChildScrollView(
-          // Ermöglicht das Scrollen, falls der Bildschirm zu klein ist
-          padding:
-              const EdgeInsets.symmetric(horizontal: 20), // Padding für Ränder
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FractionallySizedBox(
-                widthFactor:
-                    0.6, // Setzt die Breite des Logos auf 60% der Bildschirmbreite
-                child: Image.asset(
-                  'assets/Bilder/lectorAI_Logo.png',
-                  fit: BoxFit
-                      .contain, // Passt das Bild innerhalb der Box an, behält Seitenverhältnis
-                ),
+      //backgroundColor: const Color(0xFFB9B5C6),
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              // Ermöglicht das Scrollen, falls der Bildschirm zu klein ist
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20), // Padding für Ränder
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FractionallySizedBox(
+                    widthFactor:
+                        0.6, // Setzt die Breite des Logos auf 60% der Bildschirmbreite
+                    child: Image.asset(
+                      'assets/Bilder/lectorAI_Logo.png',
+                      fit: BoxFit
+                          .contain, // Passt das Bild innerhalb der Box an, behält Seitenverhältnis
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  _buildInputField(
+                    prefixImage: 'assets/Bilder/User.png',
+                    hintText: 'E-Mail oder Benutzername',
+                    controller: _usernameController,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildPasswordField(),
+                  const SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      // backgroundColor: const Color(0xFFB4C2E6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 10),
+                    ),
+                    child: const Text("ANMELDEN",
+                        style: TextStyle(color: Colors.black)),
+                  ),
+                  const SizedBox(height: 20),
+                  ListTile(
+                    title: const Text(
+                      'Demo-Modus',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Checkbox(
+                      value: isDemoMode,
+                      onChanged: (bool? value) {
+                        toggleDemoMode(value ?? false);
+                      },
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 30),
-              _buildInputField(
-                prefixImage: 'assets/Bilder/User.png',
-                hintText: 'E-Mail oder Benutzername',
-                controller: _usernameController,
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordField(),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: _login,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFB4C2E6),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                ),
-                child: const Text("ANMELDEN",
-                    style: TextStyle(color: Colors.black)),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: const Text(
-                  'Demo-Modus',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                trailing: Checkbox(
-                  value: isDemoMode,
-                  onChanged: (bool? value) {
-                    toggleDemoMode(value ?? false);
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: 60,
+            right: 20,
+            child: IconButton(
+              icon: const Icon(Icons.settings, size: 36.0),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -155,8 +174,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         hintText: hintText, // Setzt den Platzhaltertext für das Eingabefeld
         filled: true,
-        fillColor: const Color(
-            0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
+        // fillColor: const Color(
+        //     0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
               25.0), // Abgerundete Ecken für das Eingabefeld
@@ -192,8 +211,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
         hintText: 'Kennwort', // Platzhaltertext für das Passwortfeld
         filled: true,
-        fillColor: const Color(
-            0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
+        // fillColor: const Color(
+        //     0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
               25.0), // Abgerundete Ecken für das Eingabefeld
