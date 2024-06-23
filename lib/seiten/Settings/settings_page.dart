@@ -15,6 +15,10 @@ class _SettingsPageState extends State<SettingsPage> {
   bool isDarkMode = false;
   bool no_db = false;
   bool no_change = false;
+  bool useDefaultIP = true;
+  String serverAddress = '192.168.0.166'; // Default IP-Adresse
+
+  final TextEditingController _ipController = TextEditingController();
 
   @override
   void initState() {
@@ -57,25 +61,65 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 10),
             TextField(
+              controller: _ipController,
               decoration: InputDecoration(
                 labelText: 'Serveradresse',
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
+                enabled: !useDefaultIP,
+              ),
+              style: TextStyle(
+                color: useDefaultIP ? Colors.grey : Colors.black,
               ),
             ),
-            const SizedBox(height: 20),
-            buildCheckboxTile(
-              'Aenderung von Datenbank abholen',
-              no_db,
-                  (value) => setState(() => no_db = value ?? false),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Checkbox(
+                  value: useDefaultIP,
+                  onChanged: (value) {
+                    setState(() {
+                      useDefaultIP = value ?? true;
+                      if (useDefaultIP) {
+                        serverAddress = '192.168.0.166';
+                        _ipController.text = serverAddress;
+                      }
+                      _saveServerAddress();
+                    });
+                  },
+                ),
+                const Text('Default IP-Adresse verwenden')
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: useDefaultIP ? null : _saveServerAddress,
+                  child: const Text('Speichern'),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             buildCheckboxTile(
-              'Change nicht übertragen',
+              'Datenbankänderungen abrufen',
+              no_db,
+              (value) => setState(() {
+                no_db = value ?? false;
+                _saveSettings();
+              }),
+            ),
+            const SizedBox(height: 20),
+            buildCheckboxTile(
+              'Änderungen nicht übertragen',
               no_change,
-                  (value) => setState(() => no_change = value ?? false),
+              (value) => setState(() {
+                no_change = value ?? false;
+                _saveSettings();
+              }),
             ),
           ],
         ),
@@ -120,6 +164,9 @@ class _SettingsPageState extends State<SettingsPage> {
       isDarkMode = prefs.getBool('isDarkMode') ?? false;
       no_db = prefs.getBool('no_db') ?? false;
       no_change = prefs.getBool('no_change') ?? false;
+      serverAddress = prefs.getString('serverAddress') ?? '192.168.0.166';
+      useDefaultIP = serverAddress == '192.168.0.166';
+      _ipController.text = serverAddress;
     });
   }
 
@@ -128,6 +175,20 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setBool('isDarkMode', isDarkMode);
     prefs.setBool('no_db', no_db);
     prefs.setBool('no_change', no_change);
+    prefs.setString('serverAddress', serverAddress);
+  }
+
+  void _saveServerAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (!useDefaultIP) {
+        serverAddress = _ipController.text;
+      }
+    });
+    prefs.setString('serverAddress', serverAddress);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('IP-Adresse gespeichert')),
+    );
   }
 }
 

@@ -17,16 +17,32 @@ class ThemeProvider extends ChangeNotifier {
 
     if (mode == ThemeMode.dark) {
       // Dark mode
-      newThemeData = ThemeData.dark().copyWith(
-        // Your dark mode theme data here
-      );
+      newThemeData = ThemeData.dark();
     } else {
       // Light mode
       newThemeData = ThemeData.light().copyWith(
-        // Your light mode theme data here
+        scaffoldBackgroundColor: const Color(0xFFB9B5C6), // Hintergrundfarbe
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFB9B5C6), // AppBar-Farbe
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFB6CEF9), // Button-Farbe
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFB6CEF9), // Eingabefeld-Farbe
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            borderSide: BorderSide.none,
+          ),
+        ),
+        // Your dark mode theme data here
       );
     }
 
     themeData = newThemeData;
+    notifyListeners();
   }
 }
