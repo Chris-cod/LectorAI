@@ -16,65 +16,32 @@ class ThemeProvider extends ChangeNotifier {
     ThemeData newThemeData;
 
     if (mode == ThemeMode.dark) {
-      newThemeData = ThemeData.dark().copyWith(
-        cardColor: Color(0xFF333333),  // Darker card color for dark mode
-        shadowColor: Colors.black45,  // Suitable shadow color for dark mode
-        primaryColor: const Color(0xFF1E1D1D),
-        scaffoldBackgroundColor: const Color(0xFF1E1D1D),
+      // Dark mode
+      newThemeData = ThemeData.dark();
+    } else {
+      // Light mode
+      newThemeData = ThemeData.light().copyWith(
+        scaffoldBackgroundColor: const Color(0xFFB9B5C6), // Hintergrundfarbe
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1E1D1D),
-          iconTheme: IconThemeData(color: Colors.white),
-          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
-          toolbarTextStyle: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF1E1D1D),
-          secondary: Colors.amber,
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white),
-          headlineMedium: TextStyle(color: Colors.white),
+          backgroundColor: Color(0xFFB9B5C6), // AppBar-Farbe
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueGrey,
-            // Helle Farbe für bessere Sichtbarkeit
-            foregroundColor: Colors
-                .white, // Weiße Schrift für besseren Kontrast
+            backgroundColor: const Color(0xFFB6CEF9), // Button-Farbe
           ),
         ),
-      );
-    } else {
-      newThemeData = ThemeData.light().copyWith(
-        cardColor: Colors.blueGrey,  // Lighter card color for light mode
-        shadowColor: Colors.grey[200],  // Light shadow for better visibility in light mode
-        primaryColor: Colors.blueGrey,
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blueGrey,
-          iconTheme: IconThemeData(color: Colors.black),
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
-          toolbarTextStyle: TextStyle(color: Colors.black, fontSize: 20),
-        ),
-        colorScheme: const ColorScheme.light(
-          primary: Colors.blueGrey,
-          secondary: Colors.orange,
-        ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.black),
-          bodyMedium: TextStyle(color: Colors.black),
-          headlineMedium: TextStyle(color: Colors.black),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueGrey,
-            foregroundColor: Colors.black,
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFB6CEF9), // Eingabefeld-Farbe
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(25.0),
+            borderSide: BorderSide.none,
           ),
         ),
       );
     }
 
     themeData = newThemeData;
+    notifyListeners();
   }
 }
