@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'dart:convert'; // Für das Konvertieren von JSON
-import 'package:flutter/services.dart'
-    show rootBundle; // Für den Zugriff auf die Asset-Ressourcen
+import 'package:flutter/material.dart'; // Für den Zugriff auf die Asset-Ressourcen
 import 'package:lectorai_frontend/models/lehrer.dart';
 import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
 import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
@@ -20,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
   Lehrer lehrer = Lehrer(); // Instanz der Lehrer-Klasse
   bool _isSecret = true; // Zustand zum Verbergen oder Anzeigen des Passworts
   bool isDemoMode = false; // Zustand für den Demo-Modus
+
+
   final TextEditingController _usernameController =
       TextEditingController(); // Controller für Benutzername
   final TextEditingController _passwordController =
@@ -150,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                  MaterialPageRoute(builder: (context) => const SettingsPage(loggedIn: false,)),
                 );
               },
             ),

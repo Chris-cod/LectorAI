@@ -74,17 +74,17 @@ class _HomePageState extends State<HomePage> {
       title: Text(widget.lehrer.username,
           style: TextStyle(fontSize: iconAndTextSize)),
 
-      // actions: <Widget>[
-      //   IconButton(
-      //     icon: const Icon(Icons.settings),
-      //     onPressed: () {
-      //       Navigator.push(
-      //           context,
-      //           MaterialPageRoute(builder: (context) => SettingsPage())
-      //       );
-      //     },
-      //   ),
-      // ],
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage(loggedIn: widget.lehrer.isloggedin))
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -209,7 +209,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 95),
             ElevatedButton(
                 onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsPage())),
+                    MaterialPageRoute(builder: (context) => SettingsPage(loggedIn: widget.lehrer.isloggedin))),
                 child: const Text('Einstellungen')),
           ],
         ),

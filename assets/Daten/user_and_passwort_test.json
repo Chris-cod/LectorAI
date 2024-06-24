@@ -3,10 +3,25 @@
     "teacher_name":  "Patrick Draheim",
     "username": "pdraheim",
     "password": "2pdraheim3",
-    "classes": [{
-        "classe_id": 1,
-        "classe_name": "12A"
-    }],
+    "classes": [
+        {
+            "classe_id": 1,
+            "classe_name": "12A"
+        },
+        {
+            "classe_id": 2,
+            "classe_name": "6B"
+        },
+        {
+            "classe_id": 3,
+            "classe_name": "9C"
+        },
+        {
+            "classe_id": 4,
+            "classe_name": "8D"
+        }
+
+    ],
     "token_raw": "eyJhbG0123654789"
 }
   
