@@ -1,104 +1,74 @@
 import 'package:flutter/material.dart';
 
-class OverlayList extends StatelessWidget {
-  var items;
-  String boxname;
-  final ValueChanged<Map<String,dynamic>> onItemSelected;
-  
+class OverlayList extends StatefulWidget {
+  final dynamic items;
+  final String boxname;
+  final ValueChanged<Map<String, dynamic>> onItemSelected;
 
-  OverlayList({required this.items, required this.onItemSelected ,required this.boxname});
+  OverlayList({
+    required this.items,
+    required this.onItemSelected,
+    required this.boxname,
+  });
+
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Color(0xff3d7c88),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildOverlayText(boxname),
-            SizedBox(height: 16),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: items.length - 1,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    var selectedItem = items[index+1];
-                    int person_id, parent_id, address_id;
-                    if(boxname == 'schueler'){
-                      person_id = selectedItem['id'];
-                      onItemSelected({'text': '${selectedItem['firstname']['value']}\n${selectedItem['lastname']['value']}\n${selectedItem['school_class']['value']}' , 'id': person_id});
-                    }
-                    else if(boxname == 'erzieher'){
-                      parent_id = selectedItem['parent'][0]['id'];
-                      onItemSelected({'text': '${selectedItem['parent'][0]['firstname']['value']} ${selectedItem['parent'][0]['lastname']['value']}\n${selectedItem['parent'][0]['phone_number']['value']}\n${selectedItem['parent'][0]['email']['value']}' , 'id': parent_id});
-                    }
-                    else if(boxname == 'addresse'){
-                      address_id = selectedItem['id'];
-                      onItemSelected({'text': '${selectedItem['street_name']['value']} ${selectedItem['house_number']['value']} ${selectedItem['location']['location_name']}, ${selectedItem['location']['postal_code']}' , 'id': address_id});
-                    }
-                    else{
-                      int agPointer = index + 2;
-                      List<int> ag_ids = [];
-                      var selectedItemAG = items['ag_$agPointer'];
-                      if(selectedItemAG != null && selectedItemAG.length == 3){
-                        ag_ids.add(selectedItemAG[0]['id']);
-                        ag_ids.add(selectedItemAG[1]['id']);
-                        ag_ids.add(selectedItemAG[2]['id']);
-                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}\n${selectedItemAG[2]['ag_name']['value']}' , 'id': ag_ids});
-                      }
-                      else if(selectedItemAG != null && selectedItemAG.length == 2){
-                        ag_ids.add(selectedItemAG[0]['id']);
-                        ag_ids.add(selectedItemAG[1]['id']);
-                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}' , 'id': ag_ids});
-                      }
-                      else if(selectedItemAG != null && selectedItemAG.length == 1){
-                        ag_ids.add(selectedItemAG[0]['id']);
-                        onItemSelected({'text': '${selectedItemAG[0]['ag_name']['value']}' , 'id': ag_ids});
-                      }
-                      // print(selectedItemAG[0]['name']['value']);
-                      // onItemSelected('${selectedItemAG[0]['name']['value']}\n${selectedItemAG[1]['name']['value']}\n${selectedItemAG[2]['name']['value']}');
-                    }
-                    //onItemSelected(items[index]);
-                    print('tapped Item $index');
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5.0),
-                    padding: EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: _buildListTextContent(items, boxname, index)
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+  _OverlayListState createState() => _OverlayListState();
+}
+
+class _OverlayListState extends State<OverlayList> {
+  bool _isContainerVisible = true;
+  final Map<String, TextEditingController> _controllers = {};
+
+  @override
+  void dispose() {
+    _controllers.forEach((key, controller) {
+      controller.dispose();
+    });
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers based on the boxname
+    if (widget.boxname == 'addresse' && widget.items.isNotEmpty) {
+      var selectedItem = widget.items[0];
+      _controllers['street'] = TextEditingController(text: selectedItem['street_name']['value']);
+      _controllers['houseNumber'] = TextEditingController(text: selectedItem['house_number']);
+      _controllers['postalCode'] = TextEditingController(text: selectedItem['location']['postal_code'].toString());
+      _controllers['city'] = TextEditingController(text: selectedItem['location']['location_name']);
+    } else if (widget.boxname == 'erzieher' || widget.boxname == 'schueler') {
+      for (int i = 1; i < widget.items.length; i++) {
+        var item = widget.items[i];
+        _controllers['name$i'] = TextEditingController(text: '${item['firstname']['value']} ${item['lastname']['value']}');
+        if (widget.boxname == 'erzieher') {
+          _controllers['phoneNumber$i'] = TextEditingController(text: item['parent']['phone_number']['value']);
+          _controllers['email$i'] = TextEditingController(text: item['parent']['email']['value']);
+        } else if (widget.boxname == 'schueler') {
+          _controllers['schoolClass$i'] = TextEditingController(text: item['school_class']['value']);
+        }
+      }
+    }
   }
 
   Widget _buildOverlayText(String boxname) {
-    final String text;
-    if(boxname == 'schueler'){
-      text = 'durch Analyse könnte mehrere Schüler mit diesem Namen gefunden werden.\n Wählen Sie aus der Liste den richtigen Namen.';
-    }
-    else if(boxname  == 'erzieher'){
-      text = 'Nach Analyse wurde mehrere Erzieher gefunden.\n Wählen Sie aus der Liste den richtigen Erzieherberechtigte/r.';
-    }
-    else if(boxname == 'addresse'){
-      text = 'durch KI-Analyse wurde mehrere Adressen gefunden.\n Wählen Sie aus der Liste die richtige Adresse.';
-    }
-    else{
-      text = 'Für diese Schuele wurde folgende AGs gefunden.\n Wählen Sie aus der Liste die richtige AGs.';
+    String text;
+    switch (boxname) {
+      case 'schueler':
+        text =
+            'Durch Analyse könnten mehrere Schüler mit diesem Namen gefunden werden.\n Tragen Sie die richtigen Schuelerdaten ein.';
+        break;
+      case 'erzieher':
+        text =
+            'Nach Analyse wurde mehrere Erzieher gefunden.\n Tragen Sie die richtigen Erzieherberechtigteninformationen ein.';
+        break;
+      case 'addresse':
+        text =
+            'Durch KI-Analyse wurden mehrere Adressen gefunden.\n Tragen Sie die richtige Adresse ein.';
+        break;
+      default:
+        text =
+            'Für diese Schule wurden folgende AGs gefunden.\n Tragen die richtige AGs ein.';
     }
 
     return FittedBox(
@@ -113,45 +83,297 @@ class OverlayList extends StatelessWidget {
     );
   }
 
-  Widget _buildListTextContent(var data, String boxname, int index) {
-    final String listText;
-    int pointer = index + 1;
-    if(boxname == 'schueler'){
-      listText = '${data[pointer]['firstname']['value']} ${data[pointer]['lastname']['value']}, ${data[pointer]['school_class']['value']}';
-    }
-    else if(boxname  == 'erzieher'){
-      listText = '${data[pointer]['parent'][0]['firstname']['value']} ${data[pointer]['parent'][0]['lastname']['value']},${data[pointer]['parent'][0]['phone_number']['value']}, ${data[pointer]['parent'][0]['email']['value']}';
-    }
-    else if(boxname == 'addresse'){
-      listText = '${data[pointer]['street_name']['value']} ${data[pointer]['house_number']['value']} ${data[pointer]['location']['location_name']}, ${data[pointer]['location']['postal_code']}';
-    }
-    else{
-      int agPointer = pointer + 1;
-      var ag = data['ag_$agPointer'];
-      if(ag != null && ag.length == 3){
-        listText = '${ag[0]['ag_name']['value']} ${ag[1]['ag_name']['value']} ${ag[2]['ag_name']['value']}';
-      }
-      else if(ag != null && ag.length == 2){
-        listText = '${ag[0]['ag_name']['value']} ${ag[1]['ag_name']['value']}';
-      }
-      else if(ag != null && ag.length == 1){
-        listText = '${ag[0]['ag_name']['value']}';
-      }
-      else{
-        listText = 'Keine AGs gefunden';
-      }
-    }
-    return FittedBox(
-      child: Text(
-        listText,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+  Widget _buildAddressContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Straße', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        TextField(
+          controller: _controllers['street'],
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(8.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
         ),
-      ),
+        SizedBox(height: 8),
+        Text('Hausnummer', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        TextField(
+          controller: _controllers['houseNumber'],
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(8.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text('Postleitzahl', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        TextField(
+          controller: _controllers['postalCode'],
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(8.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text('Stadt', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        TextField(
+          controller: _controllers['city'],
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(8.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+      ],
     );
-    
   }
 
+  Widget _buildListTextContent(var data, String boxname, int index) {
+    final String label;
+    final String listText;
+    int pointer = index + 1;
 
+    switch (boxname) {
+      case 'schueler':
+        label = 'Schüler';
+        listText =
+            '${data[pointer]['firstname']['value']} ${data[pointer]['lastname']['value']}, ${data[pointer]['school_class']['value']}';
+        break;
+      case 'erzieher':
+        label = 'Erzieher';
+        listText =
+            '${data[pointer]['parent']['firstname']['value']} ${data[pointer]['parent']['lastname']['value']}, ${data[pointer]['parent']['phone_number']['value']}, ${data[pointer]['parent']['email']['value']}';
+        break;
+      default:
+        label = 'AG Wahl ${index + 1}';
+        var ag;
+        switch (pointer) {
+          case 1:
+            ag = data['ag_1'];
+            break;
+          case 2:
+            ag = data['ag_2'];
+            break;
+          case 3:
+            ag = data['ag_3'];
+            break;
+          default:
+            ag = null;
+        }
+
+        if (ag != null && ag.isNotEmpty) {
+          listText = ag.map((agItem) => '${agItem['ag_name']['value']}').join(', ');
+        } else {
+          listText = 'Keine AGs gefunden';
+        }
+    }
+    if (listText == 'Keine AGs gefunden') {
+    // Wenn keine AGs gefunden wurden, entfernen wir den Controller
+    if (_controllers.containsKey('name$pointer')) {
+      _controllers.remove('name$pointer');
+    }
+    return SizedBox.shrink(); // Kein Widget zurückgeben, wenn keine AGs vorhanden sind
+   }
+    if (!_controllers.containsKey('name$pointer')) {
+      _controllers['name$pointer'] = TextEditingController();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        TextField(
+          controller: _controllers['name$pointer'],
+          decoration: InputDecoration(
+            hintText: listText,
+            contentPadding: EdgeInsets.all(8.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          onChanged: (value) {
+            // Handle text field value change
+          },
+        ),
+        if (boxname == 'erzieher')
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 8),
+              Text('Telefonnummer', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              TextField(
+                controller: _controllers['phoneNumber$pointer'],
+                decoration: InputDecoration(
+                  hintText: 'Telefonnummer',
+                  contentPadding: EdgeInsets.all(8.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              TextField(
+                controller: _controllers['email$pointer'],
+                decoration: InputDecoration(
+                  hintText: 'Email',
+                  contentPadding: EdgeInsets.all(8.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        if (boxname == 'schueler')
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 8),
+              Text('Klasse', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
+              TextField(
+                controller: _controllers['schoolClass$pointer'],
+                decoration: InputDecoration(
+                  hintText: 'Klasse',
+                  contentPadding: EdgeInsets.all(8.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  void _confirmSelection() {
+    Map<String, dynamic> result = {};
+    String allText = '';
+    List<int> allIds = [];
+
+    if (widget.boxname == 'addresse') {
+      var selectedItem = widget.items[0];
+      allText += '${_controllers['street']!.text} ${_controllers['houseNumber']!.text}\n ${_controllers['postalCode']!.text}\n ${_controllers['city']!.text}';
+      allIds.add(selectedItem['id']);
+      widget.onItemSelected({
+        'text': allText.trim(),
+        'id': allIds.isNotEmpty ? allIds.first : null,
+      });
+    } else {
+      _controllers.forEach((key, controller) {
+        var selectedItem = widget.items[int.parse(key.substring(4))]; // Extract the index from controller key
+        if (widget.boxname == 'schueler') {
+          allText += '${controller.text}\n';
+          allIds.add(selectedItem['id']);
+        } else if (widget.boxname == 'erzieher') {
+          allText += '${controller.text}\n';
+          allIds.add(selectedItem['parent']['id']);
+        } else {
+          int agPointer = int.parse(key.substring(4));
+          var selectedItemAG = widget.items['ag_$agPointer'];
+          if (selectedItemAG != null && selectedItemAG.length > 0) {
+            allText += '${controller.text}\n';
+            for (var ag in selectedItemAG) {
+              allIds.add(ag['id']);
+            }
+          }
+        }
+      });
+      widget.onItemSelected({
+        'text': allText.trim(),
+        'id': allIds,
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: _isContainerVisible
+          ? Stack(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Color(0xff3d7c88),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildOverlayText(widget.boxname),
+                        SizedBox(height: 8),
+                        if (widget.boxname == 'addresse')
+                          _buildAddressContent()
+                        else
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: widget.items.length - 1,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  _buildListTextContent(widget.items, widget.boxname, index),
+                                  SizedBox(height: 8),
+                                ],
+                              );
+                            },
+                          ),
+                        ElevatedButton(
+                          onPressed: _confirmSelection,
+                          child: Text('Bestätigen'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.cancel, color: Colors.white),
+                    onPressed: () {
+                      setState(() {
+                        _isContainerVisible = false;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            )
+          : SizedBox.shrink(),
+    );
+  }
 }
