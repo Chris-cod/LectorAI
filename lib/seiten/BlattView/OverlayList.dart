@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lectorai_frontend/seiten/BlattView/InitialOverlay.dart';
+import 'package:lectorai_frontend/seiten/BlattView/SelectableOverlayList.dart';
 
 class OverlayList extends StatefulWidget {
   final dynamic items;
@@ -17,6 +19,8 @@ class OverlayList extends StatefulWidget {
 
 class _OverlayListState extends State<OverlayList> {
   bool _isContainerVisible = true;
+  bool _showInitialOverlay = true; // Show initial overlay first
+  bool _showSelectableOverlay = false;
   final Map<String, TextEditingController> _controllers = {};
 
   @override
@@ -317,63 +321,90 @@ class _OverlayListState extends State<OverlayList> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: _isContainerVisible
-          ? Stack(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xff3d7c88),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildOverlayText(widget.boxname),
-                        SizedBox(height: 8),
-                        if (widget.boxname == 'addresse')
-                          _buildAddressContent()
-                        else
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: widget.items.length - 1,
-                            itemBuilder: (context, index) {
-                              return Column(
-                                children: [
-                                  _buildListTextContent(widget.items, widget.boxname, index),
-                                  SizedBox(height: 8),
-                                ],
-                              );
-                            },
-                          ),
-                        ElevatedButton(
-                          onPressed: _confirmSelection,
-                          child: Text('Bestätigen'),
+@override
+Widget build(BuildContext context) {
+  return Center(
+    child: _isContainerVisible
+        ? Stack(
+            children: [
+              _showInitialOverlay
+                  ? InitialOverlay(
+                      onEintragenPressed: () {
+                        setState(() {
+                          _showInitialOverlay = false;
+                        });
+                      },
+                      onAuswaehlenPressed: () {
+                        setState(() {
+                          _showInitialOverlay = false;
+                          _isContainerVisible = false;
+                          _showSelectableOverlay = true;
+                        });
+                      },
+                    )
+                  : Container(
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xff3d7c88),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildOverlayText(widget.boxname),
+                            SizedBox(height: 8),
+                            if (widget.boxname == 'addresse')
+                              _buildAddressContent()
+                            else
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: widget.items.length - 1,
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      _buildListTextContent(widget.items, widget.boxname, index),
+                                      SizedBox(height: 8),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ElevatedButton(
+                              onPressed: _confirmSelection,
+                              child: Text('Bestätigen'),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: IconButton(
+                  icon: Icon(Icons.cancel, color: Colors.white),
+                  onPressed: () {
+                    setState(() {
+                      _isContainerVisible = false;
+                    });
+                  },
+                ),
+              ),
+            ],
+          )
+        : _showSelectableOverlay
+            ? Navigator(
+                // Hier Navigator statt Navigator.push, um den Kontext nicht zu verlieren
+                onGenerateRoute: (settings) => MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) => SelectableOverlayList(
+                    items: widget.items,
+                    onItemSelected: widget.onItemSelected,
+                    boxname: widget.boxname,
                   ),
                 ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: IconButton(
-                    icon: Icon(Icons.cancel, color: Colors.white),
-                    onPressed: () {
-                      setState(() {
-                        _isContainerVisible = false;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            )
-          : SizedBox.shrink(),
-    );
-  }
+              )
+            : SizedBox.shrink(),
+  );
+}
 }
