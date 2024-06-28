@@ -1,16 +1,53 @@
-# lectorai_frontend
 
-A new Flutter project.
+# LectorAI Frontend
 
-## Getting Started
+## Voraussetzungen
 
-This project is a starting point for a Flutter application.
+- **Flutter SDK**: [Installieren](https://docs.flutter.dev/get-started/install)
+- **IDE (Android Studio oder Visual Studio Code)**:
+  - Android Studio: [Installieren](https://developer.android.com/studio)
+  - Visual Studio Code: [Installieren](https://code.visualstudio.com/)
+- **Plugins**:
+  - Dart und Flutter Plugins über den Plugin-Marktplatz Ihrer IDE installieren
+- **Physisches Android-Gerät** mit aktiviertem USB-Debugging
 
-A few resources to get you started if this is your first Flutter project:
+### Installation überprüfen
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Stellen Sie sicher, dass Flutter korrekt installiert ist:
+```sh
+flutter doctor
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Repository klonen
+
+Klonen Sie das Repository mit folgendem Befehl:
+```sh
+git clone https://github.com/Chris-cod/LectorAI.git
+```
+
+### Abhängigkeiten installieren
+
+Öffnen Sie das Projekt in Ihrer IDE und installieren Sie die Abhängigkeiten:
+```sh
+flutter pub get
+```
+
+### Gerät verbinden
+
+Verbinden Sie Ihr Android-Gerät und überprüfen Sie, ob es erkannt wird:
+```sh
+flutter devices
+```
+
+### App ausführen
+
+Um die App auf einem spezifischen Gerät zu starten:
+```sh
+flutter run -d <device_id>
+```
+
+### IP-Adresse anpassen
+
+Die App starten, auf das Einstellungs-Icon auf der Login-Seite drücken, 
+um auf die Einstellungsseite zu gelangen. 
+Dort gibt man seine lokale IP-Adresse ein und speichert diese, damit man sich anmelden kann.
