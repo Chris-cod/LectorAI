@@ -1,11 +1,5 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:lectorai_frontend/models/klasse.dart';
 import 'package:lectorai_frontend/models/schueler.dart';
-import 'package:lectorai_frontend/models/schueler_info.dart';
 import 'package:lectorai_frontend/seiten/Klasse/schuler_details.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 

@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({super.key, required this.loggedIn});
+  final bool loggedIn;
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -13,8 +14,12 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool isDarkMode = false;
-  bool no_db = false;
-  bool no_change = false;
+  bool desableDbComparison = false;
+  bool dontSaveChanges = false;
+  bool useDefaultIP = true;
+  String serverAddress = '192.168.0.166'; // Default IP-Adresse
+
+  final TextEditingController _ipController = TextEditingController();
 
   @override
   void initState() {
@@ -57,25 +62,65 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 10),
             TextField(
+              controller: _ipController,
               decoration: InputDecoration(
                 labelText: 'Serveradresse',
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
+                enabled: !useDefaultIP,
+              ),
+              style: TextStyle(
+                color: useDefaultIP ? Colors.grey : Colors.black,
               ),
             ),
-            const SizedBox(height: 20),
-            buildCheckboxTile(
-              'Aenderung von Datenbank abholen',
-              no_db,
-                  (value) => setState(() => no_db = value ?? false),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Checkbox(
+                  value: useDefaultIP,
+                  onChanged: (value) {
+                    setState(() {
+                      useDefaultIP = value ?? true;
+                      if (useDefaultIP) {
+                        serverAddress = '192.168.0.166';
+                        _ipController.text = serverAddress;
+                      }
+                      _saveServerAddress();
+                    });
+                  },
+                ),
+                const Text('Default IP-Adresse verwenden')
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: useDefaultIP ? null : _saveServerAddress,
+                  child: const Text('Speichern'),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             buildCheckboxTile(
-              'Change nicht übertragen',
-              no_change,
-                  (value) => setState(() => no_change = value ?? false),
+              'KI Ergebnis abrufen',
+              desableDbComparison,
+              (value) => setState(() {
+                desableDbComparison = value ?? false;
+                _saveSettings();
+              }),
+            ),
+            const SizedBox(height: 20),
+            buildCheckboxTile(
+              'Änderungen nicht übertragen',
+              dontSaveChanges,
+              (value) => setState(() {
+                dontSaveChanges = value ?? false;
+                _saveSettings();
+              }),
             ),
           ],
         ),
@@ -84,16 +129,20 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget buildCheckboxTile(String title, bool value, ValueChanged<bool?> onChanged) {
-    return ListTile(
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 16),
-      ),
-      trailing: Checkbox(
-        value: value,
-        onChanged: onChanged,
-      ),
-    );
+    if(widget.loggedIn) {
+      return ListTile(
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 16),
+        ),
+        trailing: Checkbox(
+          value: value,
+          onChanged: onChanged,
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget buildThemeToggle() {
@@ -118,16 +167,33 @@ class _SettingsPageState extends State<SettingsPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       isDarkMode = prefs.getBool('isDarkMode') ?? false;
-      no_db = prefs.getBool('no_db') ?? false;
-      no_change = prefs.getBool('no_change') ?? false;
+      desableDbComparison = prefs.getBool('desableDbComparison') ?? false;
+      dontSaveChanges = prefs.getBool('dontSaveChanges') ?? false;
+      serverAddress = prefs.getString('serverAddress') ?? '192.168.0.166';
+      useDefaultIP = serverAddress == '192.168.0.166';
+      _ipController.text = serverAddress;
     });
   }
 
   void _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('isDarkMode', isDarkMode);
-    prefs.setBool('no_db', no_db);
-    prefs.setBool('no_change', no_change);
+    prefs.setBool('desableDbComparison', desableDbComparison);
+    prefs.setBool('dontSaveChanges', dontSaveChanges);
+    prefs.setString('serverAddress', serverAddress);
+  }
+
+  void _saveServerAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (!useDefaultIP) {
+        serverAddress = _ipController.text;
+      }
+    });
+    prefs.setString('serverAddress', serverAddress);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('IP-Adresse gespeichert')),
+    );
   }
 }
 
