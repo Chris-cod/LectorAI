@@ -21,23 +21,27 @@ class ThemeProvider extends ChangeNotifier {
     } else {
       // Light mode
       newThemeData = ThemeData.light().copyWith(
-        scaffoldBackgroundColor: const Color(0xFFB9B5C6), // Hintergrundfarbe
+        scaffoldBackgroundColor: const Color(0xFFF8F9FA), // Hintergrundfarbe
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFB9B5C6), // AppBar-Farbe
+          backgroundColor: Color.fromARGB(255, 233, 229, 240),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFB6CEF9), // Button-Farbe
+            backgroundColor: Color.fromARGB(255, 233, 229, 240),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color(0xFFB6CEF9), // Eingabefeld-Farbe
+          fillColor: Color.fromARGB(255, 233, 229, 240),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25.0),
             borderSide: BorderSide.none,
-          ),
+          ),          
         ),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 116, 82, 163),
+        ),
+        
         // Your dark mode theme data here
       );
     }
