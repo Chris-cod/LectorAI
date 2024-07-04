@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(20)), // Abgerundete Ecken
           ),
           child: const Icon(Icons.camera_alt_rounded,
-              size: 120.0), // Das Icon in der Mitte des Buttons
+              size: 120.0, ), // Das Icon in der Mitte des Buttons
         ),
       ),
     );
