@@ -39,8 +39,8 @@ class Repository {
         var data =
             jsonDecode(response.body); // Gibt die Daten aus dem JSON-Objekt aus
         lehrer.username = username; // Speichert die Daten in der Lehrerinstanz
-        lehrer.tokenRaw = data['token_raw'];
-        lehrer.lehrerId = data['person_id'];
+        lehrer.lehrerId = 1;
+        lehrer.token = data['access-token'];
         lehrer.isloggedin = true;
         return lehrer; // Anmeldung erfolgreich
       } else {
@@ -72,7 +72,7 @@ class Repository {
         password == jsonResponse['password']) {
       lehrer.username = jsonResponse[
           "teacher_name"]; // Speichert die Daten in der Lehrerinstanz
-      lehrer.tokenRaw = jsonResponse['token_raw'];
+      lehrer.token = jsonResponse['token_raw'];
       lehrer.lehrerId = jsonResponse['id'];
       lehrer.isloggedin = true;
       return lehrer; // Anmeldung erfolgreich
@@ -81,20 +81,19 @@ class Repository {
     }
   }
 
-  Future<List<Klasse>> fetchTeacherClasses(String authToken, int id) async {
+  Future<List<String>> fetchTeacherClasses(String authToken) async {
     await _loadServerAddress();
-    List<Klasse> classes =
-        []; // Initialisierung einer leeren Liste für Klassennamen.
-    List gettedClasses = [];
+    List<String> classes = []; // Initialisierung einer leeren Liste für Klassennamen.
+    List<String> gettedClasses = [];
     // Erstellen der vollständigen URL zum Abrufen der Klassen eines bestimmten Lehrers.
-    var url = Uri.parse('$backendURL/teacher/$id/classes');
+    var url = Uri.parse('$backendURL/classes');
     try {
       // Ausführen der HTTP GET-Anfrage mit Authentifizierungstoken im Header.
       var response = await http.get(
         url,
         headers: {
           // Nutzt das zuvor gespeicherte Auth-Token.
-          "token": authToken,
+          "access-token": authToken,
         },
       );
       /* Überprüfung, ob der HTTP-Statuscode 200 OK ist, 
@@ -103,24 +102,10 @@ class Repository {
         var jsonData = json.decode(response.body);
         print(jsonData); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
         // Überprüfung, ob das JSON-Datenobjekt das Schlüsselwort 'classes' enthält.
-        gettedClasses = jsonData['classes'];
-        if (gettedClasses.isNotEmpty) {
           // Casten der Klassennamen in Strings.
           // Durchlaufen aller Einträge in 'classes' und Extrahieren der Klassennamen.
-          for (var item in gettedClasses) {
-            Klasse klasse = Klasse(
-                klasseId: item['id'],
-                klasseName:
-                    item['class_name']); // Instanzierung eines Klasse-Objekts
-            classes.add(klasse); // Hinzufügen des Klassennamens zur Liste.
-          }
+          classes = jsonData.cast<String>();
           return classes;
-        } else {
-          // Wenn die Daten unvollständig sind oder das Schlüsselwort 'classes' fehlt,
-          // wird eine Warnung ausgegeben und eine leere Liste zurückgegeben.
-          print('Data is incomplete or not as expected');
-          return [];
-        }
       } else {
         // Bei jedem anderen Statuscode als 200 wird eine Fehlermeldung ausgegeben.
         print("Fehler beim Abrufen der Daten: ${response.statusCode}");
@@ -137,21 +122,19 @@ class Repository {
   /* Retrieves a list of classes from a local JSON file.
    Returns a Future that resolves to a List of [Klasse] objects.
    Throws an error if there is an issue loading the classes from the JSON file.*/
-  Future<List<Klasse>> getClassesFromLocalJson(String token, int id) async {
+  Future<List<String>> getClassesFromLocalJson() async {
     var jsonString = await rootBundle.loadString(
         'assets/Daten/user_and_passwort_test.json'); // Loads the JSON file from assets
     var jsonResponse =
         jsonDecode(jsonString); // Decodes the JSON string into a Dart object
     var gettedClasses = jsonResponse['classes'];
-    List<Klasse> classes = [];
+    List<String> classes = [];
     if (gettedClasses.isNotEmpty) {
       // Casting the class names to strings.
       // Iterating through all entries in 'classes' and extracting the class names.
       for (var item in gettedClasses) {
-        Klasse klasse = Klasse(
-            klasseId: item['classe_id'],
-            klasseName: item['classe_name']); // Instantiating a Klasse object
-        classes.add(klasse); // Adding the class name to the list.
+        String klasseName =  item['classe_name']; // Instantiating a Klasse object
+        classes.add(klasseName); // Adding the class name to the list.
       }
       return classes;
     } else {
@@ -169,32 +152,29 @@ class Repository {
    If an error occurs during the HTTP request, the method throws an exception.
   */
   Future<List<Schueler>> getClassStudents(
-      String authToken, int lehrerId, int klasseId) async {
+      String authToken,  String klasseName) async {
         await _loadServerAddress();
     List<Schueler> students =
         []; // Initialization of an empty list for student names.
     List<dynamic> gettedStudent = [];
     // Creating the complete URL to retrieve the students of a specific teacher's class.
     var url =
-        Uri.parse('$backendURL/teacher/$lehrerId/class/$klasseId/students');
+        Uri.parse('$backendURL/class/$klasseName');
     try {
       // Executing the HTTP GET request with the authentication token in the header.
       var response = await http.get(
         url,
         headers: {
           // Using the previously stored auth token.
-          "token": authToken,
+          "access-token": authToken,
         },
       );
       /* Checking if the HTTP status code is 200 OK,
        indicating a successful request. */
       if (response.statusCode == 200) {
         var jsonData = json.decode(response
-            .body); // Outputting the received JSON data for debugging purposes.
-        // Checking if the JSON data object contains the keyword 'persons'.
-        gettedStudent = jsonData[
-            'persons']; // Outputting the received JSON data for debugging purposes.
-        print('response list: $gettedStudent');
+            .body); 
+        gettedStudent = jsonData; 
         if (gettedStudent.isNotEmpty) {
           for (var item in gettedStudent) {
             Schueler schueler = Schueler(
@@ -235,8 +215,7 @@ class Repository {
    Returns a list of [Schueler] objects.
    Throws an error if there is an issue loading the class from the JSON file.
   */
-  Future<List<Schueler>> fetchStudentFromLocalJson(
-      String token, int lehrerid, int classId) async {
+  Future<List<Schueler>> fetchStudentFromLocalJson() async {
     List<Schueler> students = [];
     final String jsonSchueler = await rootBundle.loadString(
         'assets/Daten/Schueler12A.json'); // Loads the JSON file from assets
@@ -274,7 +253,7 @@ class Repository {
         url,
         headers: {
           // Nutzt das zuvor gespeicherte Auth-Token.
-          "token": authToken,
+          "access-token": authToken,
         },
       );
       /* Überprüfung, ob der HTTP-Statuscode 200 OK ist, 
@@ -285,21 +264,21 @@ class Repository {
 
         if (jsonData.isNotEmpty) {
           var adresse = jsonData['address'];
-          var kontakt = jsonData['parent'];
+          var kontakt = jsonData['parents'];
           var ags = jsonData['ags'];
           print(ags);
           Adresse studentAdresse = Adresse(
-              strasse: adresse['street_name'],
+              strasse: adresse['street'],
               hausnummer: adresse['house_number'],
               postleitzahl: adresse['postal_code'],
-              ort: adresse['location_name']);
+              ort: adresse['location_name'] ?? 'Bremen');
           Kontakt erzieher = Kontakt(
-              vorname: kontakt['firstname'],
-              nachname: kontakt['lastname'],
-              telefonnummer: kontakt['phone_number'],
-              email: kontakt['email']);
+              vorname: kontakt[0]['firstname'],
+              nachname: kontakt[0]['lastname'],
+              telefonnummer: kontakt[0]['phone_number'],
+              email: kontakt[0]['email']);
           SchuelerInfo info = SchuelerInfo(
-              id: jsonData['person_id'],
+              id: jsonData['id'],
               vorname: jsonData['firstname'],
               nachname: jsonData['lastname'],
               adresse: studentAdresse,
@@ -400,7 +379,7 @@ class Repository {
             Uri.parse('$backendURL/image'), // URL für das Senden des Bildes
             headers: {
               'Content-Type': 'application/json',
-              'token': authToken,
+              'access-token': authToken,
             },
             body: toSend,
           )
@@ -430,7 +409,7 @@ class Repository {
             Uri.parse('$backendURL/change'), // URL für das Senden des Bildes
             headers: {
               'Content-Type': 'application/json',
-              'token': token,
+              'access-token': token,
             },
             body: toSend,
           )

@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static const double iconAndTextSize = 36.0;
   static const double cameraIconSize = 120.0;
-  List<Klasse> classes = [];
+  List<String> classes = [];
   bool isLoading = true; // Anzeigen eines Ladeindikators
   Repository repository =
       Repository(); // Erstellung einer Instanz der Repository-Klasse
@@ -32,13 +32,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void loadClasses() async {
-    List<Klasse> fetchedClasses;
+    List<String> fetchedClasses = [];
     if (widget.demoModus) {
-      fetchedClasses = await repository.getClassesFromLocalJson(
-          widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
+      fetchedClasses = await repository.getClassesFromLocalJson();
     } else {
-      fetchedClasses = await repository.fetchTeacherClasses(
-          widget.lehrer.tokenRaw, widget.lehrer.lehrerId);
+      fetchedClasses = await repository.fetchTeacherClasses(widget.lehrer.token);
     }
 
     if (fetchedClasses.isNotEmpty) {
@@ -119,7 +117,7 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(
                   builder: (context) => CameraPage(
-                        token: widget.lehrer.tokenRaw,
+                        token: widget.lehrer.token,
                         dmodus: widget.demoModus,
                       )),
             );
@@ -151,7 +149,7 @@ class _HomePageState extends State<HomePage> {
           runSpacing: 15,
           children: classes
               .map((className) =>
-                  _buildClassButton(className.klasseName, context))
+                  _buildClassButton(className, context))
               .toList(),
         ),
       ),
@@ -161,17 +159,12 @@ class _HomePageState extends State<HomePage> {
   Widget _buildClassButton(String label, BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        final int id = classes
-            .firstWhere((element) => element.klasseName == label)
-            .klasseId;
         print("Button $label wurde gedrückt.");
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => Schuelern(
-                      klasseId: id,
-                      token: widget.lehrer.tokenRaw,
-                      lehrerId: widget.lehrer.lehrerId,
+                      token: widget.lehrer.token,
                       klasseName: label,
                       demoModus: widget.demoModus,
                     )));

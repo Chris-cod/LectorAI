@@ -8,8 +8,9 @@ import 'dart:ui';
 class ViewImagePage extends StatelessWidget 
 {
   final Uint8List imageBytes;
+  final VoidCallback? onReturn;
 
-  const ViewImagePage({Key? key, required this.imageBytes}) : super(key: key);
+  const ViewImagePage({Key? key, required this.imageBytes, this.onReturn}) : super(key: key);
 
   @override
   Widget build(BuildContext context) 
@@ -20,6 +21,7 @@ class ViewImagePage extends StatelessWidget
         children: [
           Positioned.fill(
             child: Image.memory(
+              
               imageBytes, // Lädt das Bild direkt aus den übergebenen Bytes.
               fit: BoxFit.cover, // Skaliert das Bild, um den gesamten Bildschirm auszufüllen.
             ),
@@ -53,6 +55,9 @@ class ViewImagePage extends StatelessWidget
               onPressed: () 
               {
                 Navigator.of(context).pop(); // Zurück zur vorherigen Seite.
+                if (onReturn != null) {
+                  onReturn!();
+                }
               },
             ),
           ),

@@ -6,11 +6,13 @@ class OverlayList extends StatefulWidget {
   final dynamic items;
   final String boxname;
   final ValueChanged<Map<String, dynamic>> onItemSelected;
+  final bool isDemoModus;
 
   OverlayList({
     required this.items,
     required this.onItemSelected,
     required this.boxname,
+    this.isDemoModus = false,
   });
 
   @override
@@ -34,6 +36,13 @@ class _OverlayListState extends State<OverlayList> {
   @override
   void initState() {
     super.initState();
+    if(!widget.isDemoModus) {
+      _isContainerVisible = true;
+      _showInitialOverlay = false;
+      _showSelectableOverlay = true;
+    } else {
+      _isContainerVisible = true;
+    }
     // Initialize controllers based on the boxname
     if (widget.boxname == 'addresse' && widget.items.isNotEmpty) {
       var selectedItem = widget.items[0];
