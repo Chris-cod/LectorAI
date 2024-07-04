@@ -4,12 +4,10 @@ import 'package:lectorai_frontend/seiten/Klasse/schuler_details.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 
 class Schuelern extends StatefulWidget {
-  final int klasseId;
-  final int lehrerId;
   final String token;
   final String klasseName;
   final bool demoModus;
-  const Schuelern({super.key, required this.klasseId, required this.lehrerId, required this.token, required this.klasseName, required this.demoModus});
+  const Schuelern({super.key, required this.token, required this.klasseName, required this.demoModus});
 
   @override
   SchulernListState createState() => SchulernListState();
@@ -29,8 +27,8 @@ class SchulernListState extends State<Schuelern> {
 
   void initList() async {
     List<Schueler> allStudent = widget.demoModus
-        ? await repository.fetchStudentFromLocalJson(widget.token, widget.lehrerId, widget.klasseId)
-        : await repository.getClassStudents(widget.token, widget.lehrerId, widget.klasseId);
+        ? await repository.fetchStudentFromLocalJson()
+        : await repository.getClassStudents(widget.token,  widget.klasseName);
 
     print("Alle Schüler von Backend: ${allStudent.toString()}");
     setState(() {

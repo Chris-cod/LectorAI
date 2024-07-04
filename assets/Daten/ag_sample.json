@@ -48,6 +48,13 @@
                 "value": "Chor",
                 "similarity_score": 1.0
             }
+        },
+        {
+            "id": 7,
+            "ag_name": {
+                "value": "Band",
+                "similarity_score": 1.0
+            }
         }
     ],
     "ag_3": [
@@ -55,6 +62,13 @@
             "id": 5,
             "ag_name": {
                 "value": "Robotik",
+                "similarity_score": 1.0
+            }
+        },
+        {
+            "id": 5,
+            "ag_name": {
+                "value": "Programmierung",
                 "similarity_score": 1.0
             }
         }

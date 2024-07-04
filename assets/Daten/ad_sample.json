@@ -36,7 +36,43 @@
               },
               "similarity_score": 0.45966812500000004
           }
-      }
+      },
+      {
+        "id": 149,
+        "firstname": {
+            "value": "Sylvio",
+            "similarity_score": 0.4
+        },
+        "lastname": {
+            "value": "Timmer",
+            "similarity_score": 0.44444445
+        },
+        "school_class": {
+            "value": "8D",
+            "similarity_score": 1.0
+        },
+        "similarity_score": 0.6148148166666667,
+        "parent": {
+            "id": 150,
+            "firstname": {
+                "value": "Andrew",
+                "similarity_score": 0.5555556
+            },
+            "lastname": {
+                "value": "Timmer",
+                "similarity_score": 0.4
+            },
+            "phone_number": {
+                "value": "7532947",
+                "similarity_score": 0.45454547
+            },
+            "email": {
+                "value": "a-timmer@hotmail.de",
+                "similarity_score": 0.42857143
+            },
+            "similarity_score": 0.45966812500000004
+        }
+    }
   ],
   "addresses": [
       {

@@ -5,7 +5,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:lectorai_frontend/models/adresse.dart';
+import 'package:lectorai_frontend/models/schueler.dart';
+import 'package:lectorai_frontend/seiten/BlattView/InitialOverlay.dart';
 import 'package:lectorai_frontend/seiten/BlattView/OverlayList.dart';
+import 'package:lectorai_frontend/seiten/BlattView/SelectableOverlayList.dart';
 import 'package:lectorai_frontend/seiten/CamerPage/ViewImagePage.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,13 +27,13 @@ class PdfViwer extends StatefulWidget {
   PdfViwerState createState() => PdfViwerState();
 }
 
-class PdfViwerState extends State<PdfViwer> {
+class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   int? currentPage = 0;
   bool pdfReady = false;
   OverlayEntry? _overlayEntry, _secondOverlay;
   // ignore: unused_field
   late PDFViewController _controller;
-  String? path, displayTextErzieher, displayTextStudent, displayTextAdresse, displayTextAG, docType;
+  String? path, displayTextErzieher, displayTextStudent, displayTextAdresse, displayTextAG, docType, housNummer;
   Map<String, dynamic> _jsonData = {};
   Map<String, dynamic> _changeData = {};
   bool dataLoaded = false;
@@ -39,7 +43,7 @@ class PdfViwerState extends State<PdfViwer> {
   bool agIsChecked = false;
   bool isChecked = false;
   bool isSaved = false;
-  bool isOverlayVisible = false;
+  bool hideSaveButton = true;
   bool? desableDbComparison, dontSaveChanges;
   final int _currentIndex = 0;
   int? personId, parentId, addressId;
@@ -47,39 +51,45 @@ class PdfViwerState extends State<PdfViwer> {
   double? personScore, parentScore, addressScore, agScore;
   Repository repository = Repository();
   List<String> type = ['ad', 'ag'];
+  Adresse adresse = Adresse();
+  Schueler schueler = Schueler(id: 0,vorname: '',nachname: '');
   
   
 
   @override
   void initState() {
     super.initState();
-    fetchDataAndSetting().then((value) => setState(() {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showOverlay();
-        });
-    }));
+     WidgetsBinding.instance.addObserver(this);
+    fetchDataAndSetting();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOverlay();
+    });
   }
 
   Future<void> fetchDataAndSetting() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     desableDbComparison = prefs.getBool('desableDbComparison');
     dontSaveChanges = prefs.getBool('dontSaveChanges');
+    print('Aktuelle no_db value: $desableDbComparison');
     Map<String, dynamic> responseJson;
     if(widget.demoModus){
-      docType = getRandomDemoDocType(type);
-      final String response = await rootBundle.loadString('assets/Daten/${docType}_sample.json');
+      var str = getRandomDemoDocType(type);
+      final String response = await rootBundle.loadString('assets/Daten/${str}_sample.json');
       responseJson = json.decode(response);
+      docType = responseJson['doc_type'];
     }
     else{
       //responseJson = await repository.testADOverlay(widget.authToken);//sendImage(widget.authToken, widget.imageBytes);
       responseJson = await repository.sendImage(widget.authToken, widget.imageBytes, desableDbComparison!);
+      docType = desableDbComparison!? responseJson['doctype'] : responseJson['doc_type'];
     }
     
-    docType = desableDbComparison!? responseJson['doctype'] : responseJson['doc_type'];
+    
     var f = await getFileFromAsset("assets/Doc/$docType.pdf");
     setState(() {
       _jsonData = responseJson;
       path = f.path;
+      _showOverlay();
     });
 
     print(path);
@@ -112,20 +122,37 @@ class PdfViwerState extends State<PdfViwer> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _overlayEntry?.remove();
     super.dispose();
   }
 
   void _showOverlay() {
     _overlayEntry?.remove();
-    _overlayEntry = _createOverlayEntry(context);
+    _overlayEntry = _createOverlayEntry();
     if (_overlayEntry != null) {
       Overlay.of(context).insert(_overlayEntry!);
       setState(() {
-        isOverlayVisible = true;
       });
     }
     
+  }
+
+   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Called when the widget’s dependencies change.
+    // Handle the overlay display logic if needed.
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      _showOverlay();
+    } else if (state == AppLifecycleState.paused) {
+      removeFirstOverlay();
+    }
   }
 
   void _showSecondOverlay(var data , String boxname) {
@@ -137,13 +164,18 @@ class PdfViwerState extends State<PdfViwer> {
     _overlayEntry?.remove();
     _overlayEntry = null;
     setState(() {
-      isOverlayVisible = false;
     });
   }
 
   void removeSecondOverlay() {
     _secondOverlay?.remove();
     _secondOverlay = null;
+  }
+
+  void _restoreOverlay() {
+    setState(() {
+      _showOverlay();
+    });
   }
 
   @override
@@ -153,9 +185,17 @@ class PdfViwerState extends State<PdfViwer> {
         title: const Text("Erfasste Schüler Blatt"),
         leading:GestureDetector(
           onTap: () {
-            removeFirstOverlay();
-            removeSecondOverlay();
-            Navigator.pop(context);
+            if(isChecked){
+              removeFirstOverlay();
+              removeSecondOverlay();
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            }
+            else{
+              removeFirstOverlay();
+              removeSecondOverlay();
+              Navigator.pop(context);
+            }
           },
           child: Container(
             padding: const EdgeInsets.all(15.0),
@@ -164,37 +204,41 @@ class PdfViwerState extends State<PdfViwer> {
           )
           
         ),
-        actions: [
-          Positioned(
+        actions: !isChecked 
+        ? [
+           Positioned(
               top: MediaQuery.of(context).size.height * 0.05,
               left: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width * 0.1 / 2),
               child: IconButton(
                 icon: Icon(Icons.remove_red_eye, size: MediaQuery.of(context).size.width * 0.05),
                 onPressed: () 
                 {
-                  if(isOverlayVisible){
-                    removeFirstOverlay();
-                      removeSecondOverlay();
                     //Navigieren zur ViewImagePage mit dem Byte-Array
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ViewImagePage(imageBytes: widget.imageBytes)
-                    ));
-                  }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewImagePage(imageBytes: widget.imageBytes, onReturn: _restoreOverlay,),
+                        ),
+                      ).then((value) => _restoreOverlay());
+                      removeFirstOverlay();
+                      removeSecondOverlay();
+                    
                 },
               ),
             ),
-        ],
+        ]
+        : null,
       ),
       body: path != null
           ? Stack(
               children: [
                 PDFView(
                   filePath: path,
-                  enableSwipe: false,
-                  swipeHorizontal: false,
+                  enableSwipe: true,
+                  swipeHorizontal: true,
                   autoSpacing: false,
-                  pageFling: false,
-                  pageSnap: false,
+                  pageFling: true,
+                  pageSnap: true,
                   defaultPage: currentPage!,
                   fitPolicy: FitPolicy.BOTH,
                   preventLinkNavigation: false,
@@ -219,7 +263,7 @@ class PdfViwerState extends State<PdfViwer> {
                     onScaleEnd: (_) {},
                   ),
                 ),
-                if (isChecked)
+                if (!hideSaveButton)
                   Positioned(
                     bottom: 20,
                     left: MediaQuery.of(context).size.width * 0.25,
@@ -232,24 +276,40 @@ class PdfViwerState extends State<PdfViwer> {
     );
   }
 
-  OverlayEntry _createOverlayEntry(BuildContext context) {
+  OverlayEntry _createOverlayEntry() {
     try {
       print(docType);
       if (docType == 'Adresse' || docType == 'AD') {
-        var student = _jsonData['students'];
-        Map<String,dynamic> firststudent = student[_currentIndex];
-        displayTextStudent = '${firststudent['firstname']['value']}\n${firststudent['lastname']['value']}\n${firststudent['school_class']['value']}';
-        personId = firststudent['id'];
-        personScore = firststudent['similarity_score'];
-        var parent = firststudent['parent'];
-        displayTextErzieher = '${parent['firstname']['value']}\n${parent['lastname']['value']}\n${parent['phone_number']['value']}\n${parent['email']['value']}';
-        parentId = parent['id'];
-        parentScore = parent['similarity_score'];
-        var newAdress = _jsonData['addresses'];
-        Map<String,dynamic> firstNewAdress = newAdress[0];
-        displayTextAdresse = '${firstNewAdress['street_name']['value']} ${firstNewAdress['house_number']}\n${firstNewAdress['location']['location_name']}\n${firstNewAdress['location']['postal_code']}';
-        addressScore = (firstNewAdress["similarity_score"] + firstNewAdress["similarity_score"])/2;
-        addressId = firstNewAdress['id'];
+        var AD_data = _constructADTextInformation(_jsonData);
+        var student, newAdress, signature, sig;
+        displayTextStudent = AD_data['student'];
+        displayTextErzieher = AD_data['parent'];
+        displayTextAdresse = AD_data['address'];
+        if(!desableDbComparison!){
+          newAdress = _jsonData['addresses'];
+          addressId = newAdress[0]['id'];
+          student = _jsonData['students'];
+          var val = _jsonData['signature_box_found'];
+          if(!val){
+            sig = false;
+            signature = 'Not Found';
+          }
+          else{
+            sig = true;
+            signature ='Found';
+          }
+        }
+        else{
+          var val = _jsonData['signature'];
+          if(val == null || val.isEmpty){
+            sig = false;
+            signature = 'Not Found';
+          }
+          else{
+            sig = true;
+            signature ='Found';
+          };
+        }
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
@@ -262,12 +322,12 @@ class PdfViwerState extends State<PdfViwer> {
               _iconsOverlay(0.65, 0.68, newAdress, 'addresse'),
               // Add signature box
               _positionedOverlaywithText(
-                'Signature: ${_jsonData['signature_box_found'] ? "Found" : "Not Found"}',
+                'Signature: $signature',
                 0.5,
-                0.07,
-                0.78,
-                0.15,
-                _jsonData['signature_box_found'] ? 1.0 : 0.0,
+                0.04,
+                0.81,
+                0.195,
+                sig ? 1.0 : 0.0,
               ),
             ],
           ),
@@ -279,8 +339,8 @@ class PdfViwerState extends State<PdfViwer> {
         bool sig;
         print('aktuelle no_db value ${desableDbComparison!}');
         if(desableDbComparison!){
-          displayTextStudent = '${_jsonData['child_last_name']['prediction']}\n${_jsonData['child_first_name']['prediction']}\n${_jsonData['child_class']['prediction']}';
-          personScore = (_jsonData['child_last_name']['confidence'] + _jsonData['child_first_name']['confidence'] + _jsonData['child_class']['confidence'])/3;
+          displayTextStudent = '${_jsonData['child_last_name']?['prediction'] ?? 'Muster'}\n${_jsonData['child_first_name']?['prediction'] ?? 'Max'}\n${_jsonData['child_class']?['prediction'] ?? '0X'}';
+          personScore = (_jsonData['child_last_name']?['confidence'] ?? 0.0 + _jsonData['child_first_name']?['confidence'] ?? 0.0 + _jsonData['child_class']?['confidence'] ?? 0.0)/3;
           displayTextAG = _constructAGText(_jsonData);
           var val = _jsonData['signature'];
           if(val == null || val.isEmpty){
@@ -294,15 +354,19 @@ class PdfViwerState extends State<PdfViwer> {
         }
         else{
           student = _jsonData['students'];
-          Map<String,dynamic> fs = student[0];
-          displayTextStudent = '${fs["firstname"]['value']}\n${fs['lastname']['value']}\n${fs['school_class']['value']}';
-          print(displayTextStudent);
-          personId = fs['id'];
-          personScore = fs['similarity_score'];
+          if(student.isEmpty){
+            displayTextStudent = 'Keine Schüler gefunden';
+            personScore = 0.0;
+          }else{
+            Map<String,dynamic> fs = student[0];
+            displayTextStudent = '${fs["lastname"]?['value'] ?? 'Muster'}\n${fs['firstname']?['value'] ?? 'Max'}\n${fs['school_class']?['value'] ?? '0X'}';
+            personId = fs['id'];
+            personScore = fs['similarity_score'] ?? 0.0;
+          }
           displayTextAG = _constructAGText(_jsonData); 
           sig = _jsonData['signature_box_found'] ? true : false;
           var val = _jsonData['signature_box_found'];
-          if(val == null || val.isEmpty){
+          if(!val){
             sig = false;
             signature = 'Not Found';
           }
@@ -311,8 +375,6 @@ class PdfViwerState extends State<PdfViwer> {
             signature ='Found';
           }
         }
-        
-        print(displayTextAG);
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
@@ -379,6 +441,7 @@ class PdfViwerState extends State<PdfViwer> {
               });
               removeSecondOverlay();
             }, boxname: boxname,
+            isDemoModus: widget.demoModus,
           ),
         ),
       ),
@@ -436,25 +499,17 @@ class PdfViwerState extends State<PdfViwer> {
                 }
                 if(parentIsChecked && personIsChecked && addressIsChecked || agIsChecked && personIsChecked){
                   isChecked = true;
+                  hideSaveButton = false;
                   if(docType == 'Adresse' || docType == 'AD'){
-                    _changeData = {
-                      'doc_type': docType,
-                      'person_id': personId,
-                      'parent_id': parentId,
-                      'address_id': addressId,
-                    };
+                    _changeData = buildADChangeResponse();
                   }
                   else{
-                    _changeData = {
-                      'doc_type': docType,
-                      'person_id': personId,
-                      'ags': agIds,
-                    };
+                    _changeData = buildAGChangeResponse();
                   }
                 }
+                print('Change Daten zu speichern: \n ${_changeData.toString()}');
               });
               _showOverlay();
-              print(_changeData.toString());
             },
           ),
         ],
@@ -498,114 +553,223 @@ class PdfViwerState extends State<PdfViwer> {
         alignment: Alignment.bottomCenter,
         child: ElevatedButton(
           onPressed: () async {
-            if(dontSaveChanges!){
+            if(widget.demoModus!){
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Änderungen übertragen deaktiviert'),
-                    duration: Duration(seconds: 4),
+                    content: Text('Demo-Modus Änderungen gespeichert'),
+                    duration: Duration(seconds: 5),
                   ),
               );
             }
             else{
-              isSaved = await repository.saveChanges(widget.authToken, _changeData);
-              if(isSaved){
-                // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
+              if(dontSaveChanges!){
+              ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Änderungen erfolgreich übertragen und gespeichert'),
-                    duration: Duration(seconds: 4),
+                    content: Text('Änderungen übertragen deaktiviert'),
+                    duration: Duration(seconds: 5),
                   ),
-                );
+              );
               }
               else{
-                // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fehler beim Speichern der Änderungen'),
-                    duration: Duration(seconds: 4),
-                  ),
-                );
+                isSaved = await repository.saveChanges(widget.authToken, _changeData);
+                if(isSaved){
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Änderungen erfolgreich übertragen und gespeichert'),
+                      duration: Duration(seconds: 5),
+                    ),
+                  );
+                }
+                else{
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Fehler beim Speichern der Änderungen'),
+                      duration: Duration(seconds: 5),
+                    ),
+                  );
+                }
               }
             }
-            
             setState(() {
-              isChecked = false;
+              hideSaveButton = true;
             });
-            //Hier die Daten speichern
           },
           child: const Text('Änderungen speichern'),
         ),
       );
   }
 
+  Map<String, dynamic> _constructADTextInformation(Map<String, dynamic> data) {
+    String studentText = '';
+    String parentText = '';
+    String addressText = '';
+    if(desableDbComparison!){
+      if(data.isEmpty){
+        studentText = 'Kein Schüler gefunden';
+        personScore = 0.0;
+        parentText = 'Kein Elternteil gefunden';
+        parentScore = 0.0;
+        addressText = 'Keine Adresse gefunden';
+        addressScore = 0.0;
+      }else{
+        // Sicherstellen, dass alle benötigten Felder nicht null sind und einen Standardwert festlegen
+        studentText = '${data['child_last_name']?['prediction'] ?? 'Doe'}\n'
+                            '${data['child_first_name']?['prediction'] ?? 'Max'}\n'
+                            '${data['child_class']?['prediction'] ?? '0X'}';
+
+        // Berechnung des gesamten Scores für den Schüler
+        num childLastNameConfidence = data['child_last_name']?['confidence'] ?? 0;
+        num childFirstNameConfidence = data['child_first_name']?['confidence'] ?? 0;
+        num childClassConfidence = data['child_class']?['confidence'] ?? 0;
+        personScore = (childLastNameConfidence + childFirstNameConfidence + childClassConfidence) / 3;
+
+        // Sicherstellen, dass alle benötigten Felder nicht null sind und einen Standardwert festlegen
+        parentText = '${data['parent_last_name']?['prediction'] ?? 'Doe'}\n'
+                            '${data['parent_first_name']?['prediction'] ?? 'John'}\n'
+                            '${data['parent_phone']?['prediction'] ?? '0000000'}\n'
+                            '${data['parent_email']?['prediction'] ?? 'muster@web.de'}';
+
+        // Berechnung des Scores für die Eltern
+        num parentLastNameConfidence = data['parent_last_name']?['confidence'] ?? 0;
+        num parentFirstNameConfidence = data['parent_first_name']?['confidence'] ?? 0;
+        num parentPhoneConfidence = data['parent_phone']?['confidence'] ?? 0;
+        num parentEmailConfidence = data['parent_email']?['confidence'] ?? 0;
+        parentScore = (parentLastNameConfidence + parentFirstNameConfidence + parentPhoneConfidence + parentEmailConfidence) / 4;
+
+        // Sicherstellen, dass alle benötigten Felder nicht null sind und einen Standardwert festlegen
+        addressText = '${data['address_street_name']?['prediction'] ?? 'Musterstr'} '
+                            '${data['address_house_number']?['prediction'] ?? '00'}\n'
+                            '${data['address_zip']?['prediction'] ?? '00000'}\n'
+                            '${data['address_city']?['prediction'] ?? 'Bremen'}';
+
+        // Berechnung des Scores für die Adresse
+        num addressStreetNameConfidence = data['address_street_name']?['confidence'] ?? 0;
+        num addressHouseNumberConfidence = data['address_house_number']?['confidence'] ?? 0;
+        num addressZipConfidence = data['address_zip']?['confidence'] ?? 0;
+        num addressCityConfidence = data['address_city']?['confidence'] ?? 0;
+        addressScore = (addressStreetNameConfidence + addressHouseNumberConfidence + addressZipConfidence + addressCityConfidence) / 4;
+
+      }
+    }else{
+      var student = data['students'];
+      Map<String,dynamic> firststudent = student?[_currentIndex] ?? {};
+      var parent = firststudent?['parent'] ?? {};
+      var newAdress = data['addresses'];
+      if(student.isEmpty ){
+        studentText = 'Kein Schüler gefunden';
+        personScore = 0.0;
+      }else{
+        studentText = '${firststudent['lastname']?['value'] ?? 'MusterJr'}\n${firststudent['firstname']?['value'] ?? 'Max'}'+
+                      '\n${firststudent['school_class']?['value'] ?? '0X'}';
+        personId = firststudent['id'];
+        personScore = firststudent?['similarity_score'] ?? 0.0;
+      }
+      if(parent.isEmpty){
+        parentText = 'Kein Elternteil gefunden';
+        parentScore = 0.0;
+      }else{
+        parentText = '${parent?['lastname']?['value'] ?? 'Muster'}\n${parent?['firstname']?['value'] ?? 'John'}\n${parent?['phone_number']?['value'] ?? '0000000'}'+
+                      '\n${parent?['email']?['value'] ?? 'jmuster@web.de'}';
+        parentId = parent['id'];
+        parentScore = parent?['similarity_score'] ?? 0.0;
+      }
+      if(newAdress.isEmpty){
+        addressText = 'Keine Adresse gefunden';
+        addressScore = 0.0;
+      }else{
+        Map<String,dynamic> firstNewAdress = newAdress[0];
+        addressText = '${firstNewAdress['street_name']?['value'] ?? 'Mstr'} ${firstNewAdress['house_number'] ?? '00'}\n${firstNewAdress['location']?['postal_code'] ?? '00000'}'
+                      '\n${firstNewAdress['location']?['location_name'] ?? 'MusterOrt'}';
+        addressScore = (firstNewAdress["similarity_score"] ?? 0 + firstNewAdress["similarity_score"] ?? 0)/2;
+        addressId = firstNewAdress['id'];
+      }
+    }
+    return {
+      'student': studentText,
+      'parent': parentText,
+      'address': addressText,
+    };
+  }
+
   String _constructAGText(Map<String, dynamic> data) {
     String agText = '';
     if(desableDbComparison!){
-      agText = '${data['ag_1']['prediction']}\n${data['ag_2']['prediction']}\n${data['ag_3']['prediction']}';
-      agScore = (data['ag_1']['confidence'] + data['ag_2']['confidence'] + data['ag_3']['confidence'])/3;
+      agText = '${data['ag_1']?['prediction'] ?? 'label_ag_1'}\n${data['ag_2']?['prediction']?? 'label_ag_2'}\n${data['ag_3']?['prediction'] ?? 'label_ag_3'}';
+      agScore = (data['ag_1']?['confidence'] ?? 0.0 + data['ag_2']?['confidence'] ?? 0.0 + data['ag_3']?['confidence'] ?? 0.0)/3;
       return agText;
     }else{
       var ag1 = data['ag_1'];
       var ag2 = data['ag_2'];
       var ag3 = data['ag_3'];
       agIds.clear();
-      if(ag1.isNotEmpty && ag2.isNotEmpty && ag3.isNotEmpty){
-        agText = '${ag1[0]['ag_name']['value']}\n${ag2[0]['ag_name']['value']}\n${ag3[0]['ag_name']['value']}';
-        agScore = (ag1[0]['ag_name']['similarity_score'] + ag2[0]['ag_name']['similarity_score'] + ag3[0]['ag_name']['similarity_score'])/3;
-        agIds.add(ag1[0]['id']);
-        agIds.add(ag2[0]['id']);
-        agIds.add(ag3[0]['id']);
-      }
-      else {
-        if(ag1.isNotEmpty && ag2.isNotEmpty  && ag3.isEmpty){
-            agText = '${ag1[0]['ag_name']['value']}\n${ag2[0]['ag_name']['value']}\n';
-            agScore = (ag1[0]['ag_name']['similarity_score'] + ag2[0]['ag_name']['similarity_score'])/2;
-            agIds.add(ag1[0]['id']);
-            agIds.add(ag2[0]['id']);
-        }
-        else if(ag1.isEmpty && ag2.isNotEmpty  && ag3.isNotEmpty){
-          agText = ' \n${ag2[0]['ag_name']['value']}\n${ag3[0]['ag_name']['value']}';
-          agScore = (ag2[0]['ag_name']['similarity_score'] + ag3[0]['ag_name']['similarity_score'])/2;
-          agIds.add(ag2[0]['id']);
-          agIds.add(ag3[0]['id']);
-        }
-        else if(ag1.isNotEmpty && ag2.isEmpty  && ag3.isNotEmpty){
-          agText = '${ag1[0]['ag_name']['value']}\n \n${ag3[0]['ag_name']['value']}';
-          agScore = (ag1[0]['ag_name']['similarity_score'] + ag3[0]['ag_name']['similarity_score'])/2;
-          agIds.add(ag1[0]['id']);
-          agIds.add(ag3[0]['id']);
-        }
-        else if(ag1.isNotEmpty && ag2.isEmpty  && ag3.isEmpty){
-          agText = '${ag1[0]['ag_name']['value']}';
-          agScore = ag1[0]['ag_name']['similarity_score'];
-          agIds.add(ag1[0]['id']);
-        }
-        else if(ag1.isEmpty && ag2.isNotEmpty  && ag3.isEmpty){
-          agText = '\n${ag2[0]['ag_name']['value']}';
-          agScore = ag2[0]['ag_name']['similarity_score'];
-          agIds.add(ag2[0]['id']);
-        }
-        else if(ag1.isEmpty && ag2.isEmpty  && ag3.isNotEmpty){
-          agText = '\n\n${ag3[0]['ag_name']['value']}';
-          agScore = ag3[0]['ag_name']['similarity_score'];
-          agIds.add(ag3[0]['id']);
-        }
-        else{
-          agText = 'Kein Ags';
-          agScore = 0.0;
-        }
-      }
+        agText = '${ag1?[0]['ag_name']?['value'] ?? 'Wahl 1'}\n${ag2?[0]['ag_name']?['value'] ?? 'Wahl 2'}\n${ag3?[0]['ag_name']?['value'] ?? 'Wahl 3'}';
+        agScore = (ag1?[0]['ag_name']?['similarity_score'] ?? 0 + ag2?[0]['ag_name']?['similarity_score'] ?? 0 + ag3?[0]['ag_name']?['similarity_score'] ?? 0)/3;
+        agIds.add(ag1?[0]['id'] ?? 0);
+        agIds.add(ag2?[0]['id'] ?? 0);
+        agIds.add(ag3?[0]['id'] ?? 0);
     }
     print(agIds.toString());
     return agText;
   }
 
+  Map<String, dynamic> buildADChangeResponse(){
+    var studentChangeData, parentChangeData, addressChangeData;
+    List <String> stdInfo = displayTextStudent!.split('\n');
+    List <String> prntInfo = displayTextErzieher!.split('\n');
+    List <String> adrInfo = displayTextAdresse!.split('\n');
+    List <String> strUndHnr = adrInfo[0].split(' ');
+    int hNr = int.parse(strUndHnr[1]);
+    studentChangeData = {
+      'firstname': stdInfo[1],
+      'lastname': stdInfo[0],
+      'school_class': stdInfo[2],
+    };
+
+    
+    parentChangeData = {
+      'firstname': prntInfo[1],
+      'lastname': prntInfo[0],
+      'phone_number': prntInfo[2],
+      'email': prntInfo[3],
+    };
+
+    
+    addressChangeData = {
+      'street_name': adrInfo[0],
+      'postal_code': adrInfo[2],
+      'house_number': hNr,
+    };
+
+    return {
+      'student': studentChangeData,
+      'parent': parentChangeData,
+      'address': addressChangeData,
+    };
+  }
+
+  Map<String, dynamic> buildAGChangeResponse(){
+    List <String> agInfo = displayTextAG!.split('\n');
+    List<String> stdInfo = displayTextStudent!.split('\n');
+    var studentChangeData = {
+      'firstname': stdInfo[1],
+      'lastname': stdInfo[0],
+      'school_class': stdInfo[2],
+    }; 
+    return {
+      'student': studentChangeData,
+      'ags': agInfo,
+    };
+  }
+
   Color _getColorFromScore(double score) {
-    if (score >= 0.9) {
+    if(score == 1.0){
       return Colors.green;
-    } else if (score >= 0.75 && score < 0.9) {
+    }
+    else if (score > 0.80 && score < 1.0) {
       return Colors.orange;
-    } else if (score < 0.75 && score >= 0.5) {
+    } else if (score < 0.80 && score >= 0.5) {
       return Colors.yellow;
     } else {
       return Colors.red;

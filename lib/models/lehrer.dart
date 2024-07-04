@@ -1,6 +1,6 @@
 class Lehrer{
   String username;
-  String tokenRaw;
+  String token;
   int lehrerId;
   bool isloggedin;
 
@@ -8,7 +8,7 @@ class Lehrer{
 
   Lehrer({
     this.username = '',
-    this.tokenRaw = '',
+    this.token = '',
     this.lehrerId = 0,
     this.isloggedin = false,
   });

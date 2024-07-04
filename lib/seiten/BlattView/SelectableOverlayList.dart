@@ -39,7 +39,7 @@ Widget build(BuildContext context) {
                       SizedBox(height: 16),
                       ListView.builder(
                         shrinkWrap: true,
-                        itemCount: widget.items.length - 1,
+                        itemCount: widget.items.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
@@ -66,28 +66,23 @@ Widget build(BuildContext context) {
                                 int agPointer = index + 2;
                                 List<int> agIds = [];
                                 var selectedItemAG = widget.items['ag_$agPointer'];
-                                if (selectedItemAG != null && selectedItemAG.length == 3) {
-                                  agIds.add(selectedItemAG[0]['id']);
-                                  agIds.add(selectedItemAG[1]['id']);
-                                  agIds.add(selectedItemAG[2]['id']);
+                                if (selectedItemAG == null || selectedItemAG.isEmpty) {
                                   widget.onItemSelected({
-                                    'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}\n${selectedItemAG[2]['ag_name']['value']}',
-                                    'id': agIds,
+                                    'text': 'Keine AGs vorhanden',
+                                    'id': 0,
                                   });
-                                } else if (selectedItemAG != null && selectedItemAG.length == 2) {
-                                  agIds.add(selectedItemAG[0]['id']);
-                                  agIds.add(selectedItemAG[1]['id']);
+                                }
+                                else{
+                                  agIds.add(selectedItemAG[0]?['id'] ?? 0);
+                                  agIds.add(selectedItemAG[1]?['id'] ?? 0);
+                                  agIds.add(selectedItemAG[2]?['id'] ?? 0);
                                   widget.onItemSelected({
-                                    'text': '${selectedItemAG[0]['ag_name']['value']}\n${selectedItemAG[1]['ag_name']['value']}',
-                                    'id': agIds,
-                                  });
-                                } else if (selectedItemAG != null && selectedItemAG.length == 1) {
-                                  agIds.add(selectedItemAG[0]['id']);
-                                  widget.onItemSelected({
-                                    'text': '${selectedItemAG[0]['ag_name']['value']}',
+                                    'text': '${selectedItemAG[0]?['ag_name']?['value'] ?? 'kein Wahl1 vorhanden'}\n${selectedItemAG[1]?['ag_name']?['value'] ?? 'Kein Wahl2 vorhanden'}'+
+                                              '\n${selectedItemAG[2]?['ag_name']?['value'] ?? 'Kein Wahl3 vorhanden'}',
                                     'id': agIds,
                                   });
                                 }
+                                
                               }
                               print('Tapped item $index');
                             },
@@ -155,23 +150,26 @@ Widget build(BuildContext context) {
   Widget _buildListTextContent(var data, String boxname, int index) {
     final String listText;
     int pointer = index + 1;
+
+    if (pointer >= data.length) {
+      // Hier kannst du entweder ein leeres Widget zurückgeben oder einen Platzhalter anzeigen
+      return SizedBox.shrink(); // Gibt ein leeres unsichtbares Widget zurück
+    }
+
     if (boxname == 'schueler') {
       listText = '${data[pointer]['firstname']['value']} ${data[pointer]['lastname']['value']}, ${data[pointer]['school_class']['value']}';
     } else if (boxname == 'erzieher') {
-      listText = '${data[pointer]['parent'][0]['firstname']['value']} ${data[pointer]['parent'][0]['lastname']['value']}, ${data[pointer]['parent'][0]['phone_number']['value']}, ${data[pointer]['parent'][0]['email']['value']}';
+      listText = '${data[pointer]['parent']['firstname']['value']} ${data[pointer]['parent']['lastname']['value']}, ${data[pointer]['parent']['phone_number']['value']}, ${data[pointer]['parent']['email']['value']}';
     } else if (boxname == 'addresse') {
       listText = '${data[pointer]['street_name']['value']} ${data[pointer]['house_number']}, ${data[pointer]['location']['location_name']} ${data[pointer]['location']['postal_code']}';
     } else {
-      int agPointer = pointer + 1;
-      var ag = data['ag_$agPointer'];
-      if (ag != null && ag.length == 3) {
-        listText = '${ag[0]['ag_name']['value']} ${ag[1]['ag_name']['value']} ${ag[2]['ag_name']['value']}';
-      } else if (ag != null && ag.length == 2) {
-        listText = '${ag[0]['ag_name']['value']} ${ag[1]['ag_name']['value']}';
-      } else if (ag != null && ag.length == 1) {
-        listText = '${ag[0]['ag_name']['value']}';
+      var ag = data['ag_$pointer'];
+      if (ag == null || ag.isEmpty) {
+        return const SizedBox.shrink();
       } else {
-        listText = 'Keine AGs gefunden';
+        listText = '${ag.length > 0 ? ag[0]['ag_name']['value'] : 'AG Wahl1 nicht vorhanden'} '
+                 '${ag.length > 1 ? ag[1]['ag_name']['value'] : 'AG Wahl2 nicht vorhanden'} '
+                 '${ag.length > 2 ? ag[2]['ag_name']['value'] : 'AG Wahl3 nicht vorhanden'}';
       }
     }
     return FittedBox(
