@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class SelectableOverlayList extends StatefulWidget {
   var items;
-  String boxname;
   final ValueChanged<Map<String, dynamic>> onItemSelected;
+  final String boxname;
 
   SelectableOverlayList({
     required this.items,
@@ -11,19 +11,86 @@ class SelectableOverlayList extends StatefulWidget {
     required this.boxname,
   });
 
- @override
+  @override
   _SelectableOverlayListState createState() => _SelectableOverlayListState();
 }
 
 class _SelectableOverlayListState extends State<SelectableOverlayList> {
   bool _isContainerVisible = true;
+  String? selectedStudent;
+  String? selectedParent;
+  String? selectedAdresse;
+  String? selectedAG1;
+  String? selectedAG2;
+  String? selectedAG3;
+
+  List<String> studentItems = [];
+  List<String> parentItems = [];
+  List<String> adresseItems = [];
+  List<String> ag1 = [];
+  List<String> ag2 = [];
+  List<String> ag3 = [];
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.transparent,
-    body: Center(
-      child: _isContainerVisible
+  void initState() {
+    super.initState();
+    _initializeItems();
+  }
+
+  void _initializeItems() {
+    if(widget.boxname == 'schueler') {
+      for (var item in widget.items) {
+        studentItems.add('${item['lastname']} | ${item['firstname']} | ${item['school_class']}');
+      }
+    } else if(widget.boxname == 'erzieher') {
+      for (var item in widget.items) {
+        parentItems.add('${item['parent']['lastname']} | ${item['parent']['firstname']}\n${item['parent']['phone_number']} | ${item['parent']['email']}');
+      }
+    } else if(widget.boxname == 'addresse') {
+      for (var item in widget.items) {
+        adresseItems.add('${item['street_name']} | ${item['house_number']}\n${item['postal_code']} | Bremen');
+      }
+    } else {
+      if (widget.items['ag_1'] != null) {
+        for (var ag in widget.items['ag_1']) {
+          ag1.add(ag['name']);
+        }
+      }
+
+      if (widget.items['ag_2'] != null) {
+        for (var ag in widget.items['ag_2']) {
+          ag2.add(ag['name']);
+        }
+      }
+
+      if (widget.items['ag_3'] != null) {
+        for (var ag in widget.items['ag_3']) {
+          ag3.add(ag['name']);
+        }
+      }
+    }
+  }
+
+  void initDefaultValues() {
+    if (widget.boxname == 'schueler') {
+      selectedStudent = studentItems[0];
+    } else if (widget.boxname == 'erzieher') {
+      selectedParent = parentItems[0];
+    } else if (widget.boxname == 'addresse') {
+      selectedAdresse = adresseItems[0];
+    } else {
+      selectedAG1 = ag1[0];
+      selectedAG2 = ag2[0];
+      selectedAG3 = ag3[0];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: _isContainerVisible
           ? Stack(
               children: [
                 Container(
@@ -33,77 +100,15 @@ Widget build(BuildContext context) {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _buildOverlayText(widget.boxname),
-                      SizedBox(height: 16),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: widget.items.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              var selectedItem = widget.items[index + 1];
-                              if (widget.boxname == 'schueler') {
-                                int personId = selectedItem['id'];
-                                widget.onItemSelected({
-                                  'text': '${selectedItem['firstname']['value']}\n${selectedItem['lastname']['value']}\n${selectedItem['school_class']['value']}',
-                                  'id': personId,
-                                });
-                              } else if (widget.boxname == 'erzieher') {
-                                int parentId = selectedItem['parent'][0]['id'];
-                                widget.onItemSelected({
-                                  'text': '${selectedItem['parent'][0]['firstname']['value']} ${selectedItem['parent'][0]['lastname']['value']}\n${selectedItem['parent'][0]['phone_number']['value']}\n${selectedItem['parent'][0]['email']['value']}',
-                                  'id': parentId,
-                                });
-                              } else if (widget.boxname == 'addresse') {
-                                int addressId = selectedItem['id'];
-                                widget.onItemSelected({
-                                  'text': '${selectedItem['street_name']['value']} ${selectedItem['house_number']}\n${selectedItem['location']['postal_code']}\n${selectedItem['location']['location_name']}',
-                                  'id': addressId,
-                                });
-                              } else {
-                                int agPointer = index + 2;
-                                List<int> agIds = [];
-                                var selectedItemAG = widget.items['ag_$agPointer'];
-                                if (selectedItemAG == null || selectedItemAG.isEmpty) {
-                                  widget.onItemSelected({
-                                    'text': 'Keine AGs vorhanden',
-                                    'id': 0,
-                                  });
-                                }
-                                else{
-                                  agIds.add(selectedItemAG[0]?['id'] ?? 0);
-                                  agIds.add(selectedItemAG[1]?['id'] ?? 0);
-                                  agIds.add(selectedItemAG[2]?['id'] ?? 0);
-                                  widget.onItemSelected({
-                                    'text': '${selectedItemAG[0]?['ag_name']?['value'] ?? 'kein Wahl1 vorhanden'}\n${selectedItemAG[1]?['ag_name']?['value'] ?? 'Kein Wahl2 vorhanden'}'+
-                                              '\n${selectedItemAG[2]?['ag_name']?['value'] ?? 'Kein Wahl3 vorhanden'}',
-                                    'id': agIds,
-                                  });
-                                }
-                                
-                              }
-                              print('Tapped item $index');
-                            },
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 5.0),
-                              padding: EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Center(
-                                child: _buildListTextContent(widget.items, widget.boxname, index),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      const SizedBox(height: 10),
+                      buildDropdown(widget.boxname),
                     ],
                   ),
                 ),
-                Positioned(
+                 Positioned(
                   right: 0,
                   top: 0,
                   child: IconButton(
@@ -115,13 +120,20 @@ Widget build(BuildContext context) {
                     },
                   ),
                 ),
+                Positioned(
+                  bottom: 10,
+                  right: 70,
+                  child: ElevatedButton(
+                    onPressed: _onSubmit,
+                    child: const Text('Bestätigen'),
+                  ),
+                ),
               ],
             )
-          : SizedBox.shrink(),
-    ),
-  );
-}
-
+            : SizedBox.shrink(),
+      )
+    );
+  }
 
   Widget _buildOverlayText(String boxname) {
     final String text;
@@ -132,54 +144,204 @@ Widget build(BuildContext context) {
     } else if (boxname == 'addresse') {
       text = 'Durch KI-Analyse wurden mehrere Adressen gefunden.\nWählen Sie aus der Liste die richtige Adresse.';
     } else {
-      text = 'Für diese Schule wurden folgende AGs gefunden.\nWählen Sie aus der Liste die richtigen AGs.';
+      text = 'Für diese Schüler wurden folgende AGs gefunden.\nWählen Sie aus der Liste die richtigen AGs.';
     }
 
     return FittedBox(
       child: Text(
         text,
         style: const TextStyle(
-          fontSize: 24,
+          color: Color.fromARGB(255, 29, 13, 13),
+          fontSize: 30,
           fontWeight: FontWeight.bold,
         ),
-        textAlign: TextAlign.center,
       ),
     );
   }
 
-  Widget _buildListTextContent(var data, String boxname, int index) {
-    final String listText;
-    int pointer = index + 1;
-
-    if (pointer >= data.length) {
-      // Hier kannst du entweder ein leeres Widget zurückgeben oder einen Platzhalter anzeigen
-      return SizedBox.shrink(); // Gibt ein leeres unsichtbares Widget zurück
+  Widget buildDropdown(String boxname) {
+    switch (boxname) {
+      case 'schueler':
+        return Container(
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              const Text('Schüler Auswählen', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 10),
+              DropdownButton<String>(
+                value: selectedStudent,
+                style: const TextStyle(fontSize: 16, color: Colors.black),
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedStudent = newValue;
+                  });
+                },
+                items: studentItems.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      case 'erzieher':
+        return Container(
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              const Text('Erzieher Auswälen', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 10),
+              DropdownButton<String>(
+                value: selectedParent,
+                style: const TextStyle(fontSize: 12, color: Colors.black),
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedParent = newValue;
+                  });
+                },
+                items: parentItems.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      case 'addresse':
+        return Container(
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              const Text('Adresse', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 10),
+              DropdownButton<String>(
+                value: selectedAdresse,
+                style: const TextStyle(fontSize: 11, color: Colors.black),
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedAdresse = newValue;
+                  });
+                },
+                items: adresseItems.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      case 'ag':
+        return Container(
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text('AG 1: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  DropdownButton<String>(
+                    value: selectedAG1,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedAG1 = newValue;
+                      });
+                    },
+                    items: ag1.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const Text('AG 2: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  DropdownButton<String>(
+                    value: selectedAG2,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedAG2 = newValue;
+                      });
+                    },
+                    items: ag2.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const Text('AG 3: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  DropdownButton<String>(
+                    value: selectedAG3,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedAG3 = newValue;
+                      });
+                    },
+                    items: ag3.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      // Add more cases for 'erzieher', 'addresse' as needed
+      default:
+        return Container();
     }
+  }
 
-    if (boxname == 'schueler') {
-      listText = '${data[pointer]['firstname']['value']} ${data[pointer]['lastname']['value']}, ${data[pointer]['school_class']['value']}';
-    } else if (boxname == 'erzieher') {
-      listText = '${data[pointer]['parent']['firstname']['value']} ${data[pointer]['parent']['lastname']['value']}, ${data[pointer]['parent']['phone_number']['value']}, ${data[pointer]['parent']['email']['value']}';
-    } else if (boxname == 'addresse') {
-      listText = '${data[pointer]['street_name']['value']} ${data[pointer]['house_number']}, ${data[pointer]['location']['location_name']} ${data[pointer]['location']['postal_code']}';
+
+  void _onSubmit() {
+    if (widget.boxname == 'schueler') {
+      List<String> student = selectedStudent!.split(' | ');
+      widget.onItemSelected({
+        'selectedStudent': '${student[0]}\n${student[1]}\n${student[2]}',
+      });
+    } else if (widget.boxname == 'erzieher') {
+      List<String> parent = selectedParent!.split('\n');
+      List<String> name = parent[0].split(' | ');
+      List<String> contact = parent[1].split(' | ');
+      widget.onItemSelected({
+        'selectedErzieher': '${name[0]}\n${name[1]}\n${contact[0]}\n${contact[1]}',
+      });
+    } else if (widget.boxname == 'addresse') {
+      List<String> address = selectedAdresse!.split('\n');
+      List<String> street = address[0].split(' | ');
+      List<String> postal = address[1].split(' | ');
+      widget.onItemSelected({
+        'selectedAdresse': '${street[0]}-${street[1]}\n${postal[0]}\n${postal[1]}',
+      });
     } else {
-      var ag = data['ag_$pointer'];
-      if (ag == null || ag.isEmpty) {
-        return const SizedBox.shrink();
-      } else {
-        listText = '${ag.length > 0 ? ag[0]['ag_name']['value'] : 'AG Wahl1 nicht vorhanden'} '
-                 '${ag.length > 1 ? ag[1]['ag_name']['value'] : 'AG Wahl2 nicht vorhanden'} '
-                 '${ag.length > 2 ? ag[2]['ag_name']['value'] : 'AG Wahl3 nicht vorhanden'}';
-      }
+      widget.onItemSelected({
+        'selectedAGs': '${selectedAG1!}\n${selectedAG2!}\n${selectedAG3!}',
+      });
     }
-    return FittedBox(
-      child: Text(
-        listText,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
   }
 }

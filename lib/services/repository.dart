@@ -172,8 +172,7 @@ class Repository {
       /* Checking if the HTTP status code is 200 OK,
        indicating a successful request. */
       if (response.statusCode == 200) {
-        var jsonData = json.decode(response
-            .body); 
+        var jsonData = json.decode(const Utf8Decoder().convert(response.bodyBytes)) as List<dynamic>; 
         gettedStudent = jsonData; 
         if (gettedStudent.isNotEmpty) {
           for (var item in gettedStudent) {
@@ -259,8 +258,7 @@ class Repository {
       /* Überprüfung, ob der HTTP-Statuscode 200 OK ist, 
        was auf eine erfolgreiche Anfrage hinweist.*/
       if (response.statusCode == 200) {
-        var jsonData = json.decode(response
-            .body); // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
+        var jsonData = json.decode(const Utf8Decoder().convert(response.bodyBytes)) as Map<String, dynamic>; // Ausgabe der empfangenen JSON-Daten für Debug-Zwecke.
 
         if (jsonData.isNotEmpty) {
           var adresse = jsonData['address'];
@@ -268,19 +266,19 @@ class Repository {
           var ags = jsonData['ags'];
           print(ags);
           Adresse studentAdresse = Adresse(
-              strasse: adresse['street'],
-              hausnummer: adresse['house_number'],
-              postleitzahl: adresse['postal_code'],
+              strasse: adresse['street'] ?? 'Keine Straße',
+              hausnummer: adresse['house_number'] ?? '0X',
+              postleitzahl: adresse['postal_code'] ?? 00000,
               ort: adresse['location_name'] ?? 'Bremen');
           Kontakt erzieher = Kontakt(
-              vorname: kontakt[0]['firstname'],
-              nachname: kontakt[0]['lastname'],
-              telefonnummer: kontakt[0]['phone_number'],
-              email: kontakt[0]['email']);
+              vorname: kontakt[0]['firstname'] ?? 'Kein Erzieher Vorname',
+              nachname: kontakt[0]['lastname'] ?? 'Kein Erzieher Nachname',
+              telefonnummer: kontakt[0]['phone_number'] ?? 'Keine Telefonnummer',
+              email: kontakt[0]['email'] ?? 'KeinE-mail@keine.de');
           SchuelerInfo info = SchuelerInfo(
               id: jsonData['id'],
-              vorname: jsonData['firstname'],
-              nachname: jsonData['lastname'],
+              vorname: jsonData['firstname'] ?? 'Kein Student Vorname',
+              nachname: jsonData['lastname'] ?? 'Kein Student Nachname',
               adresse: studentAdresse,
               ags: ags,
               kontakt: erzieher); // Instanzierung eines Schueler-Objekts
@@ -338,20 +336,20 @@ class Repository {
       var ags = filteredIinfo['AGs'];
       print(ags);
       Adresse studentAdresse = Adresse(
-          strasse: adresse['Straße'],
-          hausnummer: adresse['Hausnummer'],
-          postleitzahl: adresse['Postleitzahl'],
+          strasse: adresse['Straße'] ?? 'Keine Straße',
+          hausnummer: adresse['Hausnummer'] ?? '0X',
+          postleitzahl: adresse['Postleitzahl'] ?? 00000,
           ort:
               'Bremen'); // 'Ort' ist in der JSON-Datei nicht vorhanden, daher wird ein fester Wert verwendet.
       Kontakt erzieher = Kontakt(
-          vorname: kontakt['Vorname'],
-          nachname: kontakt['Nachname'],
-          telefonnummer: kontakt['Telefonnummer'],
-          email: kontakt['E-Mail']);
+          vorname: kontakt['Vorname'] ?? 'Kein Erzieher Vorname',
+          nachname: kontakt['Nachname'] ?? 'Kein Erzieher Nachname',
+          telefonnummer: kontakt['Telefonnummer'] ?? 'Keine Telefonnummer',
+          email: kontakt['E-Mail'] ?? 'KeineE-Mail@keine.de');
       SchuelerInfo info = SchuelerInfo(
           id: filteredIinfo['ID'],
-          vorname: filteredIinfo['Vorname'],
-          nachname: filteredIinfo['Nachname'],
+          vorname: filteredIinfo['Vorname'] ?? 'Kein Vorname',
+          nachname: filteredIinfo['Nachname'] ?? 'Kein Nachname',
           adresse: studentAdresse,
           ags: ags,
           kontakt: erzieher); // Instanzierung eines Schueler-Objekts
@@ -387,6 +385,7 @@ class Repository {
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        print(data);
         return data;
       } else {
         print(
@@ -415,7 +414,7 @@ class Repository {
           )
           .timeout(const Duration(seconds: 15));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
         Future.error('Fehler beim Übertragung der Daten: ${response.statusCode} ${response.body}');

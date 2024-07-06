@@ -388,7 +388,7 @@
         "Postleitzahl": 28201
       },
       "Klasse": "12A",
-      "AGs": ["Volleyball", "Band", "Robotik"],
+      "AGs": ["Volleyball", "Band"],
       "Kontakt": {
         "Vorname": "André",
         "Nachname": "Anders",
@@ -442,7 +442,7 @@
         "Postleitzahl": 28307
       },
       "Klasse": "12A",
-      "AGs": ["Fussball", "Chor", "Robotik"],
+      "AGs": ["Fussball"],
       "Kontakt": {
         "Vorname": "Daniel",
         "Nachname": "Buchholz",

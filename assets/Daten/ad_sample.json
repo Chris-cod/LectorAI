@@ -1,151 +1,52 @@
 {
-  "doc_type": "AD",
-  "students": [
-      {
-          "id": 149,
-          "firstname": {
-              "value": "Silvio ",
-              "similarity_score": 0.4
-          },
-          "lastname": {
-              "value": "Zimmer",
-              "similarity_score": 0.44444445
-          },
-          "school_class": {
-              "value": "8D",
-              "similarity_score": 1.0
-          },
-          "similarity_score": 0.6148148166666667,
-          "parent": {
-              "id": 150,
-              "firstname": {
-                  "value": "Robert",
-                  "similarity_score": 0.5555556
-              },
-              "lastname": {
-                  "value": "Zimmer",
-                  "similarity_score": 0.4
-              },
-              "phone_number": {
-                  "value": "6532948",
-                  "similarity_score": 0.45454547
-              },
-              "email": {
-                  "value": "zimmer-r@hotmail.de",
-                  "similarity_score": 0.42857143
-              },
-              "similarity_score": 0.45966812500000004
-          }
-      },
-      {
-        "id": 149,
-        "firstname": {
-            "value": "Sylvio",
-            "similarity_score": 0.4
+    "doc_type": "AD",
+    "students": [
+        {
+            "id": 69,
+            "firstname": "Alicja",
+            "lastname": "Linke",
+            "school_class": "8D",
+            "parent": {
+                "id": 69,
+                "firstname": "René",
+                "lastname": "Linke",
+                "email": "linke-r@gmx.de",
+                "phone_number": "5246087",
+                "similarity_score": 0.6923077
+            },
+            "similarity_score": 0.83333335
         },
-        "lastname": {
-            "value": "Timmer",
-            "similarity_score": 0.44444445
-        },
-        "school_class": {
-            "value": "8D",
-            "similarity_score": 1.0
-        },
-        "similarity_score": 0.6148148166666667,
-        "parent": {
-            "id": 150,
-            "firstname": {
-                "value": "Andrew",
-                "similarity_score": 0.5555556
+        {
+            "id": 69,
+            "firstname": "Alicia",
+            "lastname": "Linje",
+            "school_class": "8D",
+            "parent": {
+                "id": 69,
+                "firstname": "Reiz",
+                "lastname": "Linje",
+                "email": "linje-r@web.de",
+                "phone_number": "5356088",
+                "similarity_score": 0.6923077
             },
-            "lastname": {
-                "value": "Timmer",
-                "similarity_score": 0.4
-            },
-            "phone_number": {
-                "value": "7532947",
-                "similarity_score": 0.45454547
-            },
-            "email": {
-                "value": "a-timmer@hotmail.de",
-                "similarity_score": 0.42857143
-            },
-            "similarity_score": 0.45966812500000004
+            "similarity_score": 0.85333335
         }
-    }
-  ],
-  "addresses": [
-      {
-          "id": 1757,
-          "street_name": {
-              "value": "Georg-Bitter-Weg",
-              "similarity_score": 0.84210527
-          },
-          "location": {
-              "location_name": "382 Hastedt",
-              "postal_code": 28207,
-              "id": 52
-          },
-          "house_number": "7",
-          "similarity_score": 0.84210527
-      },
-      {
-          "id": 1756,
-          "street_name": {
-              "value": "Georg-Bitter-Straße",
-              "similarity_score": 0.52
-          },
-          "location": {
-              "location_name": "382 Hastedt",
-              "postal_code": 28205,
-              "id": 119
-          },
-          "house_number": "7",
-          "similarity_score": 0.52
-      },
-      {
-          "id": 1755,
-          "street_name": {
-              "value": "Georg-Bitter-Straße",
-              "similarity_score": 0.52
-          },
-          "location": {
-              "location_name": "313 Peterswerder",
-              "postal_code": 28205,
-              "id": 7
-          },
-          "house_number": "7",
-          "similarity_score": 0.52
-      },
-      {
-          "id": 1760,
-          "street_name": {
-              "value": "Georg-Elser-Weg",
-              "similarity_score": 0.41666666
-          },
-          "location": {
-              "location_name": "335 Neue Vahr Südost",
-              "postal_code": 28327,
-              "id": 23
-          },
-          "house_number": "7",
-          "similarity_score": 0.41666666
-      },
-      {
-          "id": 787,
-          "street_name": {
-              "value": "Binger Weg",
-              "similarity_score": 0.26086956
-          },
-          "location": {
-              "location_name": "373 Tenever",
-              "postal_code": 28325,
-              "id": 80
-          },
-          "house_number": "7",
-          "similarity_score": 0.26086956
-      }
-  ],
-  "signature_box_found": true
+    ],
+    "addresses": [
+        {
+            "address_id": 1104,
+            "street_name": "Petershagener Straße",
+            "postal_code": 28207,
+            "house_number": "13",
+            "similarity_score": 0.61111111
+        },
+        {
+            "address_id": 3059,
+            "street_name": "Kluvenhagener Straße",
+            "postal_code": 28307,
+            "house_number": "13",
+            "similarity_score": 0.27413793000000003
+        }
+    ],
+    "signature": true
 }
-

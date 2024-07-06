@@ -87,9 +87,9 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
               context,
               'AGs',
               [
-                buildInfoField('AG Wahl 1', '${schuelerInfo!.ags[0]}', Icons.check_circle),
-                buildInfoField('AG Wahl 2', '${schuelerInfo!.ags[1]}', Icons.check_circle),
-                buildInfoField('AG Wahl 3', '${schuelerInfo!.ags[2]}', Icons.check_circle),
+                buildInfoField('AG Wahl 1', '${schuelerInfo!.ags.isNotEmpty ? schuelerInfo!.ags[0] : ' '}', Icons.check_circle),
+                buildInfoField('AG Wahl 2', '${schuelerInfo!.ags.length > 1 ? schuelerInfo!.ags[1] : ' '}', Icons.check_circle),
+                buildInfoField('AG Wahl 3', '${schuelerInfo!.ags.length > 2 ? schuelerInfo!.ags[2] : ''}', Icons.check_circle),
               ],
               Icons.group,
             ),
