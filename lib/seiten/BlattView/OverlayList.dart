@@ -36,32 +36,25 @@ class _OverlayListState extends State<OverlayList> {
   @override
   void initState() {
     super.initState();
-    if(!widget.isDemoModus) {
-      _isContainerVisible = true;
-      _showInitialOverlay = false;
-      _showSelectableOverlay = true;
-    } else {
-      _isContainerVisible = true;
-    }
     // Initialize controllers based on the boxname
     if (widget.boxname == 'addresse' && widget.items.isNotEmpty) {
       var selectedItem = widget.items[0];
-      _controllers['street'] = TextEditingController(text: selectedItem['street_name']['value']);
+      _controllers['street'] = TextEditingController(text: selectedItem['street_name']);
       _controllers['houseNumber'] = TextEditingController(text: selectedItem['house_number']);
-      _controllers['postalCode'] = TextEditingController(text: selectedItem['location']['postal_code'].toString());
-      _controllers['city'] = TextEditingController(text: selectedItem['location']['location_name']);
-    } else if (widget.boxname == 'erzieher' || widget.boxname == 'schueler') {
-      for (int i = 1; i < widget.items.length; i++) {
-        var item = widget.items[i];
-        _controllers['name$i'] = TextEditingController(text: '${item['firstname']['value']} ${item['lastname']['value']}');
-        if (widget.boxname == 'erzieher') {
-          _controllers['phoneNumber$i'] = TextEditingController(text: item['parent']['phone_number']['value']);
-          _controllers['email$i'] = TextEditingController(text: item['parent']['email']['value']);
-        } else if (widget.boxname == 'schueler') {
-          _controllers['schoolClass$i'] = TextEditingController(text: item['school_class']['value']);
-        }
-      }
-    }
+      _controllers['postalCode'] = TextEditingController(text: selectedItem['postal_code'].toString());
+      _controllers['city'] = TextEditingController(text: 'Bremen');
+    } else if (widget.boxname == 'erzieher' && widget.items.isNotEmpty) {
+      var selectedItem = widget.items['parent'];
+      _controllers['firstname'] = TextEditingController(text: '${selectedItem['parent']['firstname']}');
+      _controllers['lastname'] = TextEditingController(text: selectedItem['parent']['lastname']);
+      _controllers['phoneNumber'] = TextEditingController(text: selectedItem['parent']['phone_number']);
+      _controllers['email1'] = TextEditingController(text: selectedItem['parent']['email']);
+    } else if (widget.boxname == 'schueler' && widget.items.isNotEmpty) {
+        var selectedItem = widget.items[0];
+        _controllers['firstname'] = TextEditingController(text: '${selectedItem['firstname']}');
+        _controllers['lastname'] = TextEditingController(text: selectedItem['lastname']);
+        _controllers['schoolClass'] = TextEditingController(text: selectedItem['school_class']);
+    } 
   }
 
   Widget _buildOverlayText(String boxname) {
@@ -168,12 +161,12 @@ class _OverlayListState extends State<OverlayList> {
       case 'schueler':
         label = 'Schüler';
         listText =
-            '${data[pointer]['firstname']['value']} ${data[pointer]['lastname']['value']}, ${data[pointer]['school_class']['value']}';
+            '${data[pointer]['firstname']} ${data[pointer]['lastname']}';
         break;
       case 'erzieher':
         label = 'Erzieher';
         listText =
-            '${data[pointer]['parent']['firstname']['value']} ${data[pointer]['parent']['lastname']['value']}, ${data[pointer]['parent']['phone_number']['value']}, ${data[pointer]['parent']['email']['value']}';
+            '${data[pointer]['parent']['firstname']} ${data[pointer]['parent']['lastname']}';
         break;
       default:
         label = 'AG Wahl ${index + 1}';
@@ -193,7 +186,7 @@ class _OverlayListState extends State<OverlayList> {
         }
 
         if (ag != null && ag.isNotEmpty) {
-          listText = ag.map((agItem) => '${agItem['ag_name']['value']}').join(', ');
+          listText = ag.map((agItem) => '${agItem['name']}').join(', ');
         } else {
           listText = 'Keine AGs gefunden';
         }
@@ -212,10 +205,28 @@ class _OverlayListState extends State<OverlayList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        Text("Vorname", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         SizedBox(height: 4),
         TextField(
-          controller: _controllers['name$pointer'],
+          controller: _controllers['firstname'],
+          decoration: InputDecoration(
+            hintText: listText,
+            contentPadding: EdgeInsets.all(8.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          onChanged: (value) {
+            // Handle text field value change
+          },
+        ),
+        SizedBox(height: 4),
+        Text("Nachname", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        TextField(
+          controller: _controllers['lastname'],
           decoration: InputDecoration(
             hintText: listText,
             contentPadding: EdgeInsets.all(8.0),
@@ -237,7 +248,7 @@ class _OverlayListState extends State<OverlayList> {
               Text('Telefonnummer', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               SizedBox(height: 4),
               TextField(
-                controller: _controllers['phoneNumber$pointer'],
+                controller: _controllers['phoneNumber'],
                 decoration: InputDecoration(
                   hintText: 'Telefonnummer',
                   contentPadding: EdgeInsets.all(8.0),
@@ -252,7 +263,7 @@ class _OverlayListState extends State<OverlayList> {
               Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               SizedBox(height: 4),
               TextField(
-                controller: _controllers['email$pointer'],
+                controller: _controllers['email'],
                 decoration: InputDecoration(
                   hintText: 'Email',
                   contentPadding: EdgeInsets.all(8.0),
@@ -273,7 +284,7 @@ class _OverlayListState extends State<OverlayList> {
               Text('Klasse', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               SizedBox(height: 4),
               TextField(
-                controller: _controllers['schoolClass$pointer'],
+                controller: _controllers['schoolClass'],
                 decoration: InputDecoration(
                   hintText: 'Klasse',
                   contentPadding: EdgeInsets.all(8.0),
@@ -298,34 +309,28 @@ class _OverlayListState extends State<OverlayList> {
     if (widget.boxname == 'addresse') {
       var selectedItem = widget.items[0];
       allText += '${_controllers['street']!.text} ${_controllers['houseNumber']!.text}\n ${_controllers['postalCode']!.text}\n ${_controllers['city']!.text}';
-      allIds.add(selectedItem['id']);
+      allIds.add(selectedItem['id'] ?? 0);
       widget.onItemSelected({
         'text': allText.trim(),
-        'id': allIds.isNotEmpty ? allIds.first : null,
+        'id': allIds.isNotEmpty ? allIds.first : 0,
       });
-    } else {
-      _controllers.forEach((key, controller) {
-        var selectedItem = widget.items[int.parse(key.substring(4))]; // Extract the index from controller key
-        if (widget.boxname == 'schueler') {
-          allText += '${controller.text}\n';
-          allIds.add(selectedItem['id']);
-        } else if (widget.boxname == 'erzieher') {
-          allText += '${controller.text}\n';
-          allIds.add(selectedItem['parent']['id']);
-        } else {
-          int agPointer = int.parse(key.substring(4));
-          var selectedItemAG = widget.items['ag_$agPointer'];
-          if (selectedItemAG != null && selectedItemAG.length > 0) {
-            allText += '${controller.text}\n';
-            for (var ag in selectedItemAG) {
-              allIds.add(ag['id']);
-            }
-          }
-        }
-      });
+    } 
+    else if (widget.boxname == 'erzieher') {
+      var selectedItem = widget.items['parent'];
+      allText += '${_controllers['lastname']!.text}\n${_controllers['firstname']!.text}\n ${_controllers['phoneNumber']!.text}\n ${_controllers['email1']!.text}';
+      allIds.add(selectedItem['parent']['id'] ?? 0);
       widget.onItemSelected({
         'text': allText.trim(),
-        'id': allIds,
+        'id': allIds.isNotEmpty ? allIds.first : 0,
+      });
+    }
+    else if (widget.boxname == 'schueler') {
+      var selectedItem = widget.items[0];
+      allText += '${_controllers['lastname']!.text}\n${_controllers['firstname']!.text}\n ${_controllers['schoolClass']!.text}';
+      allIds.add(selectedItem['id'] ?? 0);
+      widget.onItemSelected({
+        'text': allText.trim(),
+        'id': allIds.isNotEmpty ? allIds.first : 0,
       });
     }
   }

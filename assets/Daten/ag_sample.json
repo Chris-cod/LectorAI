@@ -1,77 +1,59 @@
 {
   "doc_type": "AG",
   "students": [
-      {
-          "id": 7,
-          "firstname": {
-              "value": "Ariane",
-              "similarity_score": 1.0
-          },
-          "lastname": {
-              "value": "Atzler",
-              "similarity_score": 1.0
-          },
-          "school_class": {
-              "value": "12A",
-              "similarity_score": 1.0
-          },
-          "similarity_score": 1.0
-      }
-  ],
-  "ag_1": [
-      {
-          "id": 1,
-          "ag_name": {
-              "value": "Fussball",
-              "similarity_score": 1.0
-          }
-      },
-      {
-          "id": 3,
-          "ag_name": {
-              "value": "Basketball",
-              "similarity_score": 0.1764706
-          }
-      },
-      {
-          "id": 4,
-          "ag_name": {
-              "value": "Volleyball",
-              "similarity_score": 0.1764706
-          }
-      }
-  ],
-"ag_2": [
         {
-            "id": 7,
-            "ag_name": {
-                "value": "Chor",
-                "similarity_score": 1.0
-            }
+            "id": 24,
+            "firstname": "Ariane",
+            "lastname": "Atzler",
+            "school_class": "12A",
+            "similarity_score": 1.0
         },
         {
-            "id": 7,
-            "ag_name": {
-                "value": "Band",
-                "similarity_score": 1.0
-            }
+            "id": 25,
+            "firstname": "Astian",
+            "lastname": "Atzer",
+            "school_class": "12A",
+            "similarity_score": 1.0
+        },
+        {
+            "id": 26,
+            "firstname": "Ariane",
+            "lastname": "Clemens",
+            "school_class": "12A",
+            "similarity_score": 1.0
+        }
+    ],
+  "ag_1": [
+        {
+            "id": 2,
+            "name": "Fussball",
+            "similarity_score": 1.0
+        },
+        {
+            "id": 4,
+            "name": "Basketball",
+            "similarity_score": 0.1764706
+        },
+        {
+            "id": 5,
+            "name": "Volleyball",
+            "similarity_score": 0.1764706
+        }
+    ],
+    "ag_2": [
+        {
+            "id": 3,
+            "name": "Chor",
+            "similarity_score": 1.0
         }
     ],
     "ag_3": [
         {
-            "id": 5,
-            "ag_name": {
-                "value": "Robotik",
-                "similarity_score": 1.0
-            }
-        },
-        {
-            "id": 5,
-            "ag_name": {
-                "value": "Programmierung",
-                "similarity_score": 1.0
-            }
+            "id": 6,
+            "name": "Robotik",
+            "similarity_score": 1.0
         }
     ],
-    "signature_box_found": true
+
+    "signature": true
 }
