@@ -175,100 +175,91 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Erfasste Schüler Informationen"),
-        leading:GestureDetector(
-          onTap: () {
-            if(isChecked){
-              removeFirstOverlay();
-              removeSecondOverlay();
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            }
-            else{
-              removeFirstOverlay();
-              removeSecondOverlay();
-              Navigator.pop(context);
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.all(15.0),
-            height: 10,
-            child: Image.asset('assets/Bilder/_.png', color: Colors.black, scale: 1.0,),
-          )
-          
-        ),
-        actions: !isChecked 
-        ? [
-           Positioned(
-              top: MediaQuery.of(context).size.height * 0.05,
-              left: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width * 0.1 / 2),
-              child: IconButton(
-                icon: Icon(Icons.remove_red_eye, size: MediaQuery.of(context).size.width * 0.05),
-                onPressed: () 
-                {
-                    //Navigieren zur ViewImagePage mit dem Byte-Array
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewImagePage(imageBytes: widget.imageBytes, onReturn: _restoreOverlay,),
-                        ),
-                      ).then((value) => _restoreOverlay());
-                      removeFirstOverlay();
-                      removeSecondOverlay();
-                    
-                },
+      return Scaffold(
+          appBar: AppBar(
+              title: const Text("Erfasste Schüler Informationen"),
+              leading: GestureDetector(
+                  onTap: () {
+                      if (isChecked) {
+                          removeFirstOverlay();
+                          removeSecondOverlay();
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                      } else {
+                          removeFirstOverlay();
+                          removeSecondOverlay();
+                          Navigator.pop(context);
+                      }
+                  },
+                  child: Container(
+                      padding: const EdgeInsets.all(15.0),
+                      height: 10,
+                      child: Image.asset('assets/Bilder/_.png', color: Colors.black, scale: 1.0,),
+                  )
               ),
-            ),
-        ]
-        : null,
-      ),
-      body: path != null
-          ? Stack(
-              children: [
-                PDFView(
-                  filePath: path,
-                  enableSwipe: true,
-                  swipeHorizontal: true,
-                  autoSpacing: false,
-                  pageFling: true,
-                  pageSnap: true,
-                  defaultPage: currentPage!,
-                  fitPolicy: FitPolicy.BOTH,
-                  preventLinkNavigation: false,
-                  onError: (e) {
-                    print(e);
-                  },
-                  onRender: (pages) {
-                    setState(() {});
-                  },
-                  onViewCreated: (PDFViewController vc) {
-                    _controller = vc;
-                  },
-                  onPageError: (page, e) {
-                    print(e);
-                  },
-                ),
-                // Widget zur verhinderung der Interaktion mit dem PDF
-                Positioned.fill(
-                  child: GestureDetector(
-                    onScaleStart: (_) {},
-                    onScaleUpdate: (_) {},
-                    onScaleEnd: (_) {},
-                  ),
-                ),
-                if (!hideSaveButton)
-                  Positioned(
-                    bottom: 20,
-                    left: MediaQuery.of(context).size.width * 0.25,
-                    right: MediaQuery.of(context).size.width * 0.25,
-                    child: buildSaveChangeButton(),
-                  ),
-              ],
-            )
-          : const Center(child: CircularProgressIndicator()),
-    );
+              actions: !isChecked
+                  ? [
+                      IconButton(
+                          icon: Icon(Icons.remove_red_eye, size: MediaQuery.of(context).size.width * 0.05),
+                          onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ViewImagePage(imageBytes: widget.imageBytes, onReturn: _restoreOverlay,),
+                                  ),
+                              ).then((value) => _restoreOverlay());
+                              removeFirstOverlay();
+                              removeSecondOverlay();
+                          },
+                      ),
+                  ]
+                  : null,
+          ),
+          body: path != null
+              ? Stack(
+                  children: [
+                      PDFView(
+                          filePath: path,
+                          enableSwipe: true,
+                          swipeHorizontal: true,
+                          autoSpacing: false,
+                          pageFling: true,
+                          pageSnap: true,
+                          defaultPage: currentPage!,
+                          fitPolicy: FitPolicy.BOTH,
+                          preventLinkNavigation: false,
+                          onError: (e) {
+                              print(e);
+                          },
+                          onRender: (pages) {
+                              setState(() {});
+                          },
+                          onViewCreated: (PDFViewController vc) {
+                              _controller = vc;
+                          },
+                          onPageError: (page, e) {
+                              print(e);
+                          },
+                      ),
+                      // Widget zur Verhinderung der Interaktion mit dem PDF
+                      Positioned.fill(
+                          child: GestureDetector(
+                              onScaleStart: (_) {},
+                              onScaleUpdate: (_) {},
+                              onScaleEnd: (_) {},
+                          ),
+                      ),
+                      if (!hideSaveButton)
+                          Positioned(
+                              bottom: 20,
+                              left: MediaQuery.of(context).size.width * 0.25,
+                              right: MediaQuery.of(context).size.width * 0.25,
+                              child: buildSaveChangeButton(),
+                          ),
+                  ],
+              )
+              : const Center(child: CircularProgressIndicator()),
+      );
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -413,16 +404,16 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             onItemSelected: (selectedItem) {
               setState(() {
                 if (boxname == 'erzieher') {
-                  displayTextErzieher = selectedItem['selectedErzieher'];
+                  displayTextErzieher = selectedItem['text'];
                   _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40);
                 } else if (boxname == 'schueler') {
-                  displayTextStudent = selectedItem['selectedStudent'];
+                  displayTextStudent = selectedItem['text'];
                   _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40);
                 } else if (boxname == 'addresse') {
-                  displayTextAdresse = selectedItem['selectedAdresse'];
+                  displayTextAdresse = selectedItem['text'];
                   _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40);
                 } else if (boxname == 'ag') {
-                  displayTextAG = selectedItem['selectedAGs'];
+                  displayTextAG = selectedItem['text'];
                   _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, 0.40);
                 }
               });
