@@ -41,6 +41,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   bool isSaved = false;
   bool hideSaveButton = true;
   bool isSigned = false;
+  bool isOverLayVisible = false;
   bool? desableDbComparison, dontSaveChanges;
   final int _currentIndex = 0;
   int? personId, parentId, addressId;
@@ -48,6 +49,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   double? personScore, parentScore, addressScore, agScore;
   Repository repository = Repository();
   List<String> type = ['ad', 'ag'];
+  Color? personColor, parentColor, addressColor, agColor, signatureColor;
   
   
 
@@ -123,14 +125,20 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   }
 
   void _showOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = _createOverlayEntry();
-    if (_overlayEntry != null) {
+    if(isChecked){
+      _overlayEntry = _changeOverlayBorder(Colors.green);
       Overlay.of(context).insert(_overlayEntry!);
       setState(() {
+        isOverLayVisible = true;
       });
     }
-    
+    else{
+      _overlayEntry = _createOverlayEntry();
+      Overlay.of(context).insert(_overlayEntry!);
+      setState(() {
+        isOverLayVisible = true;
+      });
+    }
   }
 
    @override
@@ -144,7 +152,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      _showOverlay();
+      isOverLayVisible = true;
     } else if (state == AppLifecycleState.paused) {
       removeFirstOverlay();
     }
@@ -177,15 +185,17 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   Widget build(BuildContext context) {
       return Scaffold(
           appBar: AppBar(
-              title: const Text("Erfasste Schüler Informationen"),
+              title: const Text("Erfasste Informationen"),
               leading: GestureDetector(
                   onTap: () {
                       if (isChecked) {
+                          isOverLayVisible = false;
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                           removeFirstOverlay();
                           removeSecondOverlay();
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
                       } else {
+                          isOverLayVisible = false;
                           removeFirstOverlay();
                           removeSecondOverlay();
                           Navigator.pop(context);
@@ -208,7 +218,9 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                                       builder: (context) => ViewImagePage(imageBytes: widget.imageBytes, onReturn: _restoreOverlay,),
                                   ),
                               ).then((value) => _restoreOverlay());
-                              removeFirstOverlay();
+                              setState(() {
+                                  isOverLayVisible = false;
+                              });
                               removeSecondOverlay();
                           },
                       ),
@@ -271,6 +283,9 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
         displayTextStudent = adData['student'];
         displayTextErzieher = adData['parent'];
         displayTextAdresse = adData['address'];
+        personColor = _getColorFromScore(personScore!);
+        parentColor = _getColorFromScore(parentScore!);
+        addressColor = _getColorFromScore(addressScore!);
         print('aktuelle no_db value ${desableDbComparison!}');
         if(!desableDbComparison!){
           newAdress = _jsonData['addresses'];
@@ -284,6 +299,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             isSigned = true;
             signature ='Found';
           }
+          signatureColor = isSigned ? Colors.green : Colors.red;
         }
         else{
           var val = _jsonData['signature'];
@@ -295,26 +311,42 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             isSigned = true;
             signature ='Found';
           }
+          signatureColor = isSigned ? Colors.green : Colors.red;
         }
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
-              // Position für Button-Container
-              _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, personScore!),
-              _iconsOverlay(0.445, 0.67, student, 'erzieher'),
-              _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parentScore!),
-              _iconsOverlay(0.547, 0.67, student, 'schueler'),
-              _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, addressScore!),
-              _iconsOverlay(0.65, 0.67, newAdress, 'addresse'),
-              // Add signature box
-              _positionedOverlaywithText(
-                'Signature: $signature',
-                0.5,
-                0.04,
-                0.81,
-                0.195,
-                isSigned ? 1.0 : 0.0,
+              Visibility(
+                visible: isOverLayVisible,
+                child: Stack(
+                  children: [
+                    _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, personColor!),
+                    _iconsOverlay(0.445, 0.67, student, 'erzieher'),
+                    _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parentColor!),
+                    _iconsOverlay(0.547, 0.67, student, 'schueler'),
+                    _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, addressColor!),
+                    _iconsOverlay(0.65, 0.67, newAdress, 'addresse'),
+                    _positionedOverlaywithText('Signature: $signature', 0.5, 0.04, 0.81, 0.195, signatureColor!),
+                  ],
+                ),
+
               ),
+              // Position für Button-Container
+              // _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, personColor!),
+              // _iconsOverlay(0.445, 0.67, student, 'erzieher'),
+              // _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parentColor!),
+              // _iconsOverlay(0.547, 0.67, student, 'schueler'),
+              // _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, addressColor!),
+              // _iconsOverlay(0.65, 0.67, newAdress, 'addresse'),
+              // // Add signature box
+              // _positionedOverlaywithText(
+              //   'Signature: $signature',
+              //   0.5,
+              //   0.04,
+              //   0.81,
+              //   0.195,
+              //   signatureColor!,
+              // ),
             ],
           ),
         );
@@ -336,6 +368,9 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             isSigned = true;
             signature ='Found';
           }
+          signatureColor = isSigned ? Colors.green : Colors.red;
+          personColor = _getColorFromScore(personScore!);
+          agColor = _getColorFromScore(agScore!);
         }
         else{
           student = _jsonData['students'];
@@ -346,9 +381,11 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             Map<String,dynamic> fs = student[0];
             displayTextStudent = '${fs["lastname"] ?? 'Muster'}\n${fs['firstname'] ?? 'Max'}\n${fs['school_class'] ?? '0X'}';
             personId = fs['id'];
-            personScore = !isChecked ? fs['similarity_score'] ?? 0.0 : 1.0;
+            personScore =  fs['similarity_score'] ??  0.0;
+            personColor = isChecked? Colors.green : _getColorFromScore(personScore!);
           }
           displayTextAG = _constructAGText(_jsonData); 
+          agColor = isChecked? Colors.green : _getColorFromScore(agScore!);
           //isSigned = _jsonData['signature'] ? true : false;
           var val = _jsonData['signature'];
           if(!val){
@@ -359,27 +396,53 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             isSigned = true;
             signature ='Found';
           }
+          signatureColor = isSigned ? Colors.green : Colors.red;
         }
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
-              // Position für Schüler-Daten-Container
-              _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, personScore!),
-              // Position für Button-Container
-              _iconsOverlay(0.495, 0.66, student, 'schueler'),
-              // Position für AG-Container
-              _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, agScore!),
-              // // Position für Button-Container
-               _iconsOverlay(0.61, 0.66, _jsonData, 'ag'),
-              // Add signature box
-              _positionedOverlaywithText(
-                'Signature: $signature',
-                0.5,
-                0.07,
-                0.78,
-                0.15,
-                isSigned ? 1.0 : 0.0,
+              Visibility(
+                visible: isOverLayVisible,
+                child: Stack(
+                  children: [
+                    // Position für Schüler-Daten-Container
+                    _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, personColor!),
+                    // Position für Button-Container
+                    _iconsOverlay(0.495, 0.66, student, 'schueler'),
+                    // Position für AG-Container
+                    _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, agColor!),
+                    // // Position für Button-Container
+                    _iconsOverlay(0.61, 0.66, _jsonData, 'ag'),
+                    // Add signature box
+                    _positionedOverlaywithText(
+                      'Signature: $signature',
+                      0.5,
+                      0.07,
+                      0.78,
+                      0.15,
+                      signatureColor!,
+                    ),
+                  ],
+                ),
+
               ),
+              // // Position für Schüler-Daten-Container
+              // _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, personColor!),
+              // // Position für Button-Container
+              // _iconsOverlay(0.495, 0.66, student, 'schueler'),
+              // // Position für AG-Container
+              // _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, agColor!),
+              // // // Position für Button-Container
+              //  _iconsOverlay(0.61, 0.66, _jsonData, 'ag'),
+              // // Add signature box
+              // _positionedOverlaywithText(
+              //   'Signature: $signature',
+              //   0.5,
+              //   0.07,
+              //   0.78,
+              //   0.15,
+              //   signatureColor!,
+              // ),
             ],
           ),
         );
@@ -404,17 +467,17 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             onItemSelected: (selectedItem) {
               setState(() {
                 if (boxname == 'erzieher') {
+                  displayTextErzieher = '';
                   displayTextErzieher = selectedItem['text'];
-                  _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, 0.40);
                 } else if (boxname == 'schueler') {
+                  displayTextStudent = '';
                   displayTextStudent = selectedItem['text'];
-                  _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, 0.40);
                 } else if (boxname == 'addresse') {
+                  displayTextAdresse = '';
                   displayTextAdresse = selectedItem['text'];
-                  _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, 0.40);
                 } else if (boxname == 'ag') {
+                  displayTextAG = '';
                   displayTextAG = selectedItem['text'];
-                  _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, 0.40);
                 }
               });
               removeSecondOverlay();
@@ -428,7 +491,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
 
 
   Widget _positionedOverlaywithText(String text, double widthMultiplicator, double heightMultiplicator, 
-                        double topMultiplicator, double leftMultiplicator,double score) {
+                        double topMultiplicator, double leftMultiplicator,Color score) {
     return Positioned(
       width: MediaQuery.of(context).size.width * widthMultiplicator,
       height: MediaQuery.of(context).size.height * heightMultiplicator,
@@ -468,16 +531,12 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
               setState(() {
                 if (infoBox == 'schueler') {
                   personIsChecked = true;
-                  personScore = 1.0;
                 } else if (infoBox == 'erzieher') {
                   parentIsChecked = true;
-                  parentScore = 1.0;
                 } else if (infoBox == 'addresse') {
                   addressIsChecked = true;
-                  addressScore = 1.0;
                 } else if (infoBox == 'ag') {
                   agIsChecked = true;
-                  agScore = 1.0;
                 }
                 if(parentIsChecked && personIsChecked && addressIsChecked || agIsChecked && personIsChecked){
                   isChecked = true;
@@ -488,6 +547,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                   else{
                     _changeData = buildAGChangeResponse();
                   }
+                  _showOverlay();
                 }
                 print('Change Daten zu speichern: \n ${_changeData.toString()}');
               });
@@ -499,15 +559,15 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   }
 
   Widget _buildOverlayBox(
-      String text, double width, double height, Color color, double score) {
+      String text, double width, double height, Color backgroundColor, Color borderColor) {
     return  Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color:  color,
+          color:  backgroundColor,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _getColorFromScore(score),
+            color: isChecked? Colors.green : borderColor,
             width: 2,
           ),
         ),
@@ -527,6 +587,44 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
           ),
         ),
       );
+  }
+
+  OverlayEntry _changeOverlayBorder(Color borderColor) {
+    if(docType == 'Adresse' || docType == 'AD'){
+      return OverlayEntry(
+        builder: (context) => Stack(
+          children: [
+            Visibility(
+                visible: isOverLayVisible,
+                child: Stack(
+                  children: [
+                    _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, borderColor),
+                    _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, borderColor),
+                    _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, borderColor),
+                  ],
+                ),
+            ),
+          ],
+        ),
+      );
+    }
+    else{
+      return OverlayEntry(
+        builder: (context) => Stack(
+          children: [
+            Visibility(
+              visible: isOverLayVisible,
+              child: Stack(
+                children: [
+                  _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, borderColor),
+                  _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, borderColor),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget buildSaveChangeButton() {
