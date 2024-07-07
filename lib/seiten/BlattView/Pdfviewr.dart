@@ -641,16 +641,16 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
               );
             }
             else{
-              if(dontSaveChanges!){
+              if(dontSaveChanges! || desableDbComparison!){
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Änderungen übertragen deaktiviert'),
+                    content: Text('übertragen deaktiviert oder Antwort direck von der KI erhalten. Änderungen können nicht gespeichert werden.'),
                     duration: Duration(seconds: 5),
                   ),
               );
               }
               else{
-                if(isSigned!){
+                if(isSigned){
                   isSaved = await repository.saveChanges(widget.authToken, _changeData);
                   if(isSaved){
                     // ignore: use_build_context_synchronously
