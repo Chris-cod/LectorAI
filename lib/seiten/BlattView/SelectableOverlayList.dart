@@ -322,25 +322,25 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
     if (widget.boxname == 'schueler') {
       List<String> student = selectedStudent!.split(' | ');
       widget.onItemSelected({
-        'selectedStudent': '${student[0]}\n${student[1]}\n${student[2]}',
+        'text': '${student[0]}\n${student[1]}\n${student[2]}',
       });
     } else if (widget.boxname == 'erzieher') {
       List<String> parent = selectedParent!.split('\n');
       List<String> name = parent[0].split(' | ');
       List<String> contact = parent[1].split(' | ');
       widget.onItemSelected({
-        'selectedErzieher': '${name[0]}\n${name[1]}\n${contact[0]}\n${contact[1]}',
+        'text': '${name[0]}\n${name[1]}\n${contact[0]}\n${contact[1]}',
       });
     } else if (widget.boxname == 'addresse') {
       List<String> address = selectedAdresse!.split('\n');
       List<String> street = address[0].split(' | ');
       List<String> postal = address[1].split(' | ');
       widget.onItemSelected({
-        'selectedAdresse': '${street[0]}-${street[1]}\n${postal[0]}\n${postal[1]}',
+        'text': '${street[0]}-${street[1]}\n${postal[0]}\n${postal[1]}',
       });
     } else {
       widget.onItemSelected({
-        'selectedAGs': '${selectedAG1!}\n${selectedAG2!}\n${selectedAG3!}',
+        'text': '${selectedAG1!}\n${selectedAG2!}\n${selectedAG3!}',
       });
     }
   }
