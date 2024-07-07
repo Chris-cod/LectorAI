@@ -171,7 +171,7 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
               const SizedBox(width: 10),
               DropdownButton<String>(
                 value: selectedStudent,
-                style: const TextStyle(fontSize: 16, color: Colors.black),
+                style: const TextStyle(fontSize: 12, color: Colors.black),
                 onChanged: (newValue) {
                   setState(() {
                     selectedStudent = newValue;
@@ -197,7 +197,7 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
               const SizedBox(width: 10),
               DropdownButton<String>(
                 value: selectedParent,
-                style: const TextStyle(fontSize: 12, color: Colors.black),
+                style: const TextStyle(fontSize: 11, color: Colors.black),
                 onChanged: (newValue) {
                   setState(() {
                     selectedParent = newValue;
