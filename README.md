@@ -32,12 +32,13 @@ git clone https://github.com/Chris-cod/LectorAI.git
 flutter pub get
 ```
 
-### Gerät verbinden
+### Gerät verbinden*
 
 Verbinden Sie Ihr Android-Gerät und überprüfen Sie, ob es erkannt wird:
 ```sh
 flutter devices
 ```
+**Hinweis:** Eine genaue Anleitung zum Verbinden des Geräts finden Sie unter dem folgenden Link: [Einstieg in die Entwicklung von Flutter-Apps](https://drive.google.com/file/d/1m1ny3-cegguKGIi6dtfRIz3d6570gdpR/view).
 
 ### App ausführen
 
@@ -51,3 +52,5 @@ flutter run -d <device_id>
 Die App starten, auf das Einstellungs-Icon auf der Login-Seite drücken, 
 um auf die Einstellungsseite zu gelangen. 
 Dort gibt man seine lokale IP-Adresse ein und speichert diese, damit man sich anmelden kann.
+
+**Wichtig:** Diese App ist ausschließlich auf Android-Geräten funktionsfähig.
