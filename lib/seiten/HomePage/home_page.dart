@@ -142,7 +142,12 @@ class _HomePageState extends State<HomePage> {
       );
     }
     return Expanded(
-      child: Center(
+      child: Align(
+      alignment: Alignment.bottomCenter, // Positioniert den Inhalt am unteren Rand des Bildschirms
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.36, // Setzt die Höhe auf ein Viertel der Bildschirmhöhe
+        width: MediaQuery.of(context).size.width, // Setzt die Breite auf die Breite des Bildschirms
+        child: SingleChildScrollView(
         child: Wrap(
           alignment: WrapAlignment.center,
           spacing: 20,
@@ -152,6 +157,8 @@ class _HomePageState extends State<HomePage> {
                   _buildClassButton(className, context))
               .toList(),
         ),
+      ),
+      ),
       ),
     );
   }
