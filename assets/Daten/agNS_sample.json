@@ -1,0 +1,62 @@
+{
+  "doc_type": "AG",
+  "students": [
+        {
+            "id": 24,
+            "firstname": "Ariane",
+            "lastname": "Doe",
+            "school_class": "12A",
+            "similarity_score": 1.0
+        },
+        {
+            "id": 25,
+            "firstname": "Johannes",
+            "lastname": "Fischer",
+            "school_class": "12A",
+            "similarity_score": 1.0
+        },
+        {
+            "id": 26,
+            "firstname": "Özlem",
+            "lastname": "Güngör",
+            "school_class": "12A",
+            "similarity_score": 1.0
+        }
+    ],
+  "ag_1": [
+        {
+            "id": 2,
+            "name": "Fussball"
+        },
+        {
+            "id": 4,
+            "name": "Basketball"
+        },
+        {
+            "id": 5,
+            "name": "Volleyball"
+        }
+    ],
+    "ag_2": [
+        {
+            "id": 3,
+            "name": "Chor"
+        },
+        {
+            "id": 3,
+            "name": "Band"
+        }
+    ],
+    "ag_3": [
+        {
+            "id": 6,
+            "name": "Robotik"
+        },
+        {
+            "id": 6,
+            "name": "Programmierung"
+        }
+    ],
+
+    "signature": false
+}

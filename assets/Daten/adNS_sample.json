@@ -1,0 +1,49 @@
+{
+    "doc_type": "AD",
+    "students": [
+        {
+            "id": 69,
+            "firstname": "Grzegorz",
+            "lastname": "Länz",
+            "school_class": "8D",
+            "parent": {
+                "id": 69,
+                "firstname": "Piotr",
+                "lastname": "Länz",
+                "email": "länz-pr@gmx.de",
+                "phone_number": "5246087",
+                "similarity_score": 0.6923077
+            }
+        },
+        {
+            "id": 69,
+            "firstname": "franziska",
+            "lastname": "Lütz",
+            "school_class": "8D",
+            "parent": {
+                "id": 69,
+                "firstname": "Reiz",
+                "lastname": "Lütz",
+                "email": "lreizr@web.de",
+                "phone_number": "5356088",
+                "similarity_score": 0.6923077
+            },
+            "similarity_score": 0.85333335
+        }
+    ],
+    "addresses": [
+        {
+            "address_id": 1104,
+            "street_name": "PetershagenerStraße",
+            "postal_code": 28207,
+            "house_number": "13"
+        },
+        {
+            "address_id": 3059,
+            "street_name": "KluvenhagenerStraße",
+            "postal_code": 28307,
+            "house_number": "13"
+        }
+    ],
+    "signature": false
+}

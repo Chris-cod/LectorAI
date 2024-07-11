@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lectorai_frontend/seiten/BlattView/errorOverlay.dart';
 import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -362,21 +364,20 @@ class Repository {
   }
 
   // Methode zum Senden des Bildes
-  Future<Map<String, dynamic>> sendImage(
+  Future<Map<String, dynamic>> sendImage(BuildContext context,
       String authToken, List<int> imageBytes, bool notCompareWithDb) async {
     // Konvertiert Byte-Daten zu einem Base64-String
     await _loadServerAddress();
     String base64Image = base64Encode(imageBytes);
     //print(base64Image);
-    var toSend = notCompareWithDb? jsonEncode({'no_db': true,'image': base64Image }) : jsonEncode({'image': base64Image});
+    var toSend = notCompareWithDb? jsonEncode({'raw': true,'image': base64Image }) : jsonEncode({'image': base64Image});
     print(toSend);
-
+    var url = Uri.parse('$backendURL/image');
     try {
-      var response = await http
-          .post(
-            Uri.parse('$backendURL/image'), // URL für das Senden des Bildes
+      var response = await http.post(
+            url, // URL für das Senden des Bildes
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json', 
               'access-token': authToken,
             },
             body: toSend,
@@ -384,12 +385,12 @@ class Repository {
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
+        var data = json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
         print(data);
         return data;
       } else {
-        print(
-            'Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
+        print('Fehler beim Senden des Bildes: ${response.statusCode} ${response.body}');
+        ErrorOverlay.showErrorOverlay(context, 'Fehler beim Senden des Bildes: ${response.body}');
         return {};
       }
     } catch (e) {
@@ -401,7 +402,7 @@ class Repository {
   Future<bool> saveChanges(String token, Map<String, dynamic> validData) async{
     await _loadServerAddress();
     try {
-      var toSend = jsonEncode(validData);
+      var toSend = json.encode(validData);
       print(toSend);
       var response = await http
           .put(

@@ -40,15 +40,18 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
   void _initializeItems() {
     if(widget.boxname == 'schueler') {
       for (var item in widget.items) {
-        studentItems.add('${item['lastname']} | ${item['firstname']} | ${item['school_class']}');
+        studentItems.add('${item['lastname'] ?? 'Kein vorname'} | ${item['firstname'] ?? 'Kein Nachname'} |'
+        ' ${item['school_class'] ?? '0X'}');
       }
     } else if(widget.boxname == 'erzieher') {
       for (var item in widget.items) {
-        parentItems.add('${item['parent']['lastname']} | ${item['parent']['firstname']}\n${item['parent']['phone_number']} | ${item['parent']['email']}');
+        parentItems.add('${item['parent']['lastname'] ?? 'Kein Erzieher Name'} | ${item['parent']['firstname'] ?? 'kein Vorname'}\n'
+        '${item['parent']['phone_number'] ?? 'kein Telefonnummer'} | ${item['parent']['email'] ?? 'keine Email'}');
       }
     } else if(widget.boxname == 'addresse') {
       for (var item in widget.items) {
-        adresseItems.add('${item['street_name']} | ${item['house_number']}\n${item['postal_code']} | Bremen');
+        adresseItems.add('${item['street_name'] ?? 'keine Straße'} | ${item['house_number'] ?? '0X'}\n'
+        '${item['postal_code'] ?? '00000'} | Bremen');
       }
     } else {
       if (widget.items['ag_1'] != null) {
@@ -56,17 +59,26 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
           ag1.add(ag['name']);
         }
       }
+      else{
+        ag1.add('Keine AG1 vorhanden');
+      }
 
       if (widget.items['ag_2'] != null) {
         for (var ag in widget.items['ag_2']) {
           ag2.add(ag['name']);
         }
       }
+      else{
+        ag2.add('Keine AG2 vorhanden');
+      }
 
       if (widget.items['ag_3'] != null) {
         for (var ag in widget.items['ag_3']) {
           ag3.add(ag['name']);
         }
+      }
+      else{
+        ag3.add('Keine AG3 vorhanden');
       }
     }
   }
@@ -251,10 +263,10 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
                   const SizedBox(width: 10),
                   DropdownButton<String>(
                     value: selectedAG1,
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
                     onChanged: (newValue) {
                       setState(() {
-                        selectedAG1 = newValue;
+                        selectedAG1 = newValue ?? '';
                       });
                     },
                     items: ag1.map<DropdownMenuItem<String>>((String value) {
@@ -272,10 +284,10 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
                   const SizedBox(width: 10),
                   DropdownButton<String>(
                     value: selectedAG2,
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
                     onChanged: (newValue) {
                       setState(() {
-                        selectedAG2 = newValue;
+                        selectedAG2 = newValue ?? '';
                       });
                     },
                     items: ag2.map<DropdownMenuItem<String>>((String value) {
@@ -293,10 +305,10 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
                   const SizedBox(width: 10),
                   DropdownButton<String>(
                     value: selectedAG3,
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
                     onChanged: (newValue) {
                       setState(() {
-                        selectedAG3 = newValue;
+                        selectedAG3 = newValue ?? '';
                       });
                     },
                     items: ag3.map<DropdownMenuItem<String>>((String value) {

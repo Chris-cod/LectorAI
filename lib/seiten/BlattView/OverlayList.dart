@@ -325,7 +325,7 @@ Widget _buildListTextContent(var data, int index) {
 
     if (widget.boxname == 'addresse') {
       var selectedItem = widget.items[0];
-      allText += '${_controllers['street']?.text ?? ''} ${_controllers['houseNumber']?.text ?? ''}\n ${_controllers['postalCode']?.text ?? ''}\n ${_controllers['city']?.text ?? ''}';
+      allText += '${_controllers['street']?.text ?? ''}-${_controllers['houseNumber']?.text ?? ''}\n ${_controllers['postalCode']?.text ?? ''}\n ${_controllers['city']?.text ?? ''}';
       if (selectedItem['id'] != null) { // Nullprüfung hinzugefügt
       allIds.add(selectedItem['id']);
     }
