@@ -5,7 +5,7 @@ class ThemeManager {
   static ThemeProvider buildTheme() {
     return ThemeProvider(
       ThemeData.light().copyWith(
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+        scaffoldBackgroundColor: const Color(0xFFB9B5C6),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromARGB(255, 233, 229, 240),
         ),

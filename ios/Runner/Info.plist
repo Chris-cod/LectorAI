@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>Lectorai Frontend</string>
+    <string>lectorai_frontend</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -46,12 +46,12 @@
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
     <key>NSCameraUsageDescription</key>
-    <string>Die App benötigt Zugriff auf die Kamera, um Dokumente zu scannen.</string>
+    <string>We need access to your camera for scanning documents</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Die App benötigt Zugriff auf die Fotobibliothek, um gescannte Bilder zu speichern.</string>
+    <string>We need access to your photo library to save scanned documents</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to your photo library to save scanned documents</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Die App benötigt Zugriff auf das Mikrofon, um Videos mit Ton aufzunehmen.</string>
-    <key>MinimumOSVersion</key>
-    <string>13.0</string>
+    <string>We need access to your microphone for recording</string>
 </dict>
 </plist>

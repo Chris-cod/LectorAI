@@ -21,7 +21,7 @@ class ThemeProvider extends ChangeNotifier {
     } else {
       // Light mode
       newThemeData = ThemeData.light().copyWith(
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA), // Hintergrundfarbe
+        scaffoldBackgroundColor: const Color(0xFFB9B5C6), // Hintergrundfarbe
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromARGB(255, 233, 229, 240),
         ),
@@ -36,12 +36,12 @@ class ThemeProvider extends ChangeNotifier {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25.0),
             borderSide: BorderSide.none,
-          ),          
+          ),
         ),
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 116, 82, 163),
         ),
-        
+
         // Your dark mode theme data here
       );
     }

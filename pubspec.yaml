@@ -40,7 +40,7 @@ dependencies:
   readmore: ^3.0.0
 
   camera: ^0.11.0+1  # Aktualisierte Version
-  cunning_document_scanner: ^1.2.2
+  cunning_document_scanner: ^1.2.3
   
   image: ^4.2.0  # Zum Bearbeiten und Konvertieren von Bildern
   permission_handler: ^11.3.1 #  Berechtigungen zur Laufzeit zu verwalten
