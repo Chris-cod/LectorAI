@@ -23,7 +23,7 @@ class PdfViwer extends StatefulWidget {
   PdfViwerState createState() => PdfViwerState();
 }
 
-class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
+class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
   int? currentPage = 0;
   bool pdfReady = false;
   OverlayEntry? _overlayEntry, _secondOverlay;
@@ -42,21 +42,23 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   bool hideSaveButton = true;
   bool isSigned = false;
   bool isOverLayVisible = false;
+  bool isGestureDetectorActive = true;
   bool? desableDbComparison, dontSaveChanges;
   final int _currentIndex = 0;
   int? personId, parentId, addressId;
   List<int> agIds = [];
   double? personScore, parentScore, addressScore, agScore;
   Repository repository = Repository();
-  List<String> type = ['ad', 'ag'];
+  List<String> type = ['ad', 'ag', 'agNS', 'adNS'];
   Color? personColor, parentColor, addressColor, agColor, signatureColor;
+  String? signature;
   
   
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
-     WidgetsBinding.instance.addObserver(this);
     fetchDataAndSetting();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showOverlay();
@@ -65,8 +67,8 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
 
   Future<void> fetchDataAndSetting() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    desableDbComparison = prefs.getBool('desableDbComparison');
-    dontSaveChanges = prefs.getBool('dontSaveChanges');
+    desableDbComparison = prefs.getBool('desableDbComparison') ?? false;
+    dontSaveChanges = prefs.getBool('dontSaveChanges') ?? false;
     print('Aktuelle no_db value: $desableDbComparison');
     Map<String, dynamic> responseJson;
     if(widget.demoModus){
@@ -77,8 +79,8 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
     }
     else{
       //responseJson = await repository.testADOverlay(widget.authToken);//sendImage(widget.authToken, widget.imageBytes);
-      responseJson = await repository.sendImage(widget.authToken, widget.imageBytes, desableDbComparison!);
-      docType = desableDbComparison!? responseJson['doctype'] : responseJson['doc_type'];
+      responseJson = await repository.sendImage(context, widget.authToken, widget.imageBytes, desableDbComparison!);
+      docType = desableDbComparison!? responseJson['doc_type'] : responseJson['doc_type'];
     }
     
     
@@ -120,24 +122,30 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _overlayEntry?.remove();
     super.dispose();
   }
 
   void _showOverlay() {
     if(isChecked){
+      _overlayEntry?.remove();
       _overlayEntry = _changeOverlayBorder(Colors.green);
-      Overlay.of(context).insert(_overlayEntry!);
-      setState(() {
-        isOverLayVisible = true;
-      });
+      if(_overlayEntry != null){
+        Overlay.of(context).insert(_overlayEntry!);
+        setState(() {
+          isOverLayVisible = true;
+        });
+      }
+      
     }
     else{
+      _overlayEntry?.remove();
       _overlayEntry = _createOverlayEntry();
-      Overlay.of(context).insert(_overlayEntry!);
-      setState(() {
-        isOverLayVisible = true;
-      });
+      if(_overlayEntry != null){
+        Overlay.of(context).insert(_overlayEntry!);
+        setState(() {
+          isOverLayVisible = true;
+        });
+      }
     }
   }
 
@@ -159,6 +167,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   }
 
   void _showSecondOverlay(var data , String boxname) {
+    _secondOverlay?.remove();
     _secondOverlay = _createOverlayList(context, data, boxname);
     Overlay.of(context).insert(_secondOverlay!);
   }
@@ -166,8 +175,6 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
   void removeFirstOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {
-    });
   }
 
   void removeSecondOverlay() {
@@ -183,23 +190,25 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
+      return WillPopScope(
+        child: Scaffold(
           appBar: AppBar(
               title: const Text("Erfasste Informationen"),
               leading: GestureDetector(
                   onTap: () {
-                      if (isChecked) {
-                          isOverLayVisible = false;
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
-                          removeFirstOverlay();
-                          removeSecondOverlay();
-                      } else {
-                          isOverLayVisible = false;
-                          removeFirstOverlay();
-                          removeSecondOverlay();
-                          Navigator.pop(context);
-                      }
+                    if(isChecked){
+                      isOverLayVisible = false;
+                      removeFirstOverlay();
+                      removeSecondOverlay();
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    }
+                    else{
+                      isOverLayVisible = false;
+                      removeFirstOverlay();
+                      removeSecondOverlay();
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: Container(
                       padding: const EdgeInsets.all(15.0),
@@ -259,6 +268,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                               onScaleStart: (_) {},
                               onScaleUpdate: (_) {},
                               onScaleEnd: (_) {},
+                              onDoubleTap: isGestureDetectorActive ? () {} : null
                           ),
                       ),
                       if (!hideSaveButton)
@@ -271,7 +281,25 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                   ],
               )
               : const Center(child: CircularProgressIndicator()),
+      ),
+      onWillPop: () async {
+        if(isChecked){
+          isOverLayVisible = false;
+          removeFirstOverlay();
+          removeSecondOverlay();
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        }
+        else{
+          isOverLayVisible = false;
+          removeFirstOverlay();
+          removeSecondOverlay();
+          Navigator.of(context).pop();
+        }
+        return true;
+      },
       );
+      
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -279,7 +307,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
       print(docType);
       if (docType == 'Adresse' || docType == 'AD') {
         var adData = _constructADTextInformation(_jsonData);
-        var student, newAdress, signature;
+        var student, newAdress;
         displayTextStudent = adData['student'];
         displayTextErzieher = adData['parent'];
         displayTextAdresse = adData['address'];
@@ -302,7 +330,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
           signatureColor = isSigned ? Colors.green : Colors.red;
         }
         else{
-          var val = _jsonData['signature'];
+          var val = _jsonData['signature']['prediction'];
           if(val == null || val.isEmpty){
             isSigned = false;
             signature = 'Not Found';
@@ -311,6 +339,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             isSigned = true;
             signature ='Found';
           }
+          signature = !isSigned ? 'Not Found' :'Found'; 
           signatureColor = isSigned ? Colors.green : Colors.red;
         }
         return OverlayEntry(
@@ -331,35 +360,20 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                 ),
 
               ),
-              // Position für Button-Container
-              // _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, personColor!),
-              // _iconsOverlay(0.445, 0.67, student, 'erzieher'),
-              // _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parentColor!),
-              // _iconsOverlay(0.547, 0.67, student, 'schueler'),
-              // _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, addressColor!),
-              // _iconsOverlay(0.65, 0.67, newAdress, 'addresse'),
-              // // Add signature box
-              // _positionedOverlaywithText(
-              //   'Signature: $signature',
-              //   0.5,
-              //   0.04,
-              //   0.81,
-              //   0.195,
-              //   signatureColor!,
-              // ),
             ],
           ),
         );
       } 
       else {
         var student;
-        String signature;
         print('aktuelle no_db value ${desableDbComparison!}');
         if(desableDbComparison!){
-          displayTextStudent = '${_jsonData['child_last_name']?['prediction'] ?? 'Muster'}\n${_jsonData['child_first_name']?['prediction'] ?? 'Max'}\n${_jsonData['child_class']?['prediction'] ?? '0X'}';
-          personScore = !isChecked ? (_jsonData['child_last_name']?['confidence'] ?? 0.0 + _jsonData['child_first_name']?['confidence'] ?? 0.0 + _jsonData['child_class']?['confidence'] ?? 0.0)/3 : 1.0;
-          displayTextAG = _constructAGText(_jsonData);
-          var val = _jsonData['signature'];
+          displayTextStudent = '${_jsonData['student_lastname']?['prediction'] ?? 'Muster'}\n${_jsonData['student_firstname']?['prediction'] ?? 'Max'}\n${_jsonData['student_class']?['prediction'] ?? '0X'}';
+          personScore = !isChecked ? (_jsonData['student_lastname']?['confidence'] ?? 0.0 + _jsonData['student_firstname']?['confidence'] ?? 0.0 + _jsonData['student_class']?['confidence'] ?? 0.0)/3 : 1.0;
+           Map<String,dynamic> _agData =_constructAGText(_jsonData)  ;
+          displayTextAG = _agData['text'];
+          agScore = _agData['score'] ?? 0.0;
+          var val = _jsonData['signature']['prediction'];
           if(val == null || val.isEmpty){
             isSigned = false;
             signature = 'Not Found';
@@ -381,21 +395,16 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
             Map<String,dynamic> fs = student[0];
             displayTextStudent = '${fs["lastname"] ?? 'Muster'}\n${fs['firstname'] ?? 'Max'}\n${fs['school_class'] ?? '0X'}';
             personId = fs['id'];
-            personScore =  fs['similarity_score'] ??  0.0;
+            personScore =  fs['similarity_score'] ??  0.1;
             personColor = isChecked? Colors.green : _getColorFromScore(personScore!);
           }
-          displayTextAG = _constructAGText(_jsonData); 
+          Map<String,dynamic> _agData =_constructAGText(_jsonData)  ;
+          displayTextAG = _agData['text'];
+          agScore = _agData['score'] ?? 0.1; 
           agColor = isChecked? Colors.green : _getColorFromScore(agScore!);
           //isSigned = _jsonData['signature'] ? true : false;
-          var val = _jsonData['signature'];
-          if(!val){
-            isSigned = false;
-            signature = 'Not Found';
-          }
-          else{
-            isSigned = true;
-            signature ='Found';
-          }
+          isSigned = _jsonData['signature'];
+          signature = isSigned ? 'Found' :'Not Found'; 
           signatureColor = isSigned ? Colors.green : Colors.red;
         }
         return OverlayEntry(
@@ -414,41 +423,18 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                     // // Position für Button-Container
                     _iconsOverlay(0.61, 0.66, _jsonData, 'ag'),
                     // Add signature box
-                    _positionedOverlaywithText(
-                      'Signature: $signature',
-                      0.5,
-                      0.07,
-                      0.78,
-                      0.15,
-                      signatureColor!,
-                    ),
+                    _positionedOverlaywithText('Signature: $signature',0.5,0.07,0.78,0.15,signatureColor!),
                   ],
                 ),
 
               ),
-              // // Position für Schüler-Daten-Container
-              // _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, personColor!),
-              // // Position für Button-Container
-              // _iconsOverlay(0.495, 0.66, student, 'schueler'),
-              // // Position für AG-Container
-              // _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, agColor!),
-              // // // Position für Button-Container
-              //  _iconsOverlay(0.61, 0.66, _jsonData, 'ag'),
-              // // Add signature box
-              // _positionedOverlaywithText(
-              //   'Signature: $signature',
-              //   0.5,
-              //   0.07,
-              //   0.78,
-              //   0.15,
-              //   signatureColor!,
-              // ),
             ],
           ),
         );
       }
     } catch (e) {
       print('Fehler beim Erstellen des Overlays: $e');
+      print(e.toString());
       return OverlayEntry(builder: (context) => Container());
     }
   }
@@ -488,6 +474,40 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
       ),
     );
   }
+
+  void showErrorOverlay(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      top: 50.0,
+      left: MediaQuery.of(context).size.width * 0.1,
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Text(
+            message,
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+
+  // Remove the overlay after 3 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
 
 
   Widget _positionedOverlaywithText(String text, double widthMultiplicator, double heightMultiplicator, 
@@ -601,6 +621,8 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                     _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, borderColor),
                     _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, borderColor),
                     _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, borderColor),
+                    _positionedOverlaywithText('Signature: $signature', 0.5, 0.04, 0.81, 0.195, signatureColor!),
+
                   ],
                 ),
             ),
@@ -618,6 +640,7 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
                 children: [
                   _positionedOverlaywithText(displayTextStudent!,0.7, 0.108, 0.508, 0.1, borderColor),
                   _positionedOverlaywithText(displayTextAG!, 0.7, 0.108, 0.62, 0.1, borderColor),
+                  _positionedOverlaywithText('Signature: $signature',0.5,0.07,0.78,0.15,signatureColor!),
                 ],
               ),
             ),
@@ -706,40 +729,40 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
         addressScore = 0.0;
       }else{
         // Sicherstellen, dass alle benötigten Felder nicht null sind und einen Standardwert festlegen
-        studentText = '${data['child_last_name']?['prediction'] ?? 'Doe'}\n'
-                            '${data['child_first_name']?['prediction'] ?? 'Max'}\n'
-                            '${data['child_class']?['prediction'] ?? '0X'}';
+        studentText = '${data['student_lastname']?['prediction'] ?? 'Doe'}\n'
+                            '${data['student_firstname']?['prediction'] ?? 'Max'}\n'
+                            '${data['student_class']?['prediction'] ?? '0X'}';
 
         // Berechnung des gesamten Scores für den Schüler
-        num childLastNameConfidence = data['child_last_name']?['confidence'] ?? 0;
-        num childFirstNameConfidence = data['child_first_name']?['confidence'] ?? 0;
-        num childClassConfidence = data['child_class']?['confidence'] ?? 0;
+        num childLastNameConfidence = data['student_lastname']?['confidence'] ?? 0.1;
+        num childFirstNameConfidence = data['student_firstname']?['confidence'] ?? 0.1;
+        num childClassConfidence = data['student_class']?['confidence'] ?? 0.1;
         personScore = !isChecked ? (childLastNameConfidence + childFirstNameConfidence + childClassConfidence) / 3 : 1.0;
 
         // Sicherstellen, dass alle benötigten Felder nicht null sind und einen Standardwert festlegen
-        parentText = '${data['parent_last_name']?['prediction'] ?? 'Doe'}\n'
-                            '${data['parent_first_name']?['prediction'] ?? 'John'}\n'
-                            '${data['parent_phone']?['prediction'] ?? '0000000'}\n'
-                            '${data['parent_email']?['prediction'] ?? 'muster@web.de'}';
+        parentText = '${data['parent_lastname']?['prediction'] ?? 'Doe'}\n'
+                            '${data['parent_firstname']?['prediction'] ?? 'John'}\n'
+                            '${data['phone_number']?['prediction'] ?? '0000000'}\n'
+                            '${data['email']?['prediction'] ?? 'muster@web.de'}';
 
         // Berechnung des Scores für die Eltern
-        num parentLastNameConfidence = data['parent_last_name']?['confidence'] ?? 0;
-        num parentFirstNameConfidence = data['parent_first_name']?['confidence'] ?? 0;
-        num parentPhoneConfidence = data['parent_phone']?['confidence'] ?? 0;
-        num parentEmailConfidence = data['parent_email']?['confidence'] ?? 0;
+        num parentLastNameConfidence = data['parent_lastname']?['confidence'] ?? 0.1;
+        num parentFirstNameConfidence = data['parent_firstname']?['confidence'] ?? 0.1;
+        num parentPhoneConfidence = data['phone_number']?['confidence'] ?? 0.1;
+        num parentEmailConfidence = data['email']?['confidence'] ?? 0.1;
         parentScore = !isChecked ? (parentLastNameConfidence + parentFirstNameConfidence + parentPhoneConfidence + parentEmailConfidence) / 4 : 1.0;
 
         // Sicherstellen, dass alle benötigten Felder nicht null sind und einen Standardwert festlegen
-        addressText = '${data['address_street_name']?['prediction'] ?? 'Musterstr'} '
-                            '${data['address_house_number']?['prediction'] ?? '00'}\n'
-                            '${data['address_zip']?['prediction'] ?? '00000'}\n'
-                            '${data['address_city']?['prediction'] ?? 'Bremen'}';
+        addressText = '${data['street']?['prediction'] ?? 'Musterstr'} '
+                            '${data['house_number']?['prediction'] ?? '00'}\n'
+                            '${data['postal_code']?['prediction'] ?? '00000'}\n'
+                            '${data['city']?['prediction'] ?? 'Bremen'}';
 
         // Berechnung des Scores für die Adresse
-        num addressStreetNameConfidence = data['address_street_name']?['confidence'] ?? 0;
-        num addressHouseNumberConfidence = data['address_house_number']?['confidence'] ?? 0;
-        num addressZipConfidence = data['address_zip']?['confidence'] ?? 0;
-        num addressCityConfidence = data['address_city']?['confidence'] ?? 0;
+        num addressStreetNameConfidence = data['street']?['confidence'] ?? 0.1;
+        num addressHouseNumberConfidence = data['house_number']?['confidence'] ?? 0.1;
+        num addressZipConfidence = data['postal_code']?['confidence'] ?? 0.1;
+        num addressCityConfidence = data['city']?['confidence'] ?? 0.1;
         addressScore = !isChecked ? (addressStreetNameConfidence + addressHouseNumberConfidence + addressZipConfidence + addressCityConfidence) / 4 : 1.0;
 
       }
@@ -755,7 +778,12 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
         studentText = '${firststudent['lastname'] ?? 'MusterJr'}\n${firststudent['firstname'] ?? 'Max'}'
                       '\n${firststudent['school_class'] ?? '0X'}';
         personId = firststudent['id'];
-        personScore = !isChecked ? firststudent['similarity_score'] ?? 0.0 : 1.0;
+        if(firststudent['similarity_score'] != null){
+          personScore = !isChecked ? firststudent['similarity_score'] : 1.0;
+        }
+        else{
+          personScore = 0.15;
+        }
       }
       if(parent.isEmpty){
         parentText = 'Kein Elternteil gefunden';
@@ -764,16 +792,30 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
         parentText = '${parent['lastname'] ?? 'Muster'}\n${parent['firstname'] ?? 'John'}\n${parent['phone_number']?? '0000000'}'
                       '\n${parent?['email'] ?? 'jmuster@web.de'}';
         parentId = parent['id'];
-        parentScore = !isChecked ? parent['similarity_score'] ?? 0.0 : 1.0;
+        if(parent['similarity_score'] != null){
+          parentScore = !isChecked ? parent['similarity_score'] : 1.0;
+        }
+        else{
+          parentScore = 0.15;
+        }
       }
       if(newAdress.isEmpty){
         addressText = 'Keine Adresse gefunden';
-        addressScore = 0.0;
+        addressScore = 0.1;
       }else{
         Map<String,dynamic> firstNewAdress = newAdress[0];
+        if(firstNewAdress.isEmpty){
+          addressText = 'Keine Adresse gefunden';
+          addressScore = 0.1;
+        }
         addressText = '${firstNewAdress['street_name'] ?? 'Mstr'}-${firstNewAdress['house_number'] ?? '00'}\n${firstNewAdress['postal_code'] ?? '00000'}'
                       '\nBremen';
-        addressScore = !isChecked ? (firstNewAdress["similarity_score"] ?? 0 + firstNewAdress["similarity_score"] ?? 0)/2 : 1.0;
+        if(firstNewAdress['similarity_score'] != null){
+          addressScore = !isChecked ? firstNewAdress['similarity_score'] : 1.0;
+        }
+        else{
+          addressScore = 0.15;
+        }
       }
     }
     return {
@@ -783,25 +825,36 @@ class PdfViwerState extends State<PdfViwer>  with WidgetsBindingObserver {
     };
   }
 
-  String _constructAGText(Map<String, dynamic> data) {
+  Map<String,dynamic> _constructAGText(Map<String, dynamic> data) {
     String agText = '';
+    double score = 0.0;
     if(desableDbComparison!){
       agText = '${data['ag_1']?['prediction'] ?? 'label_ag_1'}\n${data['ag_2']?['prediction']?? 'label_ag_2'}\n${data['ag_3']?['prediction'] ?? 'label_ag_3'}';
-      agScore = (data['ag_1']?['confidence'] ?? 0.0 + data['ag_2']?['confidence'] ?? 0.0 + data['ag_3']?['confidence'] ?? 0.0)/3;
-      return agText;
+      if( data['ag_1']?['confidence'] != null && data['ag_2']?['confidence'] != null && data['ag_3']?['confidence'] != null){
+        score = (data['ag_1']?['confidence'] ?? 0.15 + data['ag_2']?['confidence'] ?? 0.15 + data['ag_3']?['confidence'] ?? 0.15)/3;
+      }
+      else{
+        score = 0.15;
+      } 
+      return {'text':agText, 'score':score};
     }else{
       var ag1 = data['ag_1'];
       var ag2 = data['ag_2'];
       var ag3 = data['ag_3'];
       agIds.clear();
-        agText = '${ag1?[0]['name'] ?? 'Kein Wahl 1'}\n${ag2?[0]['name'] ?? 'Kein Wahl 2'}\n${ag3?[0]['name'] ?? 'Kein Wahl 3'}';
-        agScore = !isChecked ? (ag1?[0]['similarity_score'] ?? 0 + ag2?[0]['similarity_score'] ?? 0 + ag3?[0]['similarity_score'] ?? 0)/3 : 1.0;
-        agIds.add(ag1?[0]['id'] ?? 0);
-        agIds.add(ag2?[0]['id'] ?? 0);
-        agIds.add(ag3?[0]['id'] ?? 0);
+        agText = '${ag1[0]?['name'] ?? 'Kein AG Wahl 1'}\n${ag2[0]?['name'] ?? 'Kein AG Wahl 2'}\n${ag3[0]?['name'] ?? 'Kein AG Wahl 3'}';
+        if(ag1[0]['similarity_score'] != null && ag2[0]['similarity_score'] != null && ag3[0]['similarity_score'] != null){
+          score = (ag1[0]['similarity_score'] + ag2[0]['similarity_score'] + ag3[0]['similarity_score'])/3;
+        }
+        else{
+          score = 0.15;
+        }
+        agIds.add(ag1[0]?['id'] ?? 0);
+        agIds.add(ag2[0]?['id'] ?? 0);
+        agIds.add(ag3[0]?['id'] ?? 0);
     }
-    print(agIds.toString());
-    return agText;
+    print(' ags Ids: ${agIds.toString()} und Score: $score');
+    return {'text':agText, 'score':score};
   }
 
   Map<String, dynamic> buildADChangeResponse(){
