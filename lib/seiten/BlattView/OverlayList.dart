@@ -3,10 +3,10 @@ import 'package:lectorai_frontend/seiten/BlattView/InitialOverlay.dart';
 import 'package:lectorai_frontend/seiten/BlattView/SelectableOverlayList.dart';
 
 class OverlayList extends StatefulWidget {
-  final dynamic items;
-  final String boxname;
-  final ValueChanged<Map<String, dynamic>> onItemSelected;
-  final bool isDemoModus;
+  final dynamic items; //Die Elemente, die angezeigt oder bearbeitet werden sollen.
+  final String boxname; //Ein String, der angibt, welche Art von Daten angezeigt wird (z. B. 'addresse', 'erzieher', 'schueler', 'ag')
+  final ValueChanged<Map<String, dynamic>> onItemSelected; //Ein Callback, der aufgerufen wird, wenn der Benutzer die Einträge bestätigt hat.
+  final bool isDemoModus; //Ein optionales Flag, das den Demo-Modus aktiviert
 
   OverlayList({
     required this.items,
@@ -16,16 +16,18 @@ class OverlayList extends StatefulWidget {
   });
 
   @override
+  //Erzeugt den Zustand OverlayListState für diese StatefulWidget-Klasse.
   _OverlayListState createState() => _OverlayListState();
 }
 
 class _OverlayListState extends State<OverlayList> {
-  bool _isContainerVisible = true;
-  bool _showInitialOverlay = true;
-  bool _showSelectableOverlay = false;
-  final Map<String, TextEditingController> _controllers = {};
+  bool _isContainerVisible = true; //Steuert die Sichtbarkeit des Containers.
+  bool _showInitialOverlay = true; //Steuert die Anzeige des initialen Overlays.
+  bool _showSelectableOverlay = false; //Steuert die Anzeige des auswählbaren Overlays.
+  final Map<String, TextEditingController> _controllers = {}; //Ein Map, das TextEditingController für die verschiedenen Eingabefelder enthält.
 
   @override
+  //Gibt die TextEditingController frei, wenn sie nicht mehr benötigt werden.
   void dispose() {
     _controllers.forEach((key, controller) {
       controller.dispose();
@@ -34,6 +36,7 @@ class _OverlayListState extends State<OverlayList> {
   }
 
   @override
+  // Initialisiert die TextEditingController basierend auf den übergebenen items und dem boxname.
   void initState() {
     super.initState();
     // Initialize controllers based on the boxname
@@ -59,6 +62,7 @@ class _OverlayListState extends State<OverlayList> {
 }
 }
 
+  //Erzeugt den Text, der im Overlay angezeigt wird, basierend auf dem boxname.
   Widget _buildOverlayText(String boxname) {
     String text;
     switch (boxname) {
@@ -87,6 +91,7 @@ class _OverlayListState extends State<OverlayList> {
     );
   }
 
+ //Baut die Eingabefelder für Adressdaten.
   Widget _buildAddressContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,6 +155,7 @@ class _OverlayListState extends State<OverlayList> {
     );
   }
 
+//Baut die Eingabefelder für Schülerdaten
 Widget _buildSchuelerContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,6 +205,7 @@ Widget _buildSchuelerContent() {
     );
   }
 
+   //Baut die Eingabefelder für Erzieherdaten.
     Widget _buildErzieherContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,6 +269,7 @@ Widget _buildSchuelerContent() {
     );
   }
 
+//Baut die Eingabefelder für die AG-Wahlen.
 Widget _buildListTextContent(var data, int index) {
   final String listText;
   int pointer = index + 1; // Adjusted pointer to match your expected logic
@@ -317,7 +325,7 @@ Widget _buildListTextContent(var data, int index) {
 }
 
 
-
+  //Sammelt die eingegebenen Daten und ruft den Callback onItemSelected auf.
   void _confirmSelection() {
     
     String allText = '';
@@ -368,18 +376,21 @@ Widget _buildListTextContent(var data, int index) {
   }
 
   @override
+  //Baut das UI basierend auf dem aktuellen Zustand der Variablen _isContainerVisible, _showInitialOverlay und _showSelectableOverlay.
   Widget build(BuildContext context) {
     return Center(
       child: _isContainerVisible
           ? Stack(
               children: [
-                _showInitialOverlay
+                _showInitialOverlay //InitialOverlay Wird beim ersten Anzeigen des Widgets angezeigt
                     ? InitialOverlay(
+                      //Bei Auswahl von "Eintragen" wird der InitialOverlay geschlossen und der Hauptinhalt angezeigt.
                         onEintragenPressed: () {
                           setState(() {
                             _showInitialOverlay = false;
                           });
                         },
+                        //Bei Auswahl von "Auswählen" wird der InitialOverlay geschlossen und das auswählbare Overlay wird angezeigt.
                         onAuswaehlenPressed: () {
                           setState(() {
                             _showInitialOverlay = false;
@@ -397,6 +408,7 @@ Widget _buildListTextContent(var data, int index) {
                         child: SingleChildScrollView(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
+                            //Zeigt die Eingabefelder basierend auf dem boxname an (Adresse, Schüler, Erzieher oder AGs).
                             children: [
                               _buildOverlayText(widget.boxname),
                               SizedBox(height: 8),
@@ -442,7 +454,7 @@ Widget _buildListTextContent(var data, int index) {
                 ),
               ],
             )
-          : _showSelectableOverlay
+          : _showSelectableOverlay //Wenn _showSelectableOverlay auf true gesetzt ist, wird eine Seite zum Auswählen von Elementen angezeigt.
               ? Navigator(
                   onGenerateRoute: (settings) => MaterialPageRoute(
                     fullscreenDialog: true,
