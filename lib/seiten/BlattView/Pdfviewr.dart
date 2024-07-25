@@ -15,9 +15,9 @@ class PdfViwer extends StatefulWidget {
   
   const PdfViwer({super.key, required this.authToken, required this.imageBytes, required this.demoModus});
 
-  final String authToken;
-  final Uint8List imageBytes;
-  final bool demoModus;
+  final String authToken; // Authentifizierungstoken für die Kommunikation mit dem Backend
+  final Uint8List imageBytes; // Bild, das gescannt wurde
+  final bool demoModus; // Demo-Modus
 
   @override
   PdfViwerState createState() => PdfViwerState();
@@ -49,7 +49,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
   List<int> agIds = [];
   double? personScore, parentScore, addressScore, agScore;
   Repository repository = Repository();
-  List<String> type = ['ad', 'ag', 'agNS', 'adNS'];
+  List<String> type = ['ad', 'ag', 'agNS', 'adNS']; // Liste des Teil von JSON-Dateien 
   Color? personColor, parentColor, addressColor, agColor, signatureColor;
   String? signature;
   
@@ -65,26 +65,35 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     });
   }
 
+  /*
+    + fetchDataAndSetting() - Methode zum Abrufen der Daten und Einstellungen,
+    + die für die Anzeige des PDFs erforderlich sind.
+    + die Methode ruft die Methode sendImage() aus dem Repository auf, um das Bild an backend zu senden
+    + und die Antwort als JSON-Objekt zu erhalten.
+    + Die Methode verwendet SharedPreferences, um die Einstellungen zu speichern und abzurufen.
+    + Die Methode verwendet die Methode getFileFromAsset(), um das PDF-Datei aus dem Asset-Ordner zu erhalten.
+    + in demo modus wird die Methode getRandomDemoDocType() verwendet, um zufällig ein json datei auszuwählen.
+
+   */
   Future<void> fetchDataAndSetting() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    desableDbComparison = prefs.getBool('desableDbComparison') ?? false;
-    dontSaveChanges = prefs.getBool('dontSaveChanges') ?? false;
+    SharedPreferences prefs = await SharedPreferences.getInstance(); 
+    desableDbComparison = prefs.getBool('desableDbComparison') ?? false; // werte von desableDbComparison aus shared preferences abrufen, um die Datenbankvergleich zu deaktivieren
+    dontSaveChanges = prefs.getBool('dontSaveChanges') ?? false; // werte von dontSaveChanges aus shared preferences abrufen, um die Änderungen nicht zu speichern
     print('Aktuelle no_db value: $desableDbComparison');
     Map<String, dynamic> responseJson;
     if(widget.demoModus){
       var str = getRandomDemoDocType(type);
-      final String response = await rootBundle.loadString('assets/Daten/${str}_sample.json');
+      final String response = await rootBundle.loadString('assets/Daten/${str}_sample.json'); // json datei aus dem Asset-Ordner lesen
       responseJson = json.decode(response);
-      docType = responseJson['doc_type'];
+      docType = responseJson['doc_type']; // Dokumententyp aus dem JSON-Objekt erhalten
     }
     else{
-      //responseJson = await repository.testADOverlay(widget.authToken);//sendImage(widget.authToken, widget.imageBytes);
       responseJson = await repository.sendImage(context, widget.authToken, widget.imageBytes, desableDbComparison!);
-      docType = desableDbComparison!? responseJson['doc_type'] : responseJson['doc_type'];
+      docType = desableDbComparison!? responseJson['doc_type'] : responseJson['doc_type']; // Dokuemntentyp aus dem JSON-Objekt von backend erhalten
     }
     
     
-    var f = await getFileFromAsset("assets/Doc/$docType.pdf");
+    var f = await getFileFromAsset("assets/Doc/$docType.pdf"); // PDF-Datei aus dem Asset-Ordner laden
     setState(() {
       _jsonData = responseJson;
       path = f.path;
@@ -95,7 +104,9 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
   }
 
 
-
+  /*
+    diese methood wird aufgerufen, um das DOkuemnt aus dem Asset-Ordner zu laden
+  */
   Future<File> getFileFromAsset(String asset) async {
     Completer<File> completer = Completer();
     String fileType = asset.split('/').last;
@@ -113,6 +124,9 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     return completer.future;
   }
 
+  /*
+    diese method ist gernutzt um zufaellig ein json datei in demo modus auszuwählen
+  */
   String getRandomDemoDocType(List<String> list) {
     final random = Random();
     int index = random.nextInt(list.length);
@@ -125,6 +139,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     super.dispose();
   }
 
+  // Methode zum Erstellen eines Overlays, das die Informationen abhängig vom Dokumententyp anzeigt
   void _showOverlay() {
     if(isChecked){
       _overlayEntry?.remove();
@@ -149,12 +164,12 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     }
   }
 
-   @override
+// hier wird die Methode didChangeDependencies() überschrieben, um die Änderungen zu verfolgen
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Called when the widget’s dependencies change.
-    // Handle the overlay display logic if needed.
   }
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -166,6 +181,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     }
   }
 
+// hier wird der Overlay zum Auswählen oder eintragen der Information angezeigt
+// die Methode wird aufgerufen, wenn der Benutzer auf den Edit-Icon klickt
   void _showSecondOverlay(var data , String boxname) {
     _secondOverlay?.remove();
     _secondOverlay = _createOverlayList(context, data, boxname);
@@ -188,6 +205,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     });
   }
 
+  // hier wird das Dokument auf das Bildschirm angezeigt, mit den Overlays und daten
+  // Dazu wird das Speichern-Button angezeigt, wenn alle Daten überprüft und bestätigt sind 
   @override
   Widget build(BuildContext context) {
       return WillPopScope(
@@ -216,6 +235,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
                       child: Image.asset('assets/Bilder/_.png', color: Colors.black, scale: 1.0,),
                   )
               ),
+              // Action um das gescannt Dokument zu sehen
               actions: !isChecked
                   ? [
                       IconButton(
@@ -239,6 +259,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
           body: path != null
               ? Stack(
                   children: [
+                    // Darsellung des PDF-Dokuments
                       PDFView(
                           filePath: path,
                           enableSwipe: true,
@@ -262,7 +283,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
                               print(e);
                           },
                       ),
-                      // Widget zur Verhinderung der Interaktion mit dem PDF
+                      // Widget zur Verhinderung der Interaktion (Zoom) mit dem PDF
                       Positioned.fill(
                           child: GestureDetector(
                               onScaleStart: (_) {},
@@ -282,6 +303,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
               )
               : const Center(child: CircularProgressIndicator()),
       ),
+      // methode zum navigieren zurück mit dem Zurück-Button von gerät 
       onWillPop: () async {
         if(isChecked){
           isOverLayVisible = false;
@@ -302,6 +324,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
       
   }
 
+  // Methode zum Erstellen des Overlays, das die Informationen abhängig vom Dokumententyp anzeigt
   OverlayEntry _createOverlayEntry() {
     try {
       print(docType);
@@ -315,6 +338,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
         parentColor = _getColorFromScore(parentScore!);
         addressColor = _getColorFromScore(addressScore!);
         print('aktuelle no_db value ${desableDbComparison!}');
+        // wenn vergleich mit der Datenbank deaktiviert ist
         if(!desableDbComparison!){
           newAdress = _jsonData['addresses'];
           student = _jsonData['students'];
@@ -342,6 +366,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
           signature = !isSigned ? 'Not Found' :'Found'; 
           signatureColor = isSigned ? Colors.green : Colors.red;
         }
+        // Wenn alle Daten in Json gelesen und formatiert sind
+        // wird Overlay mit den Daten ausgefüllt, und angezeigt
         return OverlayEntry(
           builder: (context) => Stack(
             children: [
@@ -349,13 +375,13 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
                 visible: isOverLayVisible,
                 child: Stack(
                   children: [
-                    _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, personColor!),
+                    _positionedOverlaywithText(displayTextErzieher!, 0.7, 0.104, 0.465, 0.1, personColor!),// Position der Erzieher-Daten-Overlay
                     _iconsOverlay(0.445, 0.67, student, 'erzieher'),
-                    _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parentColor!),
+                    _positionedOverlaywithText(displayTextStudent!, 0.7, 0.101, 0.57, 0.1, parentColor!), // Position der Schüler-Daten-Overlay
                     _iconsOverlay(0.547, 0.67, student, 'schueler'),
-                    _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, addressColor!),
+                    _positionedOverlaywithText(displayTextAdresse!, 0.7, 0.088, 0.675, 0.1, addressColor!), // Position der Adresse-Daten-Overlay
                     _iconsOverlay(0.65, 0.67, newAdress, 'addresse'),
-                    _positionedOverlaywithText('Signature: $signature', 0.5, 0.04, 0.81, 0.195, signatureColor!),
+                    _positionedOverlaywithText('Signature: $signature', 0.5, 0.04, 0.81, 0.195, signatureColor!), // Position der Signatur-Overlay
                   ],
                 ),
 
@@ -439,6 +465,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     }
   }
 
+  // methode zum erstellen der zweite Overlay, das die Interaktionmöglichkeit mit dem Benutzer bietet
+  // abhängig zum welchen Informationsfeld der Benutzer klickt
   OverlayEntry _createOverlayList(BuildContext context, var data, String boxname){
     return OverlayEntry(
       builder: (context) => Positioned(
@@ -450,6 +478,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
           color: Colors.transparent,
           child: OverlayList(
             items: data,
+            // Methode zum aktualisieren des Textes, wenn der Benutzer ein Element editiert oder auswählt
             onItemSelected: (selectedItem) {
               setState(() {
                 if (boxname == 'erzieher') {
@@ -466,6 +495,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
                   displayTextAG = selectedItem['text'];
                 }
               });
+              // entfernen des zweiten Overlays, nachdem der Benutzer eine Aktion ausgeführt hat, und bestätigt hat
               removeSecondOverlay();
             }, boxname: boxname,
             isDemoModus: widget.demoModus,
@@ -509,14 +539,16 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
   }
 
 
-
+  // methode zum positionieren des Overlay-Containers, der die Informationen anzeigt
+  // abhängig von der Position und Größe des Geräts
+  // dazu wird die Randfarbe fesgelegt.
   Widget _positionedOverlaywithText(String text, double widthMultiplicator, double heightMultiplicator, 
                         double topMultiplicator, double leftMultiplicator,Color score) {
     return Positioned(
-      width: MediaQuery.of(context).size.width * widthMultiplicator,
-      height: MediaQuery.of(context).size.height * heightMultiplicator,
-      top: MediaQuery.of(context).size.height * topMultiplicator,
-      left: MediaQuery.of(context).size.width * leftMultiplicator,
+      width: MediaQuery.of(context).size.width * widthMultiplicator, // Breite des Containers
+      height: MediaQuery.of(context).size.height * heightMultiplicator, // Höhe des Containers
+      top: MediaQuery.of(context).size.height * topMultiplicator, // Position des Containers von oben
+      left: MediaQuery.of(context).size.width * leftMultiplicator, // Position des Containers von links
       child: _buildOverlayBox(
         text,
         220,
@@ -527,7 +559,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     );
   }
 
-
+// mehtode zum darstellung der Icons-Overlay, die die Interaktion mit dem Benutzer ermöglichen
   Widget _iconsOverlay(double topMultiplicator, double leftMultiplicator, var data, String infoBox) {
     return Positioned(
       width: 180,
@@ -537,16 +569,19 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // IconButton zum Bearbeiten der Informationen
           IconButton(
             icon: const Icon(Icons.edit,
                 color: Color(0xff3d7c88)), // Button-Farbe ändern
             onPressed: () {
-              _showSecondOverlay(data, infoBox);
+              _showSecondOverlay(data, infoBox); // zweites Overlay anzeigen, um die Informationen zu bearbeiten
             },
           ),
+          // IconButton zum Bestätigen der Informationen
           IconButton(
             icon: const Icon(Icons.check,
-                color: Colors.green), // Button-Farbe ändern
+                color: Colors.green),
+            // methode zum bestätigen der Informationen
             onPressed: () {
               setState(() {
                 if (infoBox == 'schueler') {
@@ -560,14 +595,14 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
                 }
                 if(parentIsChecked && personIsChecked && addressIsChecked || agIsChecked && personIsChecked){
                   isChecked = true;
-                  hideSaveButton = false;
+                  hideSaveButton = false; //das Speichern-Buttons wird nun angezeigt
                   if(docType == 'Adresse' || docType == 'AD'){
-                    _changeData = buildADChangeResponse();
+                    _changeData = buildADChangeResponse(); // Methode zum Erstellen des JSON-Objekts für die Änderungen von Adresse-Daten zu speichern
                   }
                   else{
-                    _changeData = buildAGChangeResponse();
+                    _changeData = buildAGChangeResponse(); // Methode zum Erstellen des JSON-Objekts für die Änderungen von AG-Daten zu speichern
                   }
-                  _showOverlay();
+                  _showOverlay(); // Methode zum Anzeigen des Overlays mit den bestätigten Informationen
                 }
                 print('Change Daten zu speichern: \n ${_changeData.toString()}');
               });
@@ -578,6 +613,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     );
   }
 
+  // methode zum Erstellen der container, die die Informationen in das Overlay anzeigt
   Widget _buildOverlayBox(
       String text, double width, double height, Color backgroundColor, Color borderColor) {
     return  Container(
@@ -593,8 +629,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
         ),
         child: Center(
           child: FittedBox(
-            fit: BoxFit
-                .scaleDown, // FittedBox hinzugefügt, um den Text responsiv zu machen
+            fit: BoxFit.scaleDown, // FittedBox hinzugefügt, um den Text responsiv zu machen
             child: Text(
               text,
               style: const TextStyle(
@@ -609,6 +644,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
       );
   }
 
+  // methode zum Setzen der Farbe des Randes auf grün nach bestätigung der Informationen 
+  // dabein werden auch alle Icon von Bildschirm entfernt
   OverlayEntry _changeOverlayBorder(Color borderColor) {
     if(docType == 'Adresse' || docType == 'AD'){
       return OverlayEntry(
@@ -650,6 +687,9 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     }
   }
 
+  // hier wird das Bestätingen-Button erstellt, um die Änderungen zu speichern
+  // dazu wird die Methode saveChanges() aus dem Repository aufgerufen
+  // und Nachrichten für unterschiedliche Szenarien definieren und anzeigen für eine bestimmte Zeit
   Widget buildSaveChangeButton() {
     return  Align(
         alignment: Alignment.bottomCenter,
@@ -715,6 +755,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
       );
   }
 
+  // Methode zum Vormatierung der Informationen für Adresseänderungen
   Map<String, dynamic> _constructADTextInformation(Map<String, dynamic> data) {
     String studentText = '';
     String parentText = '';
@@ -825,6 +866,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     };
   }
 
+  // Methode zum Formatieren der Informationen für AG-Wahl
   Map<String,dynamic> _constructAGText(Map<String, dynamic> data) {
     String agText = '';
     double score = 0.0;
@@ -857,6 +899,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     return {'text':agText, 'score':score};
   }
 
+  // Methode zum Erstellen des JSON-Objekts für die richtigen Daten, die gespeichert werden sollen
+  // wenn der Benutzer die Informationen bestätigt hat, und der Dokumententyp AD ist
   Map<String, dynamic> buildADChangeResponse(){
     var studentChangeData, parentChangeData, addressChangeData;
     List <String> stdInfo = displayTextStudent!.split('\n');
@@ -892,6 +936,8 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     };
   }
 
+  // Methode zum Erstellen des JSON-Objekts für die richtigen Daten, die gespeichert werden sollen
+  // wenn der Benutzer die Informationen bestätigt hat, und der Dokumententyp AG ist
   Map<String, dynamic> buildAGChangeResponse(){
     List <String> agInfo = displayTextAG!.split('\n');
     List<String> stdInfo = displayTextStudent!.split('\n');
@@ -906,6 +952,7 @@ class PdfViwerState extends State<PdfViwer> with WidgetsBindingObserver{
     };
   }
 
+  // Methode zum Festlegen der Farbe des Randes abhängig vom Similarity_score aus der KI oder backend
   Color _getColorFromScore(double score) {
     if(score == 1.0){
       return Colors.green;

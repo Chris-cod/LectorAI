@@ -25,6 +25,8 @@ class SchulernListState extends State<Schuelern> {
     initList();
   }
 
+  // Die Schülerliste wird von der API abgerufen oder aus einer lokalen JSON-Datei gelesen
+  // und in der Variable alleSchueler gespeichert
   void initList() async {
     List<Schueler> allStudent = widget.demoModus
         ? await repository.fetchStudentFromLocalJson()
@@ -38,6 +40,8 @@ class SchulernListState extends State<Schuelern> {
     });
   }
 
+  // Die Schülerliste wird in einem ListView-Widget angezeigt
+  // Die Schüler werden in einem Card-Widget dargestellt
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -73,7 +77,7 @@ class SchulernListState extends State<Schuelern> {
                       child: ListTile(
                         leading: Icon(Icons.person, color: theme.iconTheme.color), // Adjust icon color based on theme
                         onTap: () {
-                          _navigateToDetails(context, filteredSchueler[index].id);
+                          _navigateToDetails(context, filteredSchueler[index].id); // Navigiere zur Schülerdetails-Seite
                         },
                         title: Row(
                           children: [
@@ -104,6 +108,7 @@ class SchulernListState extends State<Schuelern> {
     );
   }
 
+  // Aufbau der Suchleiste, bestehend aus zwei Suchfeldern
   Widget buildSearchRow(ThemeData theme) {
     return Row(
       children: [
@@ -113,6 +118,8 @@ class SchulernListState extends State<Schuelern> {
       ],
     );
   }
+
+  // Die Schülerliste wird gefiltert, basierend auf dem Suchbegriff und dem Filtertyp
   void _runFilter(String searchKeyword, String filterType) {
     List<Schueler> results = [];
 
@@ -133,7 +140,10 @@ class SchulernListState extends State<Schuelern> {
     });
   }
 
-
+  // Aufbau eines Suchfeldes
+  // Das Suchfeld besteht aus einem Icon, einem Textfeld und einem Label
+  // Das Icon und das Label sind abhängig vom Filtertyp
+  // Das Textfeld wird mit dem Suchbegriff gefüllt und bei jeder Eingabe wird die Filterfunktion aufgerufen
   Widget buildSearchField(ThemeData theme, String labelText, String filterType, IconData icon) {
     return Expanded(
       child: Container(
@@ -172,7 +182,7 @@ class SchulernListState extends State<Schuelern> {
     );
   }
 
-
+  // Navigiere zur Schülerdetails-Seite, nachdem ein Schüler ausgewählt wurde
   void _navigateToDetails(BuildContext context, int schuelerId) {
     Navigator.push(
       context,
