@@ -3,9 +3,21 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 
+/*
+ * Autor: Ayham
+ * Fakultät: TI
+ * Matrikelnummer: 5188947
+ * Fachsemester: 6
+ * 
+ * Diese Klasse enthält Methoden zum Erfassen von Bildern mit einem Dokumentenscanner,
+ * zum Anzeigen von Fehlerdialogen, zum Zurücksetzen von Bildern und zur Überprüfung,
+ * ob der Kontext noch im Widget-Baum vorhanden ist.
+ */
+
 class CameraControllerService 
 {
-  Uint8List? imageBytes; // Gespeichertes Bild in Byte-Array-Form
+  // Gespeichertes Bild in Byte-Array-Form
+  Uint8List? imageBytes; 
 
   // Nimmt Bilder auf und konvertiert sie in ein Byte-Array, speichert es in imageBytes
   Future<void> capturePictures(BuildContext context, Function setState) async 
@@ -15,7 +27,8 @@ class CameraControllerService
     {
       // Versucht Bilder mit dem Dokumentenscanner-Paket zu bekommen
       picturesPaths = await CunningDocumentScanner.getPictures() ?? [];
-      if (!mounted(context)) return; // Überprüft, ob das Widget noch montiert ist
+      // Überprüft, ob das Widget noch montiert ist
+      if (!mounted(context)) return;
       if (picturesPaths.isNotEmpty) 
       {
         // Liest das erste Bild als Beispiel und konvertiert es in ein Byte-Array
@@ -23,7 +36,8 @@ class CameraControllerService
         final bytes = await file.readAsBytes();
         setState(() 
         {
-          imageBytes = bytes; // Speichert das Byte-Array im Zustand
+          // Speichert das Byte-Array im Zustand
+          imageBytes = bytes; 
         });
       }
     } catch (e) 
@@ -39,13 +53,15 @@ class CameraControllerService
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Fehler'), // Titel des Dialogs
-        content: Text('Fehler: $errorMessage'), // Fehlernachricht
+        title: const Text('Fehler'),
+        content: Text('Fehler: $errorMessage'),
         actions: <Widget>[
           TextButton(
             onPressed: ()
             {
+              // Zurück zur vorherigen Seite.
               Navigator.of(context).pop();
+              // Zurück zur vorherigen Seite.
               Navigator.of(context).pop();
             },
             child: const Text('OK'),

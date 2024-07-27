@@ -4,7 +4,17 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-// Klasse, die eine Seite zur Bildanzeige repräsentiert.
+/*
+ * Autor: Ayham
+ * Fakultät: TI
+ * Matrikelnummer: 5188947
+ * Fachsemester: 6
+ * 
+ * Die `ViewImagePage`-Klasse ist ein StatelessWidget, das eine Seite zur Anzeige 
+ * eines Bildes bietet. Diese Klasse zeigt das Bild mit einem Unschärfeeffekt an und 
+ * enthält eine Schaltfläche zum Zurücknavigieren.
+ */
+
 class ViewImagePage extends StatelessWidget 
 {
   final Uint8List imageBytes;
@@ -54,7 +64,8 @@ class ViewImagePage extends StatelessWidget
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () 
               {
-                Navigator.of(context).pop(); // Zurück zur vorherigen Seite.
+                // Zurück zur vorherigen Seite.
+                Navigator.of(context).pop(); 
                 if (onReturn != null) {
                   onReturn!();
                 }
