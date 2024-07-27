@@ -53,11 +53,9 @@ Die App starten, auf das Einstellungs-Icon auf der Login-Seite drücken,
 um auf die Einstellungsseite zu gelangen. 
 Dort gibt man seine lokale IP-Adresse ein und speichert diese, damit man sich anmelden kann.
 
-### App auf Android durch QR-Code ausführen
+### Oder App auf Android-Gerät installieren
 
-Um die App auf Ihrem Android-Gerät zu installieren und auszuführen, scannen Sie einfach den folgenden QR-Code oder klicken Sie auf den untenstehenden Link. Der QR-Code und der Link führen Sie zur Download-Seite:
-
-![QR Code](assets/images/qr-code.png)
+Um die App auf Ihrem Android-Gerät zu installieren und auszuführen, klicken Sie auf den untenstehenden Link. Der Link führen Sie zur Download-Seite:
 
 **Download-Link:** [Hier herunterladen](https://drive.google.com/drive/folders/1zWW0ssiZrlr6AsBypGPqH05unsFbUGsY)
 
