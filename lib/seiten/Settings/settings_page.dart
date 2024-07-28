@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart';
 
+/* Diese Seite bietet verschiedene Einstellungen für die Anwendung, einschließlich 
+ * der Möglichkeit, den Server zu konfigurieren und den Dark Mode zu aktivieren.
+*/
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.loggedIn});
   final bool loggedIn;
@@ -47,6 +50,9 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /* Baut die Karte für die Servereinstellungen, die es dem Benutzer ermöglicht, 
+   * die IP-Adresse des Servers zu konfigurieren und andere Einstellungen vorzunehmen.
+  */
   Widget buildServerSetupCard() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -128,6 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // Baut ein Listenelement mit einem Checkbox-Toggle für verschiedene Einstellungen.
   Widget buildCheckboxTile(String title, bool value, ValueChanged<bool?> onChanged) {
     if(widget.loggedIn) {
       return ListTile(
@@ -144,7 +151,10 @@ class _SettingsPageState extends State<SettingsPage> {
       return Container();
     }
   }
-
+ 
+  /* Baut das Umschaltelement für den Dark Mode, das es dem Benutzer ermöglicht, 
+   * zwischen hellen und dunklen Themen zu wechseln.
+  */
   Widget buildThemeToggle() {
     var themeProvider = Provider.of<ThemeProvider>(context, listen: false);
 
@@ -163,6 +173,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // Lädt die gespeicherten Einstellungen aus dem lokalen Speicher.
   void _loadSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -174,7 +185,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _ipController.text = serverAddress;
     });
   }
-
+  // Speichert die aktuellen Einstellungen im lokalen Speicher.
   void _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('isDarkMode', isDarkMode);
@@ -183,6 +194,9 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setString('serverAddress', serverAddress);
   }
 
+  /* Speichert die aktuelle Serveradresse im lokalen Speicher und zeigt eine 
+   * Bestätigungsmeldung an.
+  */
   void _saveServerAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -197,6 +211,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
+/* Ein benutzerdefiniertes Listenelement im Cupertino-Stil, das eine Titel- und
+ * eine Trailing-Komponente enthält.
+*/
 class CupertinoListTile extends StatelessWidget {
   final Widget title;
   final Widget? trailing;

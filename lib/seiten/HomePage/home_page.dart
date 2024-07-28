@@ -7,6 +7,17 @@ import 'package:lectorai_frontend/seiten/Klasse/schuelern.dart';
 import 'package:lectorai_frontend/services/repository.dart';
 import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
 
+/*
+ * Autor: Ayham
+ * Fakultät: TI
+ * Matrikelnummer: 5188947
+ * Fachsemester: 6
+ * 
+ * Dies ist die Hauptseite der Anwendung, die die Benutzeroberfläche für Lehrer darstellt.
+ * Die Seite zeigt verschiedene Funktionen, wie das Scannen von Dokumenten und die 
+ * Anzeige der betreuten Klassen.
+*/
+
 class HomePage extends StatefulWidget {
   final Lehrer lehrer;
   final bool demoModus;
@@ -31,6 +42,10 @@ class _HomePageState extends State<HomePage> {
     loadClasses();
   }
 
+  /*
+   * Lädt die Klassen entweder aus einer lokalen JSON-Datei (im Demo-Modus) 
+   *  oder vom Server (wenn nicht im Demo-Modus).
+  */ 
   void loadClasses() async {
     List<String> fetchedClasses = [];
     if (widget.demoModus) {
@@ -62,6 +77,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /*
+   * Erstellt die AppBar der Seite mit dem Benutzernamen des Lehrers und einem
+   * Einstellungs-Button.
+  */ 
   AppBar _buildAppBar() {
     return AppBar(
       //backgroundColor: const Color(0xFF48CAE4),
@@ -86,6 +105,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /*
+   * Erstellt den Hauptteil der Seite, der die Schaltflächen zum Scannen von Dokumenten
+   * und zur Anzeige der betreuten Klassen enthält.
+  */ 
   Widget _buildBody(BuildContext context) {
     return Container(
       //color: const Color(0xFF0077B6),
@@ -106,6 +129,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Erstellt die Schaltfläche zum Öffnen der Kamera-Seite.
   Widget _buildCameraButton() {
     return Expanded(
       child: Center(
@@ -135,6 +159,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+
+  /*
+   * Erstellt die Schaltflächen für die betreuten Klassen. 
+   *  Wenn keine Klassen verfügbar sind, wird eine entsprechende Nachricht angezeigt.
+  */ 
   Widget _buildClassButtons(BuildContext context) {
     if (classes.isEmpty) {
       return const Expanded(
@@ -163,6 +192,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  /*
+   * Erstellt eine einzelne Schaltfläche für eine Klasse, die beim Drücken 
+   * die Seite für die Schüler dieser Klasse öffnet.
+  */ 
   Widget _buildClassButton(String label, BuildContext context) {
     return ElevatedButton(
       onPressed: () {
@@ -177,8 +210,6 @@ class _HomePageState extends State<HomePage> {
                     )));
       },
       style: ElevatedButton.styleFrom(
-        //    foregroundColor: const Color.fromARGB(255, 0, 0, 0), // Textfarbe
-        //     backgroundColor: const Color(0xff48CAE4), // Hintergrundfarbe
         minimumSize: const Size(110, 110), // Minimale Größe
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)), // Abgerundete Ecken
@@ -188,6 +219,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Erstellt die Einstellungsseite.
   Widget build_setting(BuildContext context) {
     return Scaffold(
       // backgroundColor: const Color(0xFF0077B6),

@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart';
 
+/* 
+ * Diese Klasse verwaltet das Thema der Anwendung. Sie stellt eine Methode 
+ * zur Verfügung, um ein benutzerdefiniertes Thema für die App zu erstellen.
+*/
 class ThemeManager {
+  /* 
+  * Erstellt und gibt ein `ThemeProvider` zurück, der ein benutzerdefiniertes  
+  * helles Thema enthält. Das Thema umfasst Anpassungen für verschiedene UI-Komponenten
+  * wie den Hintergrund der Scaffold, die AppBar, ElevatedButtons, Eingabefelder und Icons.
+  */
   static ThemeProvider buildTheme() {
     return ThemeProvider(
       ThemeData.light().copyWith(

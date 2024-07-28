@@ -53,4 +53,10 @@ Die App starten, auf das Einstellungs-Icon auf der Login-Seite drücken,
 um auf die Einstellungsseite zu gelangen. 
 Dort gibt man seine lokale IP-Adresse ein und speichert diese, damit man sich anmelden kann.
 
-**Wichtig:** Diese App ist ausschließlich auf Android-Geräten funktionsfähig.
+### Oder App auf Android-Gerät installieren
+
+Um die App auf Ihrem Android-Gerät zu installieren und auszuführen, klicken Sie auf den untenstehenden Link. Der Link führen Sie zur Download-Seite:
+
+**Download-Link:** [Hier herunterladen](https://drive.google.com/drive/folders/1zWW0ssiZrlr6AsBypGPqH05unsFbUGsY)
+
+Bitte beachten Sie, dass die App bis zum 28. Oktober 2024 online verfügbar sein wird.
