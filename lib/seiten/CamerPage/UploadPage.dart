@@ -4,6 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/CamerPage/ViewImagePage.dart';
 
 
+/*
+ * Autor: Ayham
+ * Fakultät: TI
+ * Matrikelnummer: 5188947
+ * Fachsemester: 6
+ * 
+ * Die `UploadPage`-Klasse ist ein StatelessWidget, das eine Seite zur Anzeige 
+ * eines hochgeladenen Bildes bietet. Diese Klasse wird derzeit nicht genutzt und 
+ * dient nur zum Testen, ob das Bild gespeichert ist.
+ */
+
 class UploadPage extends StatelessWidget 
 {
   final Uint8List imageBytes; // Nimmt das Byte-Array auf

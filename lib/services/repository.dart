@@ -121,7 +121,7 @@ class Repository {
     }
   }
 
-  /* Retrieves a list of classes from a local JSON file.
+  /* Retrieves a list of classes from the chosen local JSON file.
    Returns a Future that resolves to a List of [Klasse] objects.
    Throws an error if there is an issue loading the classes from the JSON file.*/
   Future<List<String>> getClassesFromLocalJson() async {
@@ -369,7 +369,7 @@ class Repository {
     // Konvertiert Byte-Daten zu einem Base64-String
     await _loadServerAddress();
     String base64Image = base64Encode(imageBytes);
-    //print(base64Image);
+    // Erstellt ein JSON-Objekt mit dem Bild als Base64-String
     var toSend = notCompareWithDb? jsonEncode({'raw': true,'image': base64Image }) : jsonEncode({'image': base64Image});
     print(toSend);
     var url = Uri.parse('$backendURL/image');
@@ -383,8 +383,9 @@ class Repository {
             body: toSend,
           )
           .timeout(const Duration(seconds: 60));
-
+      // Überprüfung des HTTP-Statuscodes der Antwort
       if (response.statusCode == 200) {
+        // Konvertierung der Antwort in ein JSON-Objekt
         var data = json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
         print(data);
         return data;
@@ -399,10 +400,11 @@ class Repository {
     }
   }
 
+  // Methode zum Speichern der Änderungen
   Future<bool> saveChanges(String token, Map<String, dynamic> validData) async{
-    await _loadServerAddress();
+    await _loadServerAddress(); // Lädt die Serveradresse
     try {
-      var toSend = json.encode(validData);
+      var toSend = json.encode(validData); // Konvertiert das JSON-Objekt in einen String
       print(toSend);
       var response = await http
           .put(
@@ -415,8 +417,8 @@ class Repository {
           )
           .timeout(const Duration(seconds: 15));
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
+      if (response.statusCode == 200 || response.statusCode == 201) { // Überprüfung des HTTP-Statuscodes der Antwort
+        return true; // Erfolgreiche Übertragung der Daten
       } else {
         Future.error('Fehler beim Übertragung der Daten: ${response.statusCode} ${response.body}');
         return false;

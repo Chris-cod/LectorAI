@@ -3,11 +3,25 @@ import 'package:flutter/material.dart';
 import 'camera_controller_service.dart';
 import 'image_display_widget.dart';
 
+/*
+ * Autor: Ayham
+ * Fakultät: TI
+ * Matrikelnummer: 5188947
+ * Fachsemester: 6
+ * 
+ * Die `CameraPage`-Klasse ist eine StatefulWidget, die eine Seite für die
+ * Kamerainteraktionen bereitstellt. Sie verwaltet die Kamera, zeigt ein Overlay vor 
+ * der Bildaufnahme und ermöglicht die Anzeige des aufgenommenen Bildes.
+ */
+
 class CameraPage extends StatefulWidget
 {
   const CameraPage({super.key, required this.token, required this.dmodus});
 
+  // Authentifizierungstoken für API-Anfragen.
   final String token;
+
+  // Entwicklungsmodus-Flag, das angibt, ob die Anwendung im Entwicklungsmodus läuft.
   final bool dmodus;
 
   @override
@@ -71,6 +85,7 @@ class _CameraPageState extends State<CameraPage>
   bool isCaptureSuccessful = await _capturePictures();
     if (!isCaptureSuccessful && mounted) 
     {
+      // Zurück zur vorherigen Seite.
       Navigator.of(context).pop();  
     }
   }

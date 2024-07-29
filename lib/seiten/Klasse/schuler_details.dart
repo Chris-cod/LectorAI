@@ -14,7 +14,7 @@ class SchuelerDetails extends StatefulWidget {
 }
 
 class ShowSchuelerDetails extends State<SchuelerDetails> {
-  SchuelerInfo? schuelerInfo;
+  SchuelerInfo? schuelerInfo; // Schülerinformationen werden hier gespeichert
   Repository repository = Repository();
 
   @override
@@ -23,6 +23,8 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     initList();
   }
 
+  //  Schülerinformationen werden von der API abgerufen oder aus einer lokalen JSON-Datei gelesen
+  // und in der Variable schuelerInfo gespeichert
   initList() async {
     SchuelerInfo schulerInformation;
     if (widget.demoModus) {
@@ -35,6 +37,8 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     });
   }
 
+  // Die Schülerinformationen werden in einem Card-Widget angezeigt
+  // Die Informationen werden in einer Liste von ListTile-Widgets dargestellt
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -42,7 +46,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${schuelerInfo?.vorname ?? 'Max'} ${schuelerInfo?.nachname ?? 'Muster'}',
+          '${schuelerInfo?.vorname ?? 'Max'} ${schuelerInfo?.nachname ?? 'Muster'}', // Schülername als Titel der Seite
           textAlign: TextAlign.center,
         ),
         leading: GestureDetector(
@@ -58,6 +62,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
           : Container(
         padding: const EdgeInsets.all(10.0),
         child: ListView(
+          // Die Schülerinformationen werden in drei Card-Widgets dargestellt
           children: [
             buildCard(
               context,
@@ -99,6 +104,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     );
   }
 
+  // Ein Card-Widget wird erstellt, um die Schülerinformationen anzuzeigen
   Widget buildCard(BuildContext context, String title, List<Widget> children, IconData titleIcon) {
     return Card(
       elevation: 2.0,
@@ -123,6 +129,7 @@ class ShowSchuelerDetails extends State<SchuelerDetails> {
     );
   }
 
+  // Ein ListTile-Widget wird erstellt, um jede Information von SChüler anzuzeigen
   Widget buildInfoField(String label, String value, IconData icon) {
     var theme = Theme.of(context);
     return Container(

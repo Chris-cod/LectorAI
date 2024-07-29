@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:lectorai_frontend/seiten/BlattView/Pdfviewr.dart';
 import 'dart:typed_data';
 import 'dart:ui';
-//import 'package:lectorai_frontend/seiten/CamerPage/UploadPage.dart';
+
+/*
+ * Autor: Ayham
+ * Fakultät: TI
+ * Matrikelnummer: 5188947
+ * Fachsemester: 6
+ * 
+ *  Das `ImageDisplayWidget` ist ein StatelessWidget, das ein Bild anzeigt und
+ *  zwei Schaltflächen bietet: eine zum Zurücksetzen der Bildaufnahme und eine 
+ *  zum Starten der KI-Analyse.
+ */
 
 class ImageDisplayWidget extends StatelessWidget 
 {

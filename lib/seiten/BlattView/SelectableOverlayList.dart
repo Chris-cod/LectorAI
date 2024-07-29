@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SelectableOverlayList extends StatefulWidget {
   var items;
   final ValueChanged<Map<String, dynamic>> onItemSelected;
-  final String boxname;
+  final String boxname; // das ist die 
 
   SelectableOverlayList({
     required this.items,
@@ -24,12 +24,12 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
   String? selectedAG2;
   String? selectedAG3;
 
-  List<String> studentItems = [];
-  List<String> parentItems = [];
-  List<String> adresseItems = [];
-  List<String> ag1 = [];
-  List<String> ag2 = [];
-  List<String> ag3 = [];
+  List<String> studentItems = [];  //list von Schueler
+  List<String> parentItems = [];  //list von Erzieherberechtigten
+  List<String> adresseItems = []; //list von Adressen
+  List<String> ag1 = []; //list von AG1
+  List<String> ag2 = [];  //list von AG2
+  List<String> ag3 = [];    //list von AG3
 
   @override
   void initState() {
@@ -37,7 +37,8 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
     _initializeItems();
   }
 
-  void _initializeItems() {
+// hier wird die Liste von Schueler, Erzieher, Adressen und AGs initialisiert
+  void _initializeItems() { 
     if(widget.boxname == 'schueler') {
       for (var item in widget.items) {
         studentItems.add('${item['lastname'] ?? 'Kein vorname'} | ${item['firstname'] ?? 'Kein Nachname'} |'
@@ -83,6 +84,8 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
     }
   }
 
+  
+  // hier wird der default Wert initialisiert, die in der Dropdown-Liste angezeigt wird
   void initDefaultValues() {
     if (widget.boxname == 'schueler') {
       selectedStudent = studentItems[0];
@@ -97,12 +100,13 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
     }
   }
 
+  //hier wird die Dropdown-Liste und Text zusammen aufgebaut und angezeigt 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
-        child: _isContainerVisible
+        child: _isContainerVisible 
           ? Stack(
               children: [
                 Container(
@@ -114,8 +118,10 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // je nach boxname wird der Text angezeigt
                       _buildOverlayText(widget.boxname),
                       const SizedBox(height: 10),
+                      // je nach boxname wird die Dropdown-Liste aufgebaut
                       buildDropdown(widget.boxname),
                     ],
                   ),
@@ -132,6 +138,7 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
                     },
                   ),
                 ),
+                // Bestätigen Button zum Bestätigen der Auswahl
                 Positioned(
                   bottom: 10,
                   right: 70,
@@ -147,6 +154,7 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
     );
   }
 
+ // hier wird der Text für die Overlay-Box aufgebaut
   Widget _buildOverlayText(String boxname) {
     final String text;
     if (boxname == 'schueler') {
@@ -171,6 +179,7 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
     );
   }
 
+  // hier wird die Dropdown-Liste je nach boxname aufgebaut
   Widget buildDropdown(String boxname) {
     switch (boxname) {
       case 'schueler':
@@ -323,20 +332,28 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
             ],
           ),
         );
-      // Add more cases for 'erzieher', 'addresse' as needed
       default:
         return Container();
     }
   }
 
 
+  // This method is called when the user clicks on the 'Bestätigen' button.
+  // It checks the value of 'widget.boxname' to determine which type of box is being selected.
+  // Based on the box type, it extracts the selected values from the dropdown menus and formats them accordingly.
+  // Finally, it calls the 'onItemSelected' callback with the formatted text as a parameter.
   void _onSubmit() {
     if (widget.boxname == 'schueler') {
+      // If the box type is 'schueler', split the selectedStudent string by ' | ' delimiter
+      // and create a map with the formatted text to pass to the 'onItemSelected' callback.
       List<String> student = selectedStudent!.split(' | ');
       widget.onItemSelected({
         'text': '${student[0]}\n${student[1]}\n${student[2]}',
       });
     } else if (widget.boxname == 'erzieher') {
+      // If the box type is 'erzieher', split the selectedParent string by '\n' delimiter
+      // and further split the name and contact strings by ' | ' delimiter.
+      // Create a map with the formatted text to pass to the 'onItemSelected' callback.
       List<String> parent = selectedParent!.split('\n');
       List<String> name = parent[0].split(' | ');
       List<String> contact = parent[1].split(' | ');
@@ -344,6 +361,9 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
         'text': '${name[0]}\n${name[1]}\n${contact[0]}\n${contact[1]}',
       });
     } else if (widget.boxname == 'addresse') {
+      // If the box type is 'addresse', split the selectedAdresse string by '\n' delimiter
+      // and further split the street and postal strings by ' | ' delimiter.
+      // Create a map with the formatted text to pass to the 'onItemSelected' callback.
       List<String> address = selectedAdresse!.split('\n');
       List<String> street = address[0].split(' | ');
       List<String> postal = address[1].split(' | ');
@@ -351,6 +371,8 @@ class _SelectableOverlayListState extends State<SelectableOverlayList> {
         'text': '${street[0]}-${street[1]}\n${postal[0]}\n${postal[1]}',
       });
     } else {
+      // For any other box type, create a map with the selectedAG1, selectedAG2, and selectedAG3 values
+      // and pass it to the 'onItemSelected' callback.
       widget.onItemSelected({
         'text': '${selectedAG1!}\n${selectedAG2!}\n${selectedAG3!}',
       });

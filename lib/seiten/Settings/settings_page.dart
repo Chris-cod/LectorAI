@@ -4,6 +4,9 @@ import 'package:flutter/material.dart'; // Importiert das Material Design Paket 
 import 'package:provider/provider.dart'; // Importiert das Provider Paket für State Management.
 import 'package:lectorai_frontend/seiten/Settings/theme_provider.dart'; // Importiert den ThemeProvider für das App-Thema.
 
+/* Diese Seite bietet verschiedene Einstellungen für die Anwendung, einschließlich 
+ * der Möglichkeit, den Server zu konfigurieren und den Dark Mode zu aktivieren.
+*/
 class SettingsPage extends StatefulWidget {
   const SettingsPage(
       {super.key,
@@ -54,6 +57,9 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /* Baut die Karte für die Servereinstellungen, die es dem Benutzer ermöglicht, 
+   * die IP-Adresse des Servers zu konfigurieren und andere Einstellungen vorzunehmen.
+  */
   Widget buildServerSetupCard() {
     return Card(
       shape: RoundedRectangleBorder(
@@ -151,10 +157,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+
   Widget buildCheckboxTile(
       String title, bool value, ValueChanged<bool?> onChanged) {
     if (widget.loggedIn) {
       // Zeigt das Kontrollkästchen nur an, wenn der Benutzer eingeloggt ist.
+
       return ListTile(
         title: Text(
           title,
@@ -171,7 +179,10 @@ class _SettingsPageState extends State<SettingsPage> {
       return Container(); // Gibt ein leeres Container zurück, wenn der Benutzer nicht eingeloggt ist.
     }
   }
-
+ 
+  /* Baut das Umschaltelement für den Dark Mode, das es dem Benutzer ermöglicht, 
+   * zwischen hellen und dunklen Themen zu wechseln.
+  */
   Widget buildThemeToggle() {
     var themeProvider = Provider.of<ThemeProvider>(context,
         listen: false); // Holt den ThemeProvider.
@@ -193,6 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // Lädt die gespeicherten Einstellungen aus dem lokalen Speicher.
   void _loadSettings() async {
     SharedPreferences prefs = await SharedPreferences
         .getInstance(); // Lädt die gespeicherten Einstellungen.
@@ -205,7 +217,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _ipController.text = serverAddress;
     });
   }
-
+  // Speichert die aktuellen Einstellungen im lokalen Speicher.
   void _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences
         .getInstance(); // Speichert die aktuellen Einstellungen.
@@ -215,6 +227,9 @@ class _SettingsPageState extends State<SettingsPage> {
     prefs.setString('serverAddress', serverAddress);
   }
 
+  /* Speichert die aktuelle Serveradresse im lokalen Speicher und zeigt eine 
+   * Bestätigungsmeldung an.
+  */
   void _saveServerAddress() async {
     SharedPreferences prefs = await SharedPreferences
         .getInstance(); // Speichert die aktuelle Serveradresse.
@@ -232,6 +247,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
+/* Ein benutzerdefiniertes Listenelement im Cupertino-Stil, das eine Titel- und
+ * eine Trailing-Komponente enthält.
+*/
 class CupertinoListTile extends StatelessWidget {
   final Widget title;
   final Widget? trailing;
