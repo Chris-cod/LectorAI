@@ -1,45 +1,46 @@
-import 'package:flutter/material.dart'; // Für den Zugriff auf die Asset-Ressourcen
-import 'package:lectorai_frontend/models/lehrer.dart';
-import 'package:lectorai_frontend/seiten/HomePage/home_page.dart';
-import 'package:lectorai_frontend/services/repository.dart'; // Import für die HomePage
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lectorai_frontend/seiten/Settings/settings_page.dart';
+import 'package:flutter/material.dart'; // Importiert das Material Design Paket für Flutter.
+import 'package:lectorai_frontend/models/lehrer.dart'; // Importiert das Lehrer-Modell.
+import 'package:lectorai_frontend/seiten/HomePage/home_page.dart'; // Importiert die HomePage.
+import 'package:lectorai_frontend/services/repository.dart'; // Importiert das Repository für Datenoperationen.
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Importiert das dotenv Paket für das Laden von Umgebungsvariablen.
+import 'package:lectorai_frontend/seiten/Settings/settings_page.dart'; // Importiert die Einstellungsseite.
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key}); // Konstruktor für die LoginPage Klasse.
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginPageState createState() =>
+      _LoginPageState(); // Erstellt den Zustand der LoginPage.
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Lehrer lehrer = Lehrer(); // Instanz der Lehrer-Klasse
-  bool _isSecret = true; // Zustand zum Verbergen oder Anzeigen des Passworts
-  bool isDemoMode = false; // Zustand für den Demo-Modus
-
+  Lehrer lehrer = Lehrer(); // Instanz der Lehrer-Klasse.
+  bool _isSecret = true; // Zustand zum Verbergen oder Anzeigen des Passworts.
+  bool isDemoMode = false; // Zustand für den Demo-Modus.
 
   final TextEditingController _usernameController =
-      TextEditingController(); // Controller für Benutzername
+      TextEditingController(); // Controller für den Benutzernamen.
   final TextEditingController _passwordController =
-      TextEditingController(); // Controller für Passwort
-  final Repository repository = Repository();
+      TextEditingController(); // Controller für das Passwort.
+  final Repository repository =
+      Repository(); // Instanz des Repositorys für Datenoperationen.
 
   @override
   void initState() {
-    super.initState();
+    super.initState(); // Initialisiert den Zustand der Seite.
   }
 
   void toggleDemoMode(bool value) {
     setState(() {
-      isDemoMode = value;
+      isDemoMode = value; // Setzt den Demo-Modus Zustand.
       if (isDemoMode) {
-        // Setze die Felder auf Demo-Daten, wenn der Demo-Modus aktiviert ist.
+        // Setzt die Felder auf Demo-Daten, wenn der Demo-Modus aktiviert ist.
         _usernameController.text =
             dotenv.get('DEMO_USERNAME', fallback: 'defaultUser');
         _passwordController.text =
             dotenv.get('DEMO_PASSWORD', fallback: 'defaultPassword');
       } else {
-        // Leere die Felder, wenn der Demo-Modus deaktiviert wird.
+        // Leert die Felder, wenn der Demo-Modus deaktiviert wird.
         _usernameController.clear();
         _passwordController.clear();
       }
@@ -59,9 +60,10 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     if (isDemoMode) {
-      lehrer = await repository.loginFromLocalJson(username, password);
+      lehrer =
+          await repository.loginFromLocalJson(username, password); // Demo-Login
     } else {
-      lehrer = await repository.login(username, password);
+      lehrer = await repository.login(username, password); // Normaler Login
     }
 
     if (lehrer.isloggedin) {
@@ -70,7 +72,8 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(
           builder: (context) => HomePage(
               lehrer: lehrer,
-              demoModus: isDemoMode), // Übergibt den Benutzernamen
+              demoModus:
+                  isDemoMode), // Übergibt den Lehrer und den Demo-Modus an die HomePage.
         ),
       );
     } else {
@@ -83,24 +86,23 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: const Color(0xFFB9B5C6),
       body: Stack(
         children: [
           Center(
             child: SingleChildScrollView(
-              // Ermöglicht das Scrollen, falls der Bildschirm zu klein ist
+              // Ermöglicht das Scrollen, falls der Bildschirm zu klein ist.
               padding: const EdgeInsets.symmetric(
-                  horizontal: 20), // Padding für Ränder
+                  horizontal: 20), // Padding für die Ränder.
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   FractionallySizedBox(
                     widthFactor:
-                        0.6, // Setzt die Breite des Logos auf 60% der Bildschirmbreite
+                        0.6, // Setzt die Breite des Logos auf 60% der Bildschirmbreite.
                     child: Image.asset(
                       'assets/Bilder/lectorAI_Logo.png',
                       fit: BoxFit
-                          .contain, // Passt das Bild innerhalb der Box an, behält Seitenverhältnis
+                          .contain, // Passt das Bild innerhalb der Box an, behält das Seitenverhältnis bei.
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -115,7 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton(
                     onPressed: _login,
                     style: ElevatedButton.styleFrom(
-                      // backgroundColor: const Color(0xFFB4C2E6),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 10),
                     ),
@@ -132,7 +133,8 @@ class _LoginPageState extends State<LoginPage> {
                     trailing: Checkbox(
                       value: isDemoMode,
                       onChanged: (bool? value) {
-                        toggleDemoMode(value ?? false);
+                        toggleDemoMode(
+                            value ?? false); // Schaltet den Demo-Modus um.
                       },
                     ),
                   ),
@@ -148,7 +150,9 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage(loggedIn: false,)),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const SettingsPage(loggedIn: false)),
                 );
               },
             ),
@@ -168,17 +172,15 @@ class _LoginPageState extends State<LoginPage> {
       decoration: InputDecoration(
         prefixIcon: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.asset(prefixImage), // Lädt das Bild für das Eingabefeld
+          child: Image.asset(prefixImage), // Lädt das Bild für das Eingabefeld.
         ),
-        hintText: hintText, // Setzt den Platzhaltertext für das Eingabefeld
+        hintText: hintText, // Setzt den Platzhaltertext für das Eingabefeld.
         filled: true,
-        // fillColor: const Color(
-        //     0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
-              25.0), // Abgerundete Ecken für das Eingabefeld
-          borderSide:
-              BorderSide.none, // Entfernt die äußere Umrandung des Eingabefelds
+              25.0), // Abgerundete Ecken für das Eingabefeld.
+          borderSide: BorderSide
+              .none, // Entfernt die äußere Umrandung des Eingabefelds.
         ),
       ),
     );
@@ -187,35 +189,35 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildPasswordField() {
     return TextField(
       controller: _passwordController,
-      obscureText: _isSecret, // Steuert die Sichtbarkeit des Passworts
+      obscureText: _isSecret, // Steuert die Sichtbarkeit des Passworts.
       decoration: InputDecoration(
         prefixIcon: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Image.asset(
-              'assets/Bilder/Lock.png'), // Bild für das Passwortfeld
+              'assets/Bilder/Lock.png'), // Bild für das Passwortfeld.
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            // Wechselt das Icon basierend auf dem Zustand der Sichtbarkeit
-            _isSecret ? Icons.visibility_off : Icons.visibility,
+            _isSecret
+                ? Icons.visibility_off
+                : Icons
+                    .visibility, // Wechselt das Icon basierend auf dem Zustand der Sichtbarkeit.
             color: Colors.black,
           ),
           onPressed: () {
             setState(() {
               _isSecret =
-                  !_isSecret; // Umschalten der Sichtbarkeit des Passworts
+                  !_isSecret; // Umschalten der Sichtbarkeit des Passworts.
             });
           },
         ),
-        hintText: 'Kennwort', // Platzhaltertext für das Passwortfeld
+        hintText: 'Kennwort', // Platzhaltertext für das Passwortfeld.
         filled: true,
-        // fillColor: const Color(
-        //     0xFFB6CEF9), // Einheitliche Hintergrundfarbe des Eingabefelds
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
-              25.0), // Abgerundete Ecken für das Eingabefeld
-          borderSide:
-              BorderSide.none, // Entfernt die äußere Umrandung des Eingabefelds
+              25.0), // Abgerundete Ecken für das Eingabefeld.
+          borderSide: BorderSide
+              .none, // Entfernt die äußere Umrandung des Eingabefelds.
         ),
       ),
     );
